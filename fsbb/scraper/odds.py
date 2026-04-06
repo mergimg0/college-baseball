@@ -19,9 +19,7 @@ from __future__ import annotations
 
 import json
 import os
-import sqlite3
 import urllib.request
-from datetime import datetime
 
 
 SPORT = "baseball_ncaa"
@@ -65,7 +63,7 @@ def fetch_odds(
         req = urllib.request.Request(url)
         resp = urllib.request.urlopen(req, timeout=30)
 
-        # Track remaining credits
+        # Track remaining credits (never log the URL — contains API key)
         remaining = resp.headers.get("x-requests-remaining", "?")
         used = resp.headers.get("x-requests-used", "?")
         print(f"  Credits: {remaining} remaining ({used} used this month)")

@@ -18,10 +18,12 @@ from datetime import date, timedelta
 BASE_URL = "https://ncaa-api.henrygd.me"
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
 
-# SSL context for the API
-_SSL_CTX = ssl.create_default_context()
-_SSL_CTX.check_hostname = False
-_SSL_CTX.verify_mode = ssl.CERT_NONE
+# SSL context — use certifi for proper verification
+try:
+    import certifi
+    _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    _SSL_CTX = ssl.create_default_context()
 
 
 def _fetch_scoreboard(d: date) -> list[dict]:
@@ -70,8 +72,8 @@ def _resolve_team(conn: sqlite3.Connection, name: str) -> int | None:
                     (name, row[0])
                 )
                 conn.commit()
-            except Exception:
-                pass
+            except sqlite3.OperationalError:
+                pass  # Table locked or similar — non-critical, alias is a cache
             return row[0]
 
     return None
@@ -169,7 +171,7 @@ def scrape_season(
 
     Args:
         conn: Database connection
-        start: Season start date (default: Feb 14, 2026)
+        start: Season start date (default: Feb 14 of current year)
         end: Last date to scrape (default: yesterday)
         rate_limit: Seconds between API calls
         progress: Print progress
@@ -178,14 +180,13 @@ def scrape_season(
         Summary with total games found/imported
     """
     if start is None:
-        start = date(2026, 2, 14)  # D1 season typically starts mid-Feb
+        start = date(date.today().year, 2, 14)  # D1 season typically starts mid-Feb
     if end is None:
         end = date.today() - timedelta(days=1)
 
     total_found = 0
     total_imported = 0
     total_skipped = 0
-    unresolved_names: set[str] = set()
 
     current = start
     day_count = 0

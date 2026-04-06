@@ -15,7 +15,6 @@ Commands:
 from __future__ import annotations
 
 import json
-import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -323,17 +322,20 @@ def accuracy():
         click.echo("\n  No PEAR comparison data available")
 
 
-def _run_pythag_backtest(conn) -> dict:
-    """Fast Pythagorean-only backtest for the render page."""
-    import math as _math
-    from fsbb.models.ratings import pythagorean_wpct
+def _run_production_backtest(conn) -> dict:
+    """Backtest using the PRODUCTION predict_matchup function.
+
+    This ensures the accuracy number on the page reflects exactly
+    what the live prediction system would produce — no model divergence.
+    """
+    from fsbb.models.predict import predict_matchup
+
     games = conn.execute("""
-        SELECT h.pythag_pct, a.pythag_pct, g.home_runs, g.away_runs
+        SELECT h.name as home, a.name as away, g.home_runs, g.away_runs
         FROM games g
         JOIN teams h ON g.home_team_id = h.id
         JOIN teams a ON g.away_team_id = a.id
         WHERE g.status='final' AND g.home_runs IS NOT NULL
-              AND h.pythag_pct IS NOT NULL AND a.pythag_pct IS NOT NULL
               AND h.games_played >= 10 AND a.games_played >= 10
               AND h.total_ra > 0 AND a.total_ra > 0
     """).fetchall()
@@ -341,21 +343,24 @@ def _run_pythag_backtest(conn) -> dict:
         return {"games": 0}
     correct = 0
     brier = 0.0
+    evaluated = 0
     for g in games:
-        pa, pb = g[0], g[1]
-        denom = pa + pb - 2*pa*pb
-        prob = (pa - pa*pb) / denom if denom != 0 else 0.5
-        prob = min(0.95, max(0.05, prob * 1.04))
+        pred = predict_matchup(conn, g[0], g[1])
+        if not pred:
+            continue
+        prob = pred["home_win_prob"]
         actual = 1.0 if g[2] > g[3] else 0.0
         if (prob > 0.5) == (actual == 1.0):
             correct += 1
-        brier += (prob - actual)**2
-    n = len(games)
+        brier += (prob - actual) ** 2
+        evaluated += 1
+    if evaluated == 0:
+        return {"games": 0}
     return {
-        "games": n,
+        "games": evaluated,
         "our_correct": correct,
-        "our_accuracy": round(correct/n, 4),
-        "our_brier": round(brier/n, 4),
+        "our_accuracy": round(correct / evaluated, 4),
+        "our_brier": round(brier / evaluated, 4),
     }
 
 
@@ -376,8 +381,8 @@ def render(output: str | None):
     yesterday = today - timedelta(days=1)
     yesterday_preds = predict_date(conn, yesterday)
 
-    # Get accuracy (Pythagorean Log5 backtest)
-    acc = _run_pythag_backtest(conn)
+    # Get accuracy (production model backtest — same function as live predictions)
+    acc = _run_production_backtest(conn)
 
     # Get rankings
     rankings = [dict(r) for r in conn.execute("""
@@ -426,143 +431,6 @@ def render(output: str | None):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(html)
     click.echo(f"Rendered to {out_path}")
-
-
-def _create_default_template(template_dir: Path):
-    """Create the default prediction page template."""
-    template_dir.mkdir(parents=True, exist_ok=True)
-    (template_dir / "predictions.html").write_text(DEFAULT_TEMPLATE)
-
-
-DEFAULT_TEMPLATE = """\
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForgeStream Baseball — Nightly Predictions</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #e0e0e0; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-  h1 { color: #4fc3f7; margin-bottom: 4px; font-size: 1.6em; }
-  h2 { color: #81d4fa; margin: 24px 0 12px; font-size: 1.2em; }
-  .subtitle { color: #888; font-size: 0.9em; margin-bottom: 20px; }
-  .accuracy-box { background: #1a1e2e; border: 1px solid #2a3a5a; border-radius: 8px;
-                   padding: 16px; margin: 16px 0; display: flex; gap: 32px; flex-wrap: wrap; }
-  .stat { text-align: center; }
-  .stat .value { font-size: 1.8em; font-weight: bold; color: #4fc3f7; }
-  .stat .label { font-size: 0.8em; color: #888; }
-  .edge-positive { color: #66bb6a; }
-  .edge-negative { color: #ef5350; }
-  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-  th { background: #1a1e2e; color: #81d4fa; padding: 8px 12px; text-align: left;
-       font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; }
-  td { padding: 8px 12px; border-bottom: 1px solid #1a1e2e; font-size: 0.9em; }
-  tr:hover { background: #151828; }
-  .prob-high { color: #66bb6a; font-weight: bold; }
-  .prob-med { color: #ffd54f; }
-  .prob-low { color: #ef5350; }
-  .correct { color: #66bb6a; }
-  .incorrect { color: #ef5350; }
-  .pending { color: #888; }
-  .footer { margin-top: 32px; color: #555; font-size: 0.8em; text-align: center; }
-  .conf-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; }
-  .conf-high { background: #1b5e20; color: #66bb6a; }
-  .conf-medium { background: #4a3800; color: #ffd54f; }
-  .conf-low { background: #4a1010; color: #ef5350; }
-</style>
-</head>
-<body>
-<div class="container">
-  <h1>ForgeStream Baseball</h1>
-  <p class="subtitle">NCAA D1 Game Predictions — Pythagenport + Dynamic Bradley-Terry</p>
-
-  {% if accuracy and accuracy.games > 0 %}
-  <div class="accuracy-box">
-    <div class="stat">
-      <div class="value">{{ (accuracy.our_accuracy * 100) | round(1) }}%</div>
-      <div class="label">Our Accuracy ({{ accuracy.our_correct }}/{{ accuracy.games }})</div>
-    </div>
-    <div class="stat">
-      <div class="value">{{ accuracy.our_brier | round(4) }}</div>
-      <div class="label">Brier Score</div>
-    </div>
-    {% if accuracy.pear_accuracy is defined %}
-    <div class="stat">
-      <div class="value">{{ (accuracy.pear_accuracy * 100) | round(1) }}%</div>
-      <div class="label">PEAR Accuracy</div>
-    </div>
-    <div class="stat">
-      <div class="value {% if accuracy.edge_accuracy > 0 %}edge-positive{% else %}edge-negative{% endif %}">
-        {{ (accuracy.edge_accuracy * 100) | round(1) }}%
-      </div>
-      <div class="label">Our Edge</div>
-    </div>
-    {% endif %}
-  </div>
-  {% endif %}
-
-  <h2>Today's Predictions — {{ today }}</h2>
-  {% if today_predictions %}
-  <table>
-    <thead>
-      <tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Confidence</th></tr>
-    </thead>
-    <tbody>
-    {% for p in today_predictions %}
-      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
-      {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
-      <tr>
-        <td>{{ p.home_team }}</td>
-        <td>{{ p.away_team }}</td>
-        <td class="{% if conf_pct > 0.65 %}prob-high{% elif conf_pct > 0.55 %}prob-med{% else %}prob-low{% endif %}">
-          {{ (p.home_win_prob * 100) | round(1) }}%
-        </td>
-        <td><strong>{{ winner }}</strong></td>
-        <td>{{ p.predicted_total_runs }}</td>
-        <td><span class="conf-badge conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p style="color: #888;">No games scheduled for today.</p>
-  {% endif %}
-
-  <h2>Yesterday's Results — {{ yesterday }}</h2>
-  {% if yesterday_predictions %}
-  <table>
-    <thead>
-      <tr><th>Home</th><th>Away</th><th>Our Pick</th><th>Actual</th><th>Result</th></tr>
-    </thead>
-    <tbody>
-    {% for p in yesterday_predictions %}
-      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
-      <tr>
-        <td>{{ p.home_team }}</td>
-        <td>{{ p.away_team }}</td>
-        <td>{{ winner }} ({{ ([p.home_win_prob, p.away_win_prob] | max * 100) | round(1) }}%)</td>
-        <td>{% if p.actual_home_runs is not none %}{{ p.actual_home_runs }}-{{ p.actual_away_runs }}{% else %}—{% endif %}</td>
-        <td class="{% if p.correct is true %}correct{% elif p.correct is false %}incorrect{% else %}pending{% endif %}">
-          {% if p.correct is true %}✓{% elif p.correct is false %}✗{% else %}—{% endif %}
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p style="color: #888;">No results from yesterday.</p>
-  {% endif %}
-
-  <div class="footer">
-    <p>ForgeStream Baseball v0.1 — Pythagenport + Dynamic Bradley-Terry + Logistic</p>
-    <p>Generated {{ generated_at }} | Not financial advice</p>
-  </div>
-</div>
-</body>
-</html>
-"""
 
 
 if __name__ == "__main__":

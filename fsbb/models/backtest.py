@@ -14,16 +14,11 @@ from __future__ import annotations
 import math
 import sqlite3
 from collections import defaultdict
-from datetime import date, datetime
 from typing import Any
 
-import numpy as np
-
 from fsbb.models.ratings import (
-    compute_sos,
     fit_dynamic_bt,
     pythagorean_wpct,
-    pythagenport_exponent,
 )
 
 
@@ -87,6 +82,8 @@ def run_backtest(
     gp: dict[int, int] = defaultdict(int)       # games played per team
     wins: dict[int, int] = defaultdict(int)
     game_history: list[dict] = []  # games seen so far (for BT fitting)
+    cached_bt_diff: dict[tuple[int, int], float] = {}
+    cached_hfa: float = 0.16
 
     # Results
     results = []
@@ -109,24 +106,27 @@ def run_backtest(
 
         # Only predict if both teams have minimum games
         if gp[h_idx] >= min_games and gp[a_idx] >= min_games:
-            # Compute ratings from historical data (before this game)
-            h_pythag = pythagorean_wpct(rs[h_idx], ra[h_idx], gp[h_idx])
-            a_pythag = pythagorean_wpct(rs[a_idx], ra[a_idx], gp[a_idx])
+            # Combine Pythagorean + BT for prediction
+            h_pyth = pythagorean_wpct(rs[h_idx], ra[h_idx], gp[h_idx])
+            a_pyth = pythagorean_wpct(rs[a_idx], ra[a_idx], gp[a_idx])
 
-            # BT ratings from game history
-            if len(game_history) >= 50:
-                bt_ratings, hfa_log = fit_dynamic_bt(
-                    game_history, n_teams, team_id_map, max_iter=100
-                )
-                bt_diff = bt_ratings[h_idx] - bt_ratings[a_idx]
-                hfa = hfa_log
-            else:
-                bt_diff = 0.0
-                hfa = 0.16  # default HFA
+            # Log5 from Pythagorean
+            denom = h_pyth + a_pyth - 2 * h_pyth * a_pyth
+            pythag_prob = (h_pyth - h_pyth * a_pyth) / denom if denom != 0 else 0.5
 
-            # Predict: logistic on BT diff + HFA
-            logit = bt_diff + hfa
-            our_prob = 1.0 / (1.0 + math.exp(-logit))
+            # BT component — uses cached ratings (refit every 100 games)
+            bt_diff = cached_bt_diff.get((h_idx, a_idx), 0.0)
+            hfa = cached_hfa
+
+            # Blend Pythag + BT (matching production model logic)
+            bt_logit = bt_diff + hfa
+            bt_prob = 1.0 / (1.0 + math.exp(-max(-10, min(10, bt_logit))))
+            bt_weight = 0.5 if cached_bt_diff else 0.0
+            our_prob = (1 - bt_weight) * pythag_prob + bt_weight * bt_prob
+            if bt_weight == 0:
+                log_odds = math.log(max(our_prob, 1e-10) / max(1 - our_prob, 1e-10))
+                log_odds += 0.16
+                our_prob = 1.0 / (1.0 + math.exp(-log_odds))
             our_prob = max(0.05, min(0.95, our_prob))
 
             # Actual outcome
@@ -185,6 +185,19 @@ def run_backtest(
             "home_won": h_runs > a_runs,
             "date": game["date"],
         })
+
+        # Refit BT every 100 games to keep O(n) not O(n²)
+        if len(game_history) >= 100 and len(game_history) % 100 == 0:
+            bt_ratings, hfa_log = fit_dynamic_bt(
+                game_history, n_teams, team_id_map, max_iter=100
+            )
+            cached_hfa = hfa_log
+            # Pre-compute all pairwise diffs for fast lookup
+            cached_bt_diff = {}
+            for i in range(n_teams):
+                for j in range(n_teams):
+                    if i != j:
+                        cached_bt_diff[(i, j)] = bt_ratings[i] - bt_ratings[j]
 
     # Summary
     summary: dict[str, Any] = {

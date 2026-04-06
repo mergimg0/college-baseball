@@ -235,7 +235,7 @@ def import_team_games(conn: sqlite3.Connection, team_name: str, detail: dict) ->
             """, (game_date, home_id, away_id, home_runs, away_runs, status, actual_winner))
             count += 1
         except sqlite3.IntegrityError:
-            pass
+            pass  # Duplicate game — expected when importing from both teams' perspectives
 
     conn.commit()
     return count

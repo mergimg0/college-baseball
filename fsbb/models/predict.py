@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import math
 import sqlite3
-from datetime import date, datetime
+from datetime import date
 
 
 def predict_matchup(
@@ -74,9 +74,15 @@ def predict_matchup(
     # Blend: weighted average of Pythag and BT probabilities
     home_win_prob = (1 - bt_weight) * pythag_prob + bt_weight * bt_prob
 
-    # Add small HFA adjustment if using pure Pythag (log5 doesn't include HFA)
-    if bt_weight < 0.3:
-        home_win_prob = home_win_prob * 1.04  # ~54% baseline home advantage
+    # Single HFA source: apply log-odds adjustment when NOT using BT
+    # (BT already incorporates HFA via _estimate_hfa in bt_logit)
+    # For pure Pythag path (bt_weight=0), apply HFA as log-odds shift
+    if bt_weight == 0:
+        # Convert to log-odds, add HFA, convert back
+        eps = 1e-10
+        log_odds = math.log(max(home_win_prob, eps) / max(1 - home_win_prob, eps))
+        log_odds += 0.16  # ~54% baseline home advantage in log-odds
+        home_win_prob = 1.0 / (1.0 + math.exp(-log_odds))
 
     # Clamp to reasonable range
     home_win_prob = max(0.05, min(0.95, home_win_prob))
@@ -182,8 +188,8 @@ def predict_date(
                     WHERE id=?
                 """, (pred["home_win_prob"], pred["predicted_total_runs"],
                       predicted_winner_id["id"], g["id"]))
-        except Exception:
-            pass
+        except sqlite3.OperationalError as e:
+            print(f"  WARNING: Failed to store prediction for game {g['id']}: {e}")
 
         predictions.append(pred)
 

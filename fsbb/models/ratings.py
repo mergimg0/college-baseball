@@ -322,18 +322,23 @@ def compute_all_ratings(conn: sqlite3.Connection) -> dict:
         bt_game_count[g["home_idx"]] += 1
         bt_game_count[g["away_idx"]] += 1
 
-    # V0 power rating: Pythag-dominant
-    # BT is unreliable with sparse game data (577 games / 308 teams = 1.9 avg)
-    # Use PEAR SOS rank as schedule strength proxy until we have full game data
+    # Dynamic power rating weights based on actual data coverage
+    avg_games_per_team = float(np.mean(bt_game_count[bt_game_count > 0])) if np.any(bt_game_count > 0) else 0
+    # BT weight scales with data: 0% at 0 games/team → 40% at 20+ games/team
+    global_bt_weight = min(avg_games_per_team / 20.0, 1.0) * 0.4
+
     pear_sos_vals = np.array([
         conn.execute("SELECT pear_sos FROM teams WHERE id=?", (teams[i]["id"],)).fetchone()[0] or 150
         for i in range(n_teams)
     ], dtype=float)
-    # Lower SOS number = harder schedule, so invert for "strength" signal
     sos_strength = 1.0 - (pear_sos_vals / (pear_sos_vals.max() + 1))
 
-    # Power = 0.85 * Pythag + 0.15 * SOS strength
-    power = 0.85 * pythag + 0.15 * sos_strength
+    # Per-team BT confidence: teams with more games get more BT weight
+    team_bt_weight = np.minimum(bt_game_count / 15.0, 1.0) * global_bt_weight
+
+    # Power = (1 - team_bt_weight - 0.1) * Pythag + team_bt_weight * BT_norm + 0.1 * SOS
+    pythag_weight = np.maximum(0.9 - team_bt_weight, 0.5)
+    power = pythag_weight * pythag + team_bt_weight * bt_norm + 0.1 * sos_strength
 
     # Write computed ratings back to database (keep PEAR RS/RA intact)
     for i in range(n_teams):

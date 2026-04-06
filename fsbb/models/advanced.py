@@ -266,7 +266,8 @@ def train_model(conn: sqlite3.Connection, min_games: int = 10) -> dict:
     return {
         "n_games": n_samples,
         "n_features": n_features,
-        "accuracy": round(float(accuracy), 4),
+        "accuracy_train": round(float(accuracy), 4),
+        "accuracy_note": "Training accuracy. Backtest with leakage ~73%. Honest forward estimate: 65-70%.",
         "brier": round(float(brier), 4),
         "converged": result.success,
         "weights": weights.tolist(),
@@ -346,10 +347,22 @@ def predict_v1(
 
 
 def backtest_v1(conn: sqlite3.Connection, model: dict) -> dict:
-    """Leave-one-out style backtest for the V1 model.
+    """Backtest V1 with LEAKAGE WARNING.
 
-    Uses the pre-trained weights but evaluates on held-out data
-    by chronological split (first 70% train, last 30% test).
+    CRITICAL CAVEAT (OT-019): This backtest uses season-level PEAR features
+    (wOBA, FIP, ELO, etc.) which are computed from ALL games including those
+    AFTER the prediction date. This is temporal data leakage — the model sees
+    the future when predicting the past.
+
+    The reported accuracy is an UPPER BOUND, not a realistic estimate.
+    Real forward-looking accuracy is likely 3-8% lower (65-70%).
+
+    For honest accuracy, use the production backtest (_run_production_backtest)
+    which uses only Pythagorean (computed from point-in-time RS/RA).
+
+    The V1 model is valid for FORWARD predictions (today's games) because
+    today's PEAR features are current-state, not future-state. The leakage
+    only affects historical backtesting.
     """
     games = conn.execute("""
         SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs, g.date
@@ -404,6 +417,7 @@ def backtest_v1(conn: sqlite3.Connection, model: dict) -> dict:
         "test_games": len(y_test),
         "train_games": split,
         "accuracy": round(accuracy, 4),
+        "leakage_warning": "UPPER BOUND — uses season-level features with temporal leakage. Real forward accuracy ~65-70%.",
         "brier": round(brier, 4),
         "test_period": f"{dates[split]} to {dates[-1]}",
     }
