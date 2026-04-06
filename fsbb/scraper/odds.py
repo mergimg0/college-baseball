@@ -169,6 +169,43 @@ def odds_to_probability(american_odds: int | float) -> float:
         return abs(american_odds) / (abs(american_odds) + 100)
 
 
+def _strip_mascot(name: str) -> str:
+    """Strip mascot suffix from Odds API team names.
+
+    'Michigan Wolverines' → 'Michigan'
+    'Oregon St Beavers' → 'Oregon St.'
+    'CSU Bakersfield Roadrunners' → 'CSU Bakersfield'
+    'Cal Baptist Lancers' → 'California Baptist'
+    """
+    # Known mappings that don't follow simple last-word-strip
+    ODDS_TO_PEAR = {
+        "Cal Baptist Lancers": "California Baptist",
+        "California Golden Bears": "California",
+        "Long Beach State Dirtbags": "Long Beach St.",
+        "Sacramento St Hornets": "Sacramento St.",
+        "Oregon St Beavers": "Oregon St.",
+        "Washington St Cougars": "Washington St.",
+        "Michigan St Spartans": "Michigan St.",
+        "Mississippi St Bulldogs": "Mississippi St.",
+        "Arizona St Sun Devils": "Arizona St.",
+        "Fresno St Bulldogs": "Fresno St.",
+        "San Diego St Aztecs": "San Diego St.",
+        "Boise St Broncos": "Boise St.",
+        "Saint Mary's Gaels": "Saint Mary's (CA)",
+        "Nevada Wolf Pack": "Nevada",
+        "Dallas Baptist Patriots": "Dallas Baptist",
+        "Eastern Michigan Eagles": "Eastern Mich.",
+        "UC Davis Aggies": "UC Davis",
+        "San Francisco Dons": "San Francisco",
+    }
+    if name in ODDS_TO_PEAR:
+        return ODDS_TO_PEAR[name]
+
+    # Default: strip last word (the mascot)
+    parts = name.rsplit(" ", 1)
+    return parts[0] if len(parts) > 1 else name
+
+
 def store_odds(conn, parsed_odds: list[dict]) -> int:
     """Match parsed odds to games in DB and store implied probabilities.
 
@@ -177,8 +214,8 @@ def store_odds(conn, parsed_odds: list[dict]) -> int:
     import sqlite3 as _sqlite3
     stored = 0
     for o in parsed_odds:
-        home = o["home_team"]
-        away = o["away_team"]
+        home_raw = o["home_team"]
+        away_raw = o["away_team"]
         commence = o.get("commence_time", "")[:10]  # YYYY-MM-DD
 
         if not commence or o.get("home_ml") is None:
@@ -186,17 +223,26 @@ def store_odds(conn, parsed_odds: list[dict]) -> int:
 
         implied = odds_to_probability(o["home_ml"])
 
-        # Find matching game — try direct name match, then alias
-        game = conn.execute("""
-            SELECT g.id FROM games g
-            JOIN teams h ON g.home_team_id = h.id
-            JOIN teams a ON g.away_team_id = a.id
-            WHERE g.date = ? AND (h.name = ? OR EXISTS (
-                SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = h.id
-            )) AND (a.name = ? OR EXISTS (
-                SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = a.id
-            ))
-        """, (commence, home, home, away, away)).fetchone()
+        # The Odds API uses "Team Mascot" format (e.g., "Michigan Wolverines")
+        # Our DB uses short names (e.g., "Michigan"). Try multiple match strategies.
+        home = _strip_mascot(home_raw)
+        away = _strip_mascot(away_raw)
+
+        # Find matching game — try stripped name, full name, then alias
+        game = None
+        for h_try, a_try in [(home, away), (home_raw, away_raw)]:
+            game = conn.execute("""
+                SELECT g.id FROM games g
+                JOIN teams h ON g.home_team_id = h.id
+                JOIN teams a ON g.away_team_id = a.id
+                WHERE g.date = ? AND (h.name = ? OR EXISTS (
+                    SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = h.id
+                )) AND (a.name = ? OR EXISTS (
+                    SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = a.id
+                ))
+            """, (commence, h_try, h_try, a_try, a_try)).fetchone()
+            if game:
+                break
 
         if game:
             try:
