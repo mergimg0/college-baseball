@@ -31,8 +31,12 @@ conn.close()
 "
 
 # Step 3: Scrape yesterday's box scores (pitcher data) — ~15-25 games, ~8 seconds
-echo "  [3/9] Scraping pitcher box scores..."
+echo "  [3/11] Scraping pitcher box scores..."
 python3 -m fsbb pitchers --days 1 2>&1 | tail -3
+
+# Step 3.5: Scrape yesterday's play-by-play data
+echo "  [3.5/11] Scraping play-by-play..."
+python3 -m fsbb scrape-pbp --start "$(date -v-1d '+%Y-%m-%d')" --end "$(date -v-1d '+%Y-%m-%d')" 2>&1 | tail -1
 
 # Step 4: Compute series positions
 echo "  [4/9] Computing series positions..."
@@ -110,15 +114,29 @@ else
 fi
 
 # Step 7: Recompute ratings
-echo "  [7/9] Computing ratings..."
+echo "  [7/11] Computing ratings..."
 python3 -m fsbb rate 2>&1 | tail -3
 
-# Step 8: Render prediction page
-echo "  [8/9] Rendering prediction page..."
+# Step 8: Compute PBP stats + pitcher ratings
+echo "  [8/11] Computing PBP stats + pitcher ratings..."
+python3 -c "
+from fsbb.db import init_db
+from fsbb.models.pbp_stats import compute_team_pbp_stats, compute_bullpen_stats
+from fsbb.models.pitcher_ratings import compute_pitcher_ratings
+conn = init_db()
+t = compute_team_pbp_stats(conn)
+b = compute_bullpen_stats(conn)
+p = compute_pitcher_ratings(conn)
+print(f'    {t} team stats, {b} bullpen stats, {p} pitchers rated')
+conn.close()
+"
+
+# Step 9: Render prediction page
+echo "  [9/11] Rendering prediction page..."
 python3 -m fsbb render -o docs/index.html
 
-# Step 9: Deploy to GitHub Pages
-echo "  [9/9] Deploying..."
+# Step 10: Deploy to GitHub Pages
+echo "  [10/11] Deploying..."
 if [ -d "$DEPLOY_DIR/.git" ]; then
     cp docs/index.html "$DEPLOY_DIR/index.html"
     cd "$DEPLOY_DIR"

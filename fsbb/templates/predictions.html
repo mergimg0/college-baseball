@@ -129,7 +129,7 @@
   </div>
   {% if today_predictions %}
   <table>
-    <thead><tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Conf</th></tr></thead>
+    <thead><tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Series</th><th>Conf</th></tr></thead>
     <tbody>
     {% for p in today_predictions %}
       {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
@@ -140,6 +140,7 @@
         <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (p.home_win_prob * 100) | round(1) }}%</td>
         <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
         <td class="score">{{ p.predicted_total_runs }}</td>
+        <td>{% if p.series_position == 1 %}<span class="conf conf-high">G1 Ace</span>{% elif p.series_position == 2 %}<span class="conf conf-medium">G2</span>{% elif p.series_position == 3 %}<span class="conf conf-low">G3</span>{% else %}<span class="conf" style="background:#1f2937;color:#6b7280">Mid</span>{% endif %}</td>
         <td><span class="conf conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
       </tr>
     {% endfor %}
