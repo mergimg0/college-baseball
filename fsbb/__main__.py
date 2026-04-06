@@ -327,6 +327,44 @@ def pitchers(days: int):
 
 
 @cli.command()
+@click.option("--start", default=None, help="Start date YYYY-MM-DD")
+@click.option("--end", default=None, help="End date YYYY-MM-DD")
+@click.option("--limit", default=0, help="Max days to scrape (0=all)")
+def scrape_pbp(start: str | None, end: str | None, limit: int):
+    """Backfill play-by-play data from NCAA API."""
+    from fsbb.scraper.boxscore import scrape_date_pbp
+
+    conn = init_db()
+    s = date.fromisoformat(start) if start else date(date.today().year, 2, 14)
+    e = date.fromisoformat(end) if end else date.today() - timedelta(days=1)
+
+    total_events = 0
+    total_games = 0
+    current = s
+    days = 0
+
+    while current <= e:
+        result = scrape_date_pbp(conn, current)
+        total_events += result["events"]
+        total_games += result["games"]
+        days += 1
+
+        if days % 7 == 0:
+            click.echo(f"  {current}: {total_games} games, {total_events} events")
+
+        if limit > 0 and days >= limit:
+            break
+
+        current += timedelta(days=1)
+
+    click.echo(f"Done: {total_games} games, {total_events} play events across {days} days")
+
+    total = conn.execute("SELECT COUNT(*) FROM play_events").fetchone()[0]
+    click.echo(f"Database: {total} total play events")
+    conn.close()
+
+
+@cli.command()
 def accuracy():
     """Show model accuracy metrics vs PEAR."""
     from fsbb.models.predict import compute_accuracy

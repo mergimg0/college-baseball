@@ -270,6 +270,161 @@ def get_starter_quality(conn: sqlite3.Connection, game_id: int, team_id: int) ->
     return None
 
 
+def fetch_play_by_play(game_id: str | int) -> dict | None:
+    """Fetch play-by-play for a single NCAA game."""
+    url = f"{BASE_URL}/game/{game_id}/play-by-play"
+    req = urllib.request.Request(url, headers=HEADERS)
+    try:
+        resp = urllib.request.urlopen(req, timeout=20, context=_SSL_CTX)
+        return json.loads(resp.read().decode())
+    except Exception:
+        return None
+
+
+def import_play_by_play(
+    pbp_data: dict,
+    conn: sqlite3.Connection,
+    game_db_id: int,
+    home_team_id: int,
+    away_team_id: int,
+) -> int:
+    """Import play-by-play events for a single game.
+
+    Returns number of events imported.
+    """
+    from fsbb.parser import parse_play_text
+
+    count = 0
+    home_score = 0
+    away_score = 0
+
+    # Map NCAA team IDs to our team IDs
+    ncaa_to_db: dict[int, int] = {}
+    for t in pbp_data.get("teams", []):
+        ncaa_id = int(t.get("teamId", 0))
+        if t.get("isHome"):
+            ncaa_to_db[ncaa_id] = home_team_id
+        else:
+            ncaa_to_db[ncaa_id] = away_team_id
+
+    for period in pbp_data.get("periods", []):
+        inning = period.get("periodNumber", 0)
+        seq = 0
+
+        for stat in period.get("playbyplayStats", []):
+            ncaa_team_id = stat.get("teamId", 0)
+            batting_team_id = ncaa_to_db.get(ncaa_team_id)
+            if not batting_team_id:
+                continue
+
+            is_top = 1 if batting_team_id == away_team_id else 0
+
+            for play in stat.get("plays", []):
+                text = play.get("playText", "")
+                if not text:
+                    continue
+
+                seq += 1
+                parsed = parse_play_text(text)
+
+                # Track score
+                if play.get("homeScore") is not None:
+                    try:
+                        home_score = int(play["homeScore"])
+                    except (ValueError, TypeError):
+                        pass
+                if play.get("visitorScore") is not None:
+                    try:
+                        away_score = int(play["visitorScore"])
+                    except (ValueError, TypeError):
+                        pass
+
+                try:
+                    conn.execute("""
+                        INSERT INTO play_events (
+                            game_id, inning, is_top, batting_team_id, sequence_in_inning,
+                            raw_text, event_type, batter_name, pitcher_sub_in, pitcher_sub_out,
+                            hit_direction, pitch_count, pitch_sequence,
+                            runs_scored, rbi, is_error, is_sacrifice,
+                            stolen_base, caught_stealing, wild_pitch,
+                            home_score_after, away_score_after
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT(game_id, inning, is_top, sequence_in_inning) DO NOTHING
+                    """, (
+                        game_db_id, inning, is_top, batting_team_id, seq,
+                        text, parsed["event_type"], parsed["batter_name"],
+                        parsed["pitcher_sub_in"], parsed["pitcher_sub_out"],
+                        parsed["hit_direction"], parsed["pitch_count"], parsed["pitch_sequence"],
+                        parsed["runs_scored"], parsed["rbi"], parsed["is_error"],
+                        parsed["is_sacrifice"], parsed["stolen_base"],
+                        parsed["caught_stealing"], parsed["wild_pitch"],
+                        home_score, away_score,
+                    ))
+                    count += 1
+                except sqlite3.IntegrityError:
+                    pass
+
+    conn.commit()
+    return count
+
+
+def scrape_date_pbp(
+    conn: sqlite3.Connection,
+    target_date: date,
+    rate_limit: float = 0.3,
+) -> dict:
+    """Scrape play-by-play for all completed games on a date.
+
+    Returns {"games": int, "events": int}
+    """
+    from fsbb.scraper.ncaa import _fetch_scoreboard
+
+    raw_games = _fetch_scoreboard(target_date)
+    total_events = 0
+    total_games = 0
+
+    for entry in raw_games:
+        g = entry.get("game", {})
+        if g.get("gameState") not in ("final", "FIN"):
+            continue
+
+        game_id = g.get("gameID")
+        if not game_id:
+            continue
+
+        home_name = g.get("home", {}).get("names", {}).get("short", "")
+        away_name = g.get("away", {}).get("names", {}).get("short", "")
+
+        db_game_id = _find_game_in_db(conn, target_date.isoformat(), home_name, away_name)
+        if not db_game_id:
+            continue
+
+        # Check if PBP already imported
+        existing = conn.execute(
+            "SELECT COUNT(*) FROM play_events WHERE game_id=?", (db_game_id,)
+        ).fetchone()[0]
+        if existing > 0:
+            continue
+
+        # Get team IDs
+        game_row = conn.execute(
+            "SELECT home_team_id, away_team_id FROM games WHERE id=?", (db_game_id,)
+        ).fetchone()
+        if not game_row:
+            continue
+
+        pbp = fetch_play_by_play(game_id)
+        if pbp:
+            n = import_play_by_play(pbp, conn, db_game_id, game_row[0], game_row[1])
+            total_events += n
+            if n > 0:
+                total_games += 1
+
+        time.sleep(rate_limit)
+
+    return {"games": total_games, "events": total_events}
+
+
 def _resolve_team_id(conn: sqlite3.Connection, name: str) -> int | None:
     """Resolve team name to database ID."""
     row = conn.execute("SELECT id FROM teams WHERE name=?", (name,)).fetchone()
