@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForgeStream Baseball — NCAA D1 Predictions</title>
+<title>College Baseball Predictions — NCAA D1</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
@@ -68,6 +68,11 @@
   .about .qa { margin-bottom: 6px; }
   .about .qa .q { color: #a5b4fc; font-weight: 600; font-size: 0.8em; }
   .about .qa .a { color: #9ca3af; font-size: 0.8em; }
+  .faq-item { margin-bottom: 20px; }
+  .faq-item:last-child { margin-bottom: 0; }
+  .faq-q { color: #a5b4fc; font-weight: 700; font-size: 0.95em; margin-bottom: 6px; }
+  .faq-a { color: #9ca3af; font-size: 0.85em; line-height: 1.65; }
+  .faq-a strong { color: #c7d2fe; }
   .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
   @media (max-width: 640px) {
     .accuracy-banner { gap: 20px; padding: 14px; }
@@ -82,7 +87,7 @@
 <body>
 <div class="container">
   <div class="header">
-    <h1>ForgeStream Baseball</h1>
+    <h1>College Baseball Predictions</h1>
     <div class="tagline">NCAA D1 Game Predictions &mdash; Pythagenport + Bradley-Terry + Log5</div>
     <div class="meta">Updated {{ generated_at }} | Model v0.1 | {{ total_teams }} teams tracked</div>
   </div>
@@ -191,23 +196,77 @@
 
   <div class="about" id="about">
     <h3>How It Works</h3>
-    <p>ForgeStream Baseball uses a three-layer prediction model to generate calibrated win probabilities for every NCAA D1 baseball game.</p>
+    <p>College Baseball Predictions uses a three-layer prediction model to generate calibrated win probabilities for every NCAA D1 baseball game.</p>
     <p><strong>Layer 1:</strong> Pythagenport Expected Win% with variable exponent calibrated for college baseball ({{ "%.2f" | format(pythag_exp) }}, not MLB's 1.83).</p>
     <p><strong>Layer 2:</strong> Dynamic Bradley-Terry ratings via MM algorithm with temporal decay.</p>
     <p><strong>Layer 3:</strong> Log5 matchup probability with home-field adjustment (~53% baseline).</p>
-    <h3 style="margin-top: 16px;">Technical Details</h3>
-    <div class="qa"><span class="q">Data sources:</span> <span class="a">NCAA Scoreboard API, PEAR Ratings API, The Odds API (baseball_ncaa)</span></div>
-    <div class="qa"><span class="q">Refresh:</span> <span class="a">Daily automated pipeline &mdash; scrape &rarr; rate &rarr; predict &rarr; publish</span></div>
-    <div class="qa"><span class="q">Coverage:</span> <span class="a">{{ total_teams }} D1 teams, ~8,400 games/season</span></div>
-    <div class="qa"><span class="q">Stack:</span> <span class="a">Python 3.12, SQLite, static HTML. No ML frameworks.</span></div>
-    <div class="qa"><span class="q">Odds:</span> <span class="a">The Odds API &mdash; moneyline, run line, totals from 40+ bookmakers. Free tier.</span></div>
-    <div class="qa"><span class="q">Backtest:</span> <span class="a">Chronological replay with Brier score calibration. No future data leakage.</span></div>
     <p style="margin-top: 12px; color: #6b7280; font-size: 0.75em;">No neural networks. The accuracy comes from correct modeling of college baseball's unique run environment, not from complexity.</p>
   </div>
 
+  <div class="about" id="faq" style="margin-top: 16px;">
+    <h3>Frequently Asked Questions</h3>
+
+    <div class="faq-item">
+      <div class="faq-q">1. Where does the data actually come from?</div>
+      <div class="faq-a">Three sources, all structured JSON APIs &mdash; no screen scraping or fragile HTML parsing.
+        <strong>PEAR Ratings</strong> (pearatings.com) gives us the baseline: team ratings, power rankings, ELO, strength of schedule, and full season stats for all {{ total_teams }} D1 teams.
+        <strong>NCAA Scoreboard</strong> gives us every game score, every day, across the entire D1 season.
+        <strong>The Odds API</strong> gives us live Vegas lines &mdash; moneyline, run line, and over/unders from 40+ sportsbooks.
+        No team websites are scraped. Everything comes through clean REST APIs that return JSON.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">2. How is the data collected? What tools?</div>
+      <div class="faq-a">All three sources are proper APIs that return structured JSON &mdash; we just make HTTP requests and parse the response. No Selenium, no browser automation, no BeautifulSoup. It's Python's built-in HTTP library making GET requests. This keeps the system simple and reliable: no headless browsers to crash, no HTML layouts to break. If the API returns data, we have data.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">3. Is the scraping logic the same for each source?</div>
+      <div class="faq-a">Same core pattern everywhere: build a URL, make an HTTP request, parse the JSON. The differences are minor. PEAR needs us to call once per team when we want detailed stats (about 3 minutes for all {{ total_teams }} teams at a polite rate). NCAA is one call per day. The Odds API is a single call that returns everything at once. All three have built-in rate limiting so we're good API citizens.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">4. How often does the data refresh?</div>
+      <div class="faq-a">Once a day. An automated pipeline runs every afternoon: pull the latest PEAR ratings, import yesterday's and today's NCAA scores, recompute all our ratings (Pythagorean, Bradley-Terry, strength of schedule), generate tonight's predictions, render this page, and push it live. The whole pipeline takes under 5 minutes. For odds, those are fetched on-demand since lines move throughout the day.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">5. How deep does the data go &mdash; team level? Player level? Play by play?</div>
+      <div class="faq-a">Right now, team level. We track runs scored, runs allowed, win/loss records, conference, and a full suite of ratings for every D1 team. We also have every individual game result with final scores. What we don't have yet: player stats, starting pitcher data, or play-by-play. That's the single biggest unlock on our roadmap &mdash; starting pitcher identification is worth an estimated 2&ndash;3% accuracy improvement and is something the existing rating systems (including PEAR) can't do.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">6. What happens when team names don't match across sources?</div>
+      <div class="faq-a">This is a real problem &mdash; NCAA might say "Mississippi St." while PEAR says "Mississippi State" and The Odds API says "Mississippi State Bulldogs." We handle it with a two-layer system. First, we try an exact name match. If that fails, we try common substitutions (State/St., Southern/So., etc.). When a fuzzy match works, we permanently cache it so future lookups are instant. There are currently 44 known aliases in the system. It's not perfect &mdash; some games get skipped when we can't match a team &mdash; but it handles the vast majority automatically.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">7. What's the tech stack?</div>
+      <div class="faq-a">Python, all the way through. The CLI uses Click, the math uses NumPy (Bradley-Terry fitting, matrix operations), the page rendering uses Jinja2 templates, and the database is SQLite. No machine learning frameworks &mdash; our prediction model is a hand-tuned blend of Pythagorean expectation and Bradley-Terry ratings. The accuracy comes from domain-specific modeling of college baseball's run environment, not from throwing data at a neural network.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">8. Where does this run? Cloud? Local?</div>
+      <div class="faq-a">Currently runs locally with a daily cron job, and this page is deployed as static HTML on GitHub Pages. No cloud infrastructure, no servers to maintain, no monthly hosting bill. The daily pipeline runs on a Mac, generates an HTML file, and pushes it to GitHub. For our current scale (one page, updated once daily), this is the right architecture. If we add real-time features or an API for others to query, we'd move to cloud hosting &mdash; but we're not there yet.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">9. Where is the data stored?</div>
+      <div class="faq-a">SQLite database, about 730 KB. It holds {{ total_teams }} teams with full ratings, nearly 5,000 game results with scores (going back to February 14th, the start of the 2026 season), predictions, and accuracy tracking. Raw API responses are also cached as JSON files so we have a backup. SQLite is fast, zero-configuration, and perfect for this scale &mdash; the entire season's data fits in a file smaller than a single photo.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">10. Can you get Vegas odds?</div>
+      <div class="faq-a">Yes, and it's already built. The Odds API provides moneyline, run lines (spreads), and over/unders for college baseball from 40+ sportsbooks including DraftKings, FanDuel, and BetMGM. Free tier gives us 500 API credits per month, which is more than enough for daily polling. The next step is building a betting edge calculator that compares our win probabilities against the implied odds to find value &mdash; games where our model disagrees with the market.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">11. Can you backtest? Do you have historical performance?</div>
+      <div class="faq-a">Yes &mdash; and we take it seriously. Our backtest engine replays the entire season chronologically: for each game, it computes a prediction using <em>only</em> the data that was available before that game happened. No peeking at future results. It then compares our prediction against the actual outcome and against PEAR's ratings. We track accuracy (% of games called correctly), Brier score (how well-calibrated our probabilities are), and we break it down into calibration bins so we can see if "our 70%" really wins 70% of the time. The system is designed so you can never accidentally cheat &mdash; accumulators update after each prediction, not before.</div>
+    </div>
+  </div>
+
   <div class="footer">
-    <p>ForgeStream Baseball v0.1 &mdash; Built by Mergim Gashi</p>
-    <p>Predictions are probabilistic estimates, not guarantees. Not financial advice.</p>
   </div>
 </div>
 </body>
