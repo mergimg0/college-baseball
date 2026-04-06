@@ -261,6 +261,89 @@ def compute_accuracy(conn: sqlite3.Connection, model_version: str = "v0.1") -> d
     return result
 
 
+# ---------------------------------------------------------------------------
+# Platt Scaling (Output Calibration)
+# ---------------------------------------------------------------------------
+
+# Global calibration parameters (fitted from backtest data)
+_CALIBRATION: dict[str, float] = {"a": 1.0, "b": 0.0}
+
+
+def fit_calibration(conn: sqlite3.Connection) -> dict[str, float]:
+    """Fit Platt scaling parameters from completed games.
+
+    Finds a, b such that sigmoid(a * logit(raw_prob) + b) gives
+    better-calibrated probabilities. Standard in prediction markets.
+
+    Returns {"a": float, "b": float} and updates global _CALIBRATION.
+    """
+    global _CALIBRATION
+
+    games = conn.execute("""
+        SELECT h.name, a.name, g.home_runs, g.away_runs
+        FROM games g
+        JOIN teams h ON g.home_team_id = h.id
+        JOIN teams a ON g.away_team_id = a.id
+        WHERE g.status='final' AND g.home_runs IS NOT NULL
+              AND h.games_played >= 10 AND a.games_played >= 10
+              AND h.total_ra > 0 AND a.total_ra > 0
+    """).fetchall()
+
+    if len(games) < 200:
+        return _CALIBRATION
+
+    logits = []
+    outcomes = []
+
+    for g in games:
+        pred = predict_matchup(conn, g[0], g[1])
+        if not pred:
+            continue
+        raw = pred["home_win_prob"]
+        raw = max(0.01, min(0.99, raw))
+        logits.append(math.log(raw / (1 - raw)))
+        outcomes.append(1.0 if g[2] > g[3] else 0.0)
+
+    if len(logits) < 200:
+        return _CALIBRATION
+
+    # Simple grid search for a, b (avoid scipy dependency here)
+    best_brier = float("inf")
+    best_a, best_b = 1.0, 0.0
+
+    for a_candidate in [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]:
+        for b_candidate in [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3]:
+            brier = 0.0
+            for logit, outcome in zip(logits, outcomes):
+                z = a_candidate * logit + b_candidate
+                p = 1.0 / (1.0 + math.exp(-max(-30, min(30, z))))
+                brier += (p - outcome) ** 2
+            brier /= len(logits)
+            if brier < best_brier:
+                best_brier = brier
+                best_a, best_b = a_candidate, b_candidate
+
+    _CALIBRATION = {"a": best_a, "b": best_b}
+    return _CALIBRATION
+
+
+def calibrate_probability(raw_prob: float, a: float = 1.0, b: float = 0.0) -> float:
+    """Apply Platt scaling to a raw probability.
+
+    Args:
+        raw_prob: Uncalibrated probability in (0, 1)
+        a: Scaling parameter (1.0 = no change)
+        b: Shift parameter (0.0 = no change)
+
+    Returns:
+        Calibrated probability in (0, 1)
+    """
+    raw_prob = max(0.01, min(0.99, raw_prob))
+    logit = math.log(raw_prob / (1 - raw_prob))
+    z = a * logit + b
+    return 1.0 / (1.0 + math.exp(-max(-30, min(30, z))))
+
+
 def _get_team(conn: sqlite3.Connection, name: str) -> dict | None:
     """Look up team by name or alias."""
     row = conn.execute("""

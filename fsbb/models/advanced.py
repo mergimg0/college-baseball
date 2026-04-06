@@ -146,24 +146,34 @@ def get_team_feature_vector(conn: sqlite3.Connection, team_id: int) -> np.ndarra
 def compute_matchup_features(
     home_vec: np.ndarray,
     away_vec: np.ndarray,
+    series_position: int | None = None,
 ) -> np.ndarray:
     """Compute matchup feature vector from two team vectors.
 
-    Returns difference features (home - away) plus a home-field indicator.
+    Returns difference features (home - away) plus game-level features.
     For pitching metrics (where lower = better), we flip the sign.
+
+    Args:
+        home_vec: Home team feature vector
+        away_vec: Away team feature vector
+        series_position: 1=Friday/ace, 2=Saturday/#2, 3=Sunday/#3, None=midweek
     """
-    # Indices of "lower is better" metrics (pitching stats)
     lower_better = {"FIP", "ERA", "WHIP", "RA9", "SOS"}
     lower_idx = [i for i, col in enumerate(FEATURE_COLUMNS) if col in lower_better]
 
     diff = home_vec - away_vec
 
-    # Flip pitching metrics so positive = advantage for home team
     for idx in lower_idx:
         diff[idx] = -diff[idx]
 
-    # Add home-field indicator
-    features = np.append(diff, 1.0)  # 1.0 = home
+    # Game-level features
+    home_field = 1.0
+    # Series position: encode as two features (is_game2, is_game3)
+    # Game 1 (ace) is baseline. Game 2/3 have weaker starters.
+    is_game2 = 1.0 if series_position == 2 else 0.0
+    is_game3 = 1.0 if series_position == 3 else 0.0
+
+    features = np.append(diff, [home_field, is_game2, is_game3])
 
     return features
 
@@ -180,7 +190,8 @@ def train_model(conn: sqlite3.Connection, min_games: int = 10) -> dict:
 
     # Load all completed games with both teams having features
     games = conn.execute("""
-        SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs
+        SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs,
+               g.series_position
         FROM games g
         WHERE g.status='final' AND g.home_runs IS NOT NULL
     """).fetchall()
@@ -195,13 +206,12 @@ def train_model(conn: sqlite3.Connection, min_games: int = 10) -> dict:
         if home_vec is None or away_vec is None:
             continue
 
-        # Skip if any features are NaN
-        if np.any(np.isnan(home_vec)) or np.any(np.isnan(away_vec)):
-            # Impute NaN with 0 (mean-centered)
-            home_vec = np.nan_to_num(home_vec, nan=0.0)
-            away_vec = np.nan_to_num(away_vec, nan=0.0)
+        # Impute NaN with 0 (mean-centered)
+        home_vec = np.nan_to_num(home_vec, nan=0.0)
+        away_vec = np.nan_to_num(away_vec, nan=0.0)
 
-        features = compute_matchup_features(home_vec, away_vec)
+        series_pos = g[4] if len(g) > 4 else None
+        features = compute_matchup_features(home_vec, away_vec, series_position=series_pos)
         outcome = 1.0 if g[2] > g[3] else 0.0
 
         X_list.append(features)
@@ -220,24 +230,32 @@ def train_model(conn: sqlite3.Connection, min_games: int = 10) -> dict:
     X_std[X_std == 0] = 1.0  # Avoid division by zero
     X_norm = (X - X_mean) / X_std
 
-    # L2-regularized logistic regression via scipy.optimize
-    lambda_reg = 1.0  # Regularization strength
+    # Elastic net regularization (L1 + L2) for feature pruning
+    lambda_l2 = 1.0   # L2 strength (ridge)
+    lambda_l1 = 0.1   # L1 strength (lasso) — drives weak features to zero
 
     def neg_log_likelihood(w):
         z = X_norm @ w
-        z = np.clip(z, -30, 30)  # Numerical stability
+        z = np.clip(z, -30, 30)
         p = 1.0 / (1.0 + np.exp(-z))
         p = np.clip(p, 1e-10, 1 - 1e-10)
         ll = np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
-        reg = lambda_reg / (2 * n_samples) * np.sum(w[:-1] ** 2)  # Don't regularize intercept
-        return -(ll - reg)
+        # Elastic net: L2 + L1 (skip last 3 weights: home, game2, game3)
+        feat_w = w[:-3]
+        l2_reg = lambda_l2 / (2 * n_samples) * np.sum(feat_w ** 2)
+        l1_reg = lambda_l1 / n_samples * np.sum(np.abs(feat_w))
+        return -(ll - l2_reg - l1_reg)
 
     def gradient(w):
         z = X_norm @ w
         z = np.clip(z, -30, 30)
         p = 1.0 / (1.0 + np.exp(-z))
         grad = -X_norm.T @ (y - p) / n_samples
-        grad[:-1] += lambda_reg / n_samples * w[:-1]  # L2 gradient (skip intercept)
+        # Elastic net gradient (L2 + L1 subgradient, skip game-level features)
+        feat_grad = grad[:-3]
+        feat_grad += lambda_l2 / n_samples * w[:-3]
+        feat_grad += lambda_l1 / n_samples * np.sign(w[:-3])
+        grad[:-3] = feat_grad
         return grad
 
     # Optimize
@@ -365,7 +383,8 @@ def backtest_v1(conn: sqlite3.Connection, model: dict) -> dict:
     only affects historical backtesting.
     """
     games = conn.execute("""
-        SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs, g.date
+        SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs, g.date,
+               g.series_position
         FROM games g
         WHERE g.status='final' AND g.home_runs IS NOT NULL
         ORDER BY g.date
@@ -382,7 +401,8 @@ def backtest_v1(conn: sqlite3.Connection, model: dict) -> dict:
             continue
         home_vec = np.nan_to_num(home_vec, nan=0.0)
         away_vec = np.nan_to_num(away_vec, nan=0.0)
-        features = compute_matchup_features(home_vec, away_vec)
+        series_pos = g[5] if len(g) > 5 else None
+        features = compute_matchup_features(home_vec, away_vec, series_position=series_pos)
         X_list.append(features)
         y_list.append(1.0 if g[2] > g[3] else 0.0)
         dates.append(g[4])

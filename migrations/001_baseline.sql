@@ -1,0 +1,2 @@
+-- Migration 001: Baseline schema marker
+-- Current schema as of commit 3127395. No changes — marks version 1.

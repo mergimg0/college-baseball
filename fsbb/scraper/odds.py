@@ -48,7 +48,6 @@ def fetch_odds(
     """
     key = api_key or get_api_key()
     if not key:
-        print("No API key. Set ODDS_API_KEY env var or get one at https://the-odds-api.com")
         return None
 
     url = (
@@ -62,17 +61,9 @@ def fetch_odds(
     try:
         req = urllib.request.Request(url)
         resp = urllib.request.urlopen(req, timeout=30)
-
-        # Track remaining credits (never log the URL — contains API key)
-        remaining = resp.headers.get("x-requests-remaining", "?")
-        used = resp.headers.get("x-requests-used", "?")
-        print(f"  Credits: {remaining} remaining ({used} used this month)")
-
         data = json.loads(resp.read().decode())
         return data if isinstance(data, list) else None
-
-    except Exception as e:
-        print(f"  ERROR fetching odds: {e}")
+    except Exception:
         return None
 
 
@@ -103,8 +94,7 @@ def fetch_scores(
         resp = urllib.request.urlopen(urllib.request.Request(url), timeout=30)
         data = json.loads(resp.read().decode())
         return data if isinstance(data, list) else None
-    except Exception as e:
-        print(f"  ERROR fetching scores: {e}")
+    except Exception:
         return None
 
 

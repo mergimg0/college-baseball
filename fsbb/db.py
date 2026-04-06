@@ -107,16 +107,71 @@ def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
     return conn
 
 
+MIGRATIONS_DIR = Path(__file__).parent.parent / "migrations"
+
+SCHEMA_VERSION_TABLE = """
+CREATE TABLE IF NOT EXISTS schema_version (
+    version INTEGER PRIMARY KEY,
+    applied_at TEXT DEFAULT (datetime('now'))
+);
+"""
+
+
 def init_db(db_path: Path | None = None) -> sqlite3.Connection:
-    """Initialize database with schema."""
+    """Initialize database with schema and apply pending migrations."""
     conn = get_connection(db_path)
     conn.executescript(SCHEMA)
+    conn.executescript(SCHEMA_VERSION_TABLE)
     conn.commit()
+    apply_migrations(conn)
     return conn
 
 
+def apply_migrations(conn: sqlite3.Connection) -> int:
+    """Apply any pending migrations from migrations/ directory.
+
+    Reads numbered SQL files (001_*.sql, 002_*.sql, ...) and applies
+    any not yet recorded in schema_version. Returns count applied.
+    """
+    conn.executescript(SCHEMA_VERSION_TABLE)
+    applied = set(
+        r[0] for r in conn.execute("SELECT version FROM schema_version").fetchall()
+    )
+
+    migration_files = sorted(MIGRATIONS_DIR.glob("*.sql")) if MIGRATIONS_DIR.exists() else []
+    count = 0
+
+    for f in migration_files:
+        # Extract version number from filename: 001_baseline.sql → 1
+        try:
+            version = int(f.stem.split("_")[0])
+        except (ValueError, IndexError):
+            continue
+
+        if version in applied:
+            continue
+
+        sql = f.read_text().strip()
+        if sql:
+            conn.executescript(sql)
+        conn.execute("INSERT INTO schema_version (version) VALUES (?)", (version,))
+        conn.commit()
+        count += 1
+
+    return count
+
+
+def schema_version(conn: sqlite3.Connection) -> int:
+    """Get current schema version."""
+    try:
+        row = conn.execute("SELECT MAX(version) FROM schema_version").fetchone()
+        return row[0] if row and row[0] else 0
+    except sqlite3.OperationalError:
+        return 0
+
+
 def reset_db(db_path: Path | None = None) -> sqlite3.Connection:
-    """Drop all tables and reinitialize."""
+    """Drop all tables and reinitialize. USE WITH CAUTION."""
     path = db_path or DB_PATH
     if path.exists():
         path.unlink()
