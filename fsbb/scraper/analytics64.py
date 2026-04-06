@@ -214,12 +214,20 @@ def import_pitcher_stats(conn: sqlite3.Connection) -> int:
             conn.execute("""
                 INSERT INTO analytics_pitcher (name, school, rank_wrae, classification,
                     p_ops, p_babip, p_bb_pct, k9, fip, xfip, siera,
-                    whip, team_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    whip, team_id, position,
+                    lob_pct, p_hr_fb, p_ip, p_k_pct, p_k_bb_pct, p_k_bb, p_go_ao,
+                    k_l_pct, k_s_pct)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(name, school) DO UPDATE SET
                     rank_wrae=excluded.rank_wrae, p_ops=excluded.p_ops,
-                    fip=excluded.fip, xfip=excluded.xfip,
-                    whip=excluded.whip, team_id=excluded.team_id
+                    fip=excluded.fip, xfip=excluded.xfip, siera=excluded.siera,
+                    whip=excluded.whip, team_id=excluded.team_id,
+                    position=excluded.position,
+                    lob_pct=excluded.lob_pct, p_hr_fb=excluded.p_hr_fb,
+                    p_ip=excluded.p_ip, p_k_pct=excluded.p_k_pct,
+                    p_k_bb_pct=excluded.p_k_bb_pct, p_k_bb=excluded.p_k_bb,
+                    p_go_ao=excluded.p_go_ao,
+                    k_l_pct=excluded.k_l_pct, k_s_pct=excluded.k_s_pct
             """, (
                 name, school, _safe_int(row.get("64 Rk - wRAE")),
                 row.get("Classification", "").strip(),
@@ -229,6 +237,16 @@ def import_pitcher_stats(conn: sqlite3.Connection) -> int:
                 _safe_float(row.get("SIERA")),
                 _safe_float(row.get("WHIP")),
                 team_id,
+                row.get("Position", "").strip(),
+                _safe_float(row.get("LOB%")),
+                _safe_float(row.get("P-HR/FB")),
+                _safe_float(row.get("P/IP")),
+                _safe_float(row.get("P-K%")),
+                _safe_float(row.get("P-K-BB%")),
+                _safe_float(row.get("P-K/BB")),
+                _safe_float(row.get("P-GO/AO")),
+                _safe_float(row.get("K-L%")),
+                _safe_float(row.get("K-S%")),
             ))
             count += 1
 
@@ -254,12 +272,19 @@ def import_hitter_stats(conn: sqlite3.Connection) -> int:
 
             conn.execute("""
                 INSERT INTO analytics_hitter (name, school, rank_wrce, classification,
-                    avg, obp, slg, ops, woba, babip, iso, bb_pct, k_pct, wrce, team_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    avg, obp, slg, ops, woba, babip, iso, bb_pct, k_pct, wrce, team_id,
+                    g, ab, h, hr, rbi, bb, so, sb)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(name, school) DO UPDATE SET
                     rank_wrce=excluded.rank_wrce, avg=excluded.avg,
+                    obp=excluded.obp, slg=excluded.slg,
                     ops=excluded.ops, woba=excluded.woba, wrce=excluded.wrce,
-                    team_id=excluded.team_id
+                    babip=excluded.babip, iso=excluded.iso,
+                    bb_pct=excluded.bb_pct, k_pct=excluded.k_pct,
+                    team_id=excluded.team_id,
+                    g=excluded.g, ab=excluded.ab, h=excluded.h,
+                    hr=excluded.hr, rbi=excluded.rbi, bb=excluded.bb,
+                    so=excluded.so, sb=excluded.sb
             """, (
                 name, school, _safe_int(row.get("64 Rk - wRCE")),
                 row.get("Classification", "").strip(),
@@ -270,6 +295,10 @@ def import_hitter_stats(conn: sqlite3.Connection) -> int:
                 _safe_float(row.get("BB%")), _safe_float(row.get("K%")),
                 _safe_float(row.get("wRCE")),
                 team_id,
+                _safe_int(row.get("G")), _safe_int(row.get("AB")),
+                _safe_int(row.get("H")), _safe_int(row.get("HR")),
+                _safe_int(row.get("RBI")), _safe_int(row.get("BB")),
+                _safe_int(row.get("SO")), _safe_int(row.get("SB")),
             ))
             count += 1
 
