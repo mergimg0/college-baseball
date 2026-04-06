@@ -41,6 +41,18 @@ FEATURE_COLUMNS = [
     "KillshotOffEff", "KillshotDefEff", "KSHOT_Ratio",
 ]
 
+# PBP-derived features (from team_pbp_stats table)
+PBP_FEATURES = [
+    "k_rate",
+    "bb_rate",
+    "babip_computed",
+    "first_inning_runs_per_game",
+    "late_inning_runs_per_game",
+    "bullpen_era",
+    "starter_avg_ip",
+    "pitches_per_pa",
+]
+
 # Map from clean column names to PEAR API field names
 PEAR_FIELD_MAP = {
     "wOBA": "wOBA",
@@ -141,6 +153,58 @@ def get_team_feature_vector(conn: sqlite3.Connection, team_id: int) -> np.ndarra
 
     vec = np.array([float(v) if v is not None else np.nan for v in row])
     return vec
+
+
+def get_combined_feature_vector(conn: sqlite3.Connection, team_id: int) -> np.ndarray | None:
+    """Get PEAR features + PBP features combined."""
+    pear_vec = get_team_feature_vector(conn, team_id)
+    if pear_vec is None:
+        return None
+
+    pbp_row = conn.execute("""
+        SELECT k_rate, bb_rate, babip_computed,
+               first_inning_runs_per_game, late_inning_runs_per_game,
+               bullpen_era, starter_avg_ip, pitches_per_pa
+        FROM team_pbp_stats WHERE team_id = ?
+    """, (team_id,)).fetchone()
+
+    if pbp_row:
+        pbp_vec = np.array([float(v) if v is not None else 0.0 for v in pbp_row])
+    else:
+        pbp_vec = np.zeros(len(PBP_FEATURES))
+
+    return np.concatenate([pear_vec, pbp_vec])
+
+
+def get_starter_quality_feature(
+    conn: sqlite3.Connection,
+    game_id: int,
+    home_team_id: int,
+    away_team_id: int,
+) -> float:
+    """Compute starter quality differential for a game.
+
+    Returns away_starter_era - home_starter_era (positive = home advantage).
+    Falls back to team ERA if no starter data.
+    """
+    from fsbb.scraper.boxscore import get_starter_quality
+
+    home_era = get_starter_quality(conn, game_id, home_team_id)
+    away_era = get_starter_quality(conn, game_id, away_team_id)
+
+    if home_era is None:
+        row = conn.execute(
+            "SELECT ERA FROM team_features WHERE team_id = ?", (home_team_id,)
+        ).fetchone()
+        home_era = float(row[0]) if row and row[0] else 4.5
+
+    if away_era is None:
+        row = conn.execute(
+            "SELECT ERA FROM team_features WHERE team_id = ?", (away_team_id,)
+        ).fetchone()
+        away_era = float(row[0]) if row and row[0] else 4.5
+
+    return away_era - home_era  # positive = home pitcher better
 
 
 def compute_matchup_features(
@@ -441,3 +505,87 @@ def backtest_v1(conn: sqlite3.Connection, model: dict) -> dict:
         "brier": round(brier, 4),
         "test_period": f"{dates[split]} to {dates[-1]}",
     }
+
+
+# ---------------------------------------------------------------------------
+# In-Game Win Probability (Foundation)
+# ---------------------------------------------------------------------------
+
+def compute_win_probability_by_inning(conn: sqlite3.Connection, game_id: int) -> list[dict]:
+    """Compute inning-by-inning win probability for a completed game.
+
+    Uses base rates: at each (inning, score_diff) state,
+    what fraction of games in our DB were won by the home team?
+
+    Returns list of {"inning": int, "home_wp": float, "score": str, "event": str}
+    """
+    plays = conn.execute("""
+        SELECT inning, is_top, home_score_after, away_score_after, raw_text
+        FROM play_events
+        WHERE game_id = ?
+        ORDER BY inning, is_top DESC, sequence_in_inning
+    """, (game_id,)).fetchall()
+
+    if not plays:
+        return []
+
+    base_rates = _get_or_compute_base_rates(conn)
+
+    wp_curve = []
+    for p in plays:
+        inning = p[0]
+        score_diff = (p[2] or 0) - (p[3] or 0)
+        key = (min(inning, 9), max(-5, min(5, score_diff)))
+        wp = base_rates.get(key, 0.5)
+        wp_curve.append({
+            "inning": inning,
+            "home_wp": round(wp, 3),
+            "score": f"{p[2]}-{p[3]}",
+            "event": (p[4] or "")[:60],
+        })
+
+    return wp_curve
+
+
+_BASE_RATES_CACHE: dict | None = None
+
+
+def _get_or_compute_base_rates(conn: sqlite3.Connection) -> dict:
+    """Compute historical win rates by (inning, score_diff) state."""
+    global _BASE_RATES_CACHE
+    if _BASE_RATES_CACHE is not None:
+        return _BASE_RATES_CACHE
+
+    state_counts: dict[tuple[int, int], list[int]] = {}
+
+    games = conn.execute("""
+        SELECT g.id,
+               CASE WHEN g.home_runs > g.away_runs THEN 1 ELSE 0 END as home_won
+        FROM games g WHERE g.status = 'final' AND g.home_runs IS NOT NULL
+    """).fetchall()
+
+    for game_id, home_won in games:
+        inning_scores = conn.execute("""
+            SELECT inning, MAX(home_score_after) as h, MAX(away_score_after) as a
+            FROM play_events
+            WHERE game_id = ?
+            GROUP BY inning
+            ORDER BY inning
+        """, (game_id,)).fetchall()
+
+        for row in inning_scores:
+            inn = min(row[0], 9)
+            diff = max(-5, min(5, (row[1] or 0) - (row[2] or 0)))
+            key = (inn, diff)
+            if key not in state_counts:
+                state_counts[key] = [0, 0]
+            state_counts[key][1] += 1
+            if home_won:
+                state_counts[key][0] += 1
+
+    rates: dict[tuple[int, int], float] = {}
+    for key, (wins, total) in state_counts.items():
+        rates[key] = wins / total if total >= 10 else 0.5
+
+    _BASE_RATES_CACHE = rates
+    return rates
