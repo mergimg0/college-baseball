@@ -1,2 +1,17 @@
 # Audio files - kept local only
 *.wav
+
+# Python
+__pycache__/
+*.egg-info/
+*.pyc
+.venv/
+
+# Data
+data/fsbb.db
+
+# IDE/tools
+.claude/
+.tldr/
+.tldrignore
+uv.lock

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForgeStream Baseball — NCAA D1 Predictions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; letter-spacing: -0.5px; }
+  .header .tagline { color: #6b7280; font-size: 0.85em; margin-top: 2px; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+  .accuracy-banner { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 20px; margin: 16px 0 24px; display: flex; gap: 40px; flex-wrap: wrap; align-items: center; }
+  .accuracy-banner .stat { text-align: center; min-width: 80px; }
+  .accuracy-banner .stat .value { font-size: 2em; font-weight: 800; color: #a5b4fc; line-height: 1.1; }
+  .accuracy-banner .stat .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .accuracy-banner .stat.edge .value { color: #34d399; }
+  .accuracy-banner .stat.negative .value { color: #f87171; }
+  .accuracy-banner .divider { width: 1px; height: 48px; background: #312e81; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
+  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
+  .section-header .date { color: #6b7280; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left;
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 0; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #111827; font-size: 0.88em; }
+  tbody tr:hover { background: #0f172a; }
+  .prob { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prob-strong { color: #34d399; }
+  .prob-mid { color: #fbbf24; }
+  .prob-weak { color: #9ca3af; }
+  .pick { font-weight: 600; color: #e8eaed; }
+  .pick-away { color: #a5b4fc; }
+  .correct { color: #34d399; font-weight: 700; }
+  .incorrect { color: #f87171; font-weight: 700; }
+  .pending { color: #4b5563; }
+  .score { font-variant-numeric: tabular-nums; color: #9ca3af; }
+  .conf { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .conf-high { background: #064e3b; color: #34d399; }
+  .conf-medium { background: #451a03; color: #fbbf24; }
+  .conf-low { background: #1f2937; color: #6b7280; }
+  .rankings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .rank-card { background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 12px; transition: border-color 0.2s; }
+  .rank-card:hover { border-color: #312e81; }
+  .rank-num { font-size: 1.1em; font-weight: 800; color: #4b5563; min-width: 28px; text-align: right; }
+  .rank-num.top5 { color: #a5b4fc; }
+  .rank-num.top10 { color: #818cf8; }
+  .rank-team { flex: 1; }
+  .rank-name { font-weight: 600; color: #e8eaed; font-size: 0.9em; }
+  .rank-conf { font-size: 0.7em; color: #6b7280; }
+  .rank-stats { text-align: right; font-size: 0.8em; }
+  .rank-record { color: #9ca3af; font-weight: 600; }
+  .rank-pythag { color: #6b7280; font-size: 0.75em; }
+  .finding { background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%); border: 1px solid #312e81;
+    border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  .finding .label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.5px; color: #818cf8; font-weight: 700; margin-bottom: 4px; }
+  .finding .text { color: #c7d2fe; font-size: 0.9em; }
+  .finding .number { font-size: 1.4em; font-weight: 800; color: #a5b4fc; }
+  .about { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 20px; margin: 32px 0; }
+  .about h3 { color: #e8eaed; margin-bottom: 12px; font-size: 1em; }
+  .about p { color: #9ca3af; font-size: 0.85em; margin-bottom: 8px; }
+  .about .qa { margin-bottom: 6px; }
+  .about .qa .q { color: #a5b4fc; font-weight: 600; font-size: 0.8em; }
+  .about .qa .a { color: #9ca3af; font-size: 0.8em; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+  @media (max-width: 640px) {
+    .accuracy-banner { gap: 20px; padding: 14px; }
+    .accuracy-banner .stat .value { font-size: 1.5em; }
+    .accuracy-banner .divider { display: none; }
+    .rankings-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.82em; }
+    td, th { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>ForgeStream Baseball</h1>
+    <div class="tagline">NCAA D1 Game Predictions &mdash; Pythagenport + Bradley-Terry + Log5</div>
+    <div class="meta">Updated 2026-04-06 12:34 | Model v0.1 | 284 teams tracked</div>
+  </div>
+
+  
+  <div class="accuracy-banner">
+    <div class="stat">
+      <div class="value">66.0%</div>
+      <div class="label">Accuracy</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">4070</div>
+      <div class="label">Games Tested</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">0.212</div>
+      <div class="label">Brier Score</div>
+    </div>
+    
+  </div>
+  
+
+  <div class="finding">
+    <div class="label">Original Research</div>
+    <div class="text">The college baseball Pythagenport exponent is <span class="number">2.13</span>, not the MLB-derived 1.83. First published computation of the college-specific exponent &mdash; reflecting 13.1 runs per game (vs MLB ~8.5).</div>
+  </div>
+
+  <div class="section-header">
+    <h2>Tonight's Predictions</h2>
+    <span class="date">2026-04-06</span>
+  </div>
+  
+  <p style="color: #4b5563; padding: 20px 0;">No games scheduled. Check back tomorrow.</p>
+  
+
+  <div class="section-header">
+    <h2>Yesterday's Results</h2>
+    <span class="date">2026-04-05</span>
+  </div>
+  
+  <table>
+    <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Score</th><th></th></tr></thead>
+    <tbody>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Kentucky</td>
+        <td>Missouri</td>
+        <td>Kentucky (66.0%)</td>
+        <td class="score">2&ndash;5</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Dayton</td>
+        <td>Fordham</td>
+        <td>Dayton (66.0%)</td>
+        <td class="score">4&ndash;5</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>West Virginia</td>
+        <td>UCF</td>
+        <td>West Virginia (61.0%)</td>
+        <td class="score">1&ndash;5</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Purdue</td>
+        <td>Illinois</td>
+        <td>Purdue (60.0%)</td>
+        <td class="score">10&ndash;5</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Tennessee</td>
+        <td>LSU</td>
+        <td>Tennessee (51.0%)</td>
+        <td class="score">6&ndash;16</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Nebraska</td>
+        <td>Penn St.</td>
+        <td>Nebraska (93.0%)</td>
+        <td class="score">8&ndash;6</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Indiana</td>
+        <td>Rutgers</td>
+        <td>Rutgers (55.0%)</td>
+        <td class="score">8&ndash;2</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Ohio St.</td>
+        <td>Maryland</td>
+        <td>Ohio St. (70.0%)</td>
+        <td class="score">7&ndash;0</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Pittsburgh</td>
+        <td>Wake Forest</td>
+        <td>Pittsburgh (59.0%)</td>
+        <td class="score">4&ndash;3</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Miami (FL)</td>
+        <td>Virginia Tech</td>
+        <td>Miami (FL) (84.0%)</td>
+        <td class="score">3&ndash;6</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Northwestern</td>
+        <td>Michigan St.</td>
+        <td>Northwestern (57.0%)</td>
+        <td class="score">8&ndash;6</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Missouri St.</td>
+        <td>Sam Houston</td>
+        <td>Missouri St. (79.0%)</td>
+        <td class="score">12&ndash;0</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Kansas St.</td>
+        <td>TCU</td>
+        <td>Kansas St. (53.0%)</td>
+        <td class="score">0&ndash;4</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Oklahoma St.</td>
+        <td>Cincinnati</td>
+        <td>Oklahoma St. (58.0%)</td>
+        <td class="score">10&ndash;4</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Iowa</td>
+        <td>Minnesota</td>
+        <td>Iowa (55.0%)</td>
+        <td class="score">5&ndash;4</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Western Ill.</td>
+        <td>Little Rock</td>
+        <td>Little Rock (70.0%)</td>
+        <td class="score">8&ndash;5</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Navy</td>
+        <td>Lehigh</td>
+        <td>Navy (82.0%)</td>
+        <td class="score">6&ndash;11</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Southern Ill.</td>
+        <td>Illinois St.</td>
+        <td>Illinois St. (60.0%)</td>
+        <td class="score">4&ndash;10</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Stanford</td>
+        <td>Clemson</td>
+        <td>Clemson (58.0%)</td>
+        <td class="score">5&ndash;12</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>NJIT</td>
+        <td>Binghamton</td>
+        <td>Binghamton (59.0%)</td>
+        <td class="score">4&ndash;5</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+    </tbody>
+  </table>
+  
+
+  <div class="section-header">
+    <h2>Power Rankings</h2>
+    <span class="date">Top 25</span>
+  </div>
+  <div class="rankings-grid">
+    
+    <div class="rank-card">
+      <div class="rank-num top5">1</div>
+      <div class="rank-team">
+        <div class="rank-name">UCLA</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">28-2</div>
+        <div class="rank-pythag">90.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">2</div>
+      <div class="rank-team">
+        <div class="rank-name">Texas</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">26-5</div>
+        <div class="rank-pythag">88.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">3</div>
+      <div class="rank-team">
+        <div class="rank-name">Mississippi St.</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-7</div>
+        <div class="rank-pythag">90.4%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">4</div>
+      <div class="rank-team">
+        <div class="rank-name">Georgia Tech</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">26-5</div>
+        <div class="rank-pythag">88.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">5</div>
+      <div class="rank-team">
+        <div class="rank-name">North Carolina</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-5</div>
+        <div class="rank-pythag">85.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">6</div>
+      <div class="rank-team">
+        <div class="rank-name">Texas A&M</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-6</div>
+        <div class="rank-pythag">86.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">7</div>
+      <div class="rank-team">
+        <div class="rank-name">West Virginia</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-6</div>
+        <div class="rank-pythag">82.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">8</div>
+      <div class="rank-team">
+        <div class="rank-name">Southern California</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-5</div>
+        <div class="rank-pythag">84.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">9</div>
+      <div class="rank-team">
+        <div class="rank-name">Georgia</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-6</div>
+        <div class="rank-pythag">85.4%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">10</div>
+      <div class="rank-team">
+        <div class="rank-name">Florida St.</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-7</div>
+        <div class="rank-pythag">79.6%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">11</div>
+      <div class="rank-team">
+        <div class="rank-name">Pittsburgh</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">20-9</div>
+        <div class="rank-pythag">83.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">12</div>
+      <div class="rank-team">
+        <div class="rank-name">Oregon</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-8</div>
+        <div class="rank-pythag">83.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">13</div>
+      <div class="rank-team">
+        <div class="rank-name">Miami (FL)</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-7</div>
+        <div class="rank-pythag">82.3%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">14</div>
+      <div class="rank-team">
+        <div class="rank-name">Auburn</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">22-9</div>
+        <div class="rank-pythag">76.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">15</div>
+      <div class="rank-team">
+        <div class="rank-name">Alabama</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-8</div>
+        <div class="rank-pythag">77.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">16</div>
+      <div class="rank-team">
+        <div class="rank-name">Arizona St.</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">23-9</div>
+        <div class="rank-pythag">75.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">17</div>
+      <div class="rank-team">
+        <div class="rank-name">Florida</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-9</div>
+        <div class="rank-pythag">75.0%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">18</div>
+      <div class="rank-team">
+        <div class="rank-name">Oklahoma</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-10</div>
+        <div class="rank-pythag">75.7%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">19</div>
+      <div class="rank-team">
+        <div class="rank-name">Kansas St.</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">20-11</div>
+        <div class="rank-pythag">75.4%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">20</div>
+      <div class="rank-team">
+        <div class="rank-name">Arkansas</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">20-13</div>
+        <div class="rank-pythag">74.7%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">21</div>
+      <div class="rank-team">
+        <div class="rank-name">LSU</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-11</div>
+        <div class="rank-pythag">76.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">22</div>
+      <div class="rank-team">
+        <div class="rank-name">Oregon St.</div>
+        <div class="rank-conf">Independent</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-6</div>
+        <div class="rank-pythag">70.8%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">23</div>
+      <div class="rank-team">
+        <div class="rank-name">Virginia</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-9</div>
+        <div class="rank-pythag">74.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">24</div>
+      <div class="rank-team">
+        <div class="rank-name">NC State</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-11</div>
+        <div class="rank-pythag">78.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">25</div>
+      <div class="rank-team">
+        <div class="rank-name">UCF</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">19-9</div>
+        <div class="rank-pythag">71.8%</div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="about" id="about">
+    <h3>How It Works</h3>
+    <p>ForgeStream Baseball uses a three-layer prediction model to generate calibrated win probabilities for every NCAA D1 baseball game.</p>
+    <p><strong>Layer 1:</strong> Pythagenport Expected Win% with variable exponent calibrated for college baseball (2.13, not MLB's 1.83).</p>
+    <p><strong>Layer 2:</strong> Dynamic Bradley-Terry ratings via MM algorithm with temporal decay.</p>
+    <p><strong>Layer 3:</strong> Log5 matchup probability with home-field adjustment (~53% baseline).</p>
+    <h3 style="margin-top: 16px;">Technical Details</h3>
+    <div class="qa"><span class="q">Data sources:</span> <span class="a">NCAA Scoreboard API, PEAR Ratings API, The Odds API (baseball_ncaa)</span></div>
+    <div class="qa"><span class="q">Refresh:</span> <span class="a">Daily automated pipeline &mdash; scrape &rarr; rate &rarr; predict &rarr; publish</span></div>
+    <div class="qa"><span class="q">Coverage:</span> <span class="a">284 D1 teams, ~8,400 games/season</span></div>
+    <div class="qa"><span class="q">Stack:</span> <span class="a">Python 3.12, SQLite, static HTML. No ML frameworks.</span></div>
+    <div class="qa"><span class="q">Odds:</span> <span class="a">The Odds API &mdash; moneyline, run line, totals from 40+ bookmakers. Free tier.</span></div>
+    <div class="qa"><span class="q">Backtest:</span> <span class="a">Chronological replay with Brier score calibration. No future data leakage.</span></div>
+    <p style="margin-top: 12px; color: #6b7280; font-size: 0.75em;">No neural networks. The accuracy comes from correct modeling of college baseball's unique run environment, not from complexity.</p>
+  </div>
+
+  <div class="footer">
+    <p>ForgeStream Baseball v0.1 &mdash; Built by Mergim Gashi</p>
+    <p>Predictions are probabilistic estimates, not guarantees. Not financial advice.</p>
+  </div>
+</div>
+</body>
+</html>

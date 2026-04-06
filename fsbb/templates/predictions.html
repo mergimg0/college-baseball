@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ForgeStream Baseball — NCAA D1 Predictions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; letter-spacing: -0.5px; }
+  .header .tagline { color: #6b7280; font-size: 0.85em; margin-top: 2px; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+  .accuracy-banner { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 20px; margin: 16px 0 24px; display: flex; gap: 40px; flex-wrap: wrap; align-items: center; }
+  .accuracy-banner .stat { text-align: center; min-width: 80px; }
+  .accuracy-banner .stat .value { font-size: 2em; font-weight: 800; color: #a5b4fc; line-height: 1.1; }
+  .accuracy-banner .stat .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .accuracy-banner .stat.edge .value { color: #34d399; }
+  .accuracy-banner .stat.negative .value { color: #f87171; }
+  .accuracy-banner .divider { width: 1px; height: 48px; background: #312e81; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
+  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
+  .section-header .date { color: #6b7280; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left;
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 0; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #111827; font-size: 0.88em; }
+  tbody tr:hover { background: #0f172a; }
+  .prob { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prob-strong { color: #34d399; }
+  .prob-mid { color: #fbbf24; }
+  .prob-weak { color: #9ca3af; }
+  .pick { font-weight: 600; color: #e8eaed; }
+  .pick-away { color: #a5b4fc; }
+  .correct { color: #34d399; font-weight: 700; }
+  .incorrect { color: #f87171; font-weight: 700; }
+  .pending { color: #4b5563; }
+  .score { font-variant-numeric: tabular-nums; color: #9ca3af; }
+  .conf { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .conf-high { background: #064e3b; color: #34d399; }
+  .conf-medium { background: #451a03; color: #fbbf24; }
+  .conf-low { background: #1f2937; color: #6b7280; }
+  .rankings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .rank-card { background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 12px; transition: border-color 0.2s; }
+  .rank-card:hover { border-color: #312e81; }
+  .rank-num { font-size: 1.1em; font-weight: 800; color: #4b5563; min-width: 28px; text-align: right; }
+  .rank-num.top5 { color: #a5b4fc; }
+  .rank-num.top10 { color: #818cf8; }
+  .rank-team { flex: 1; }
+  .rank-name { font-weight: 600; color: #e8eaed; font-size: 0.9em; }
+  .rank-conf { font-size: 0.7em; color: #6b7280; }
+  .rank-stats { text-align: right; font-size: 0.8em; }
+  .rank-record { color: #9ca3af; font-weight: 600; }
+  .rank-pythag { color: #6b7280; font-size: 0.75em; }
+  .finding { background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%); border: 1px solid #312e81;
+    border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  .finding .label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.5px; color: #818cf8; font-weight: 700; margin-bottom: 4px; }
+  .finding .text { color: #c7d2fe; font-size: 0.9em; }
+  .finding .number { font-size: 1.4em; font-weight: 800; color: #a5b4fc; }
+  .about { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 20px; margin: 32px 0; }
+  .about h3 { color: #e8eaed; margin-bottom: 12px; font-size: 1em; }
+  .about p { color: #9ca3af; font-size: 0.85em; margin-bottom: 8px; }
+  .about .qa { margin-bottom: 6px; }
+  .about .qa .q { color: #a5b4fc; font-weight: 600; font-size: 0.8em; }
+  .about .qa .a { color: #9ca3af; font-size: 0.8em; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+  @media (max-width: 640px) {
+    .accuracy-banner { gap: 20px; padding: 14px; }
+    .accuracy-banner .stat .value { font-size: 1.5em; }
+    .accuracy-banner .divider { display: none; }
+    .rankings-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.82em; }
+    td, th { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>ForgeStream Baseball</h1>
+    <div class="tagline">NCAA D1 Game Predictions &mdash; Pythagenport + Bradley-Terry + Log5</div>
+    <div class="meta">Updated {{ generated_at }} | Model v0.1 | {{ total_teams }} teams tracked</div>
+  </div>
+
+  {% if accuracy and accuracy.games > 0 %}
+  <div class="accuracy-banner">
+    <div class="stat">
+      <div class="value">{{ (accuracy.our_accuracy * 100) | round(1) }}%</div>
+      <div class="label">Accuracy</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">{{ accuracy.games }}</div>
+      <div class="label">Games Tested</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">{{ accuracy.our_brier | round(3) }}</div>
+      <div class="label">Brier Score</div>
+    </div>
+    {% if accuracy.pear_accuracy is defined %}
+    <div class="divider"></div>
+    <div class="stat {% if accuracy.edge_accuracy > 0 %}edge{% else %}negative{% endif %}">
+      <div class="value">{{ "%+.1f" | format(accuracy.edge_accuracy * 100) }}%</div>
+      <div class="label">vs PEAR ELO</div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="finding">
+    <div class="label">Original Research</div>
+    <div class="text">The college baseball Pythagenport exponent is <span class="number">{{ "%.2f" | format(pythag_exp) }}</span>, not the MLB-derived 1.83. First published computation of the college-specific exponent &mdash; reflecting {{ "%.1f" | format(rpg) }} runs per game (vs MLB ~8.5).</div>
+  </div>
+
+  <div class="section-header">
+    <h2>Tonight's Predictions</h2>
+    <span class="date">{{ today }}</span>
+  </div>
+  {% if today_predictions %}
+  <table>
+    <thead><tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Conf</th></tr></thead>
+    <tbody>
+    {% for p in today_predictions %}
+      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+      {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
+      <tr>
+        <td>{{ p.home_team }}</td>
+        <td>{{ p.away_team }}</td>
+        <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (p.home_win_prob * 100) | round(1) }}%</td>
+        <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
+        <td class="score">{{ p.predicted_total_runs }}</td>
+        <td><span class="conf conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color: #4b5563; padding: 20px 0;">No games scheduled. Check back tomorrow.</p>
+  {% endif %}
+
+  <div class="section-header">
+    <h2>Yesterday's Results</h2>
+    <span class="date">{{ yesterday }}</span>
+  </div>
+  {% if yesterday_predictions %}
+  <table>
+    <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Score</th><th></th></tr></thead>
+    <tbody>
+    {% for p in yesterday_predictions %}
+      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+      <tr>
+        <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}&#10003;{% elif p.correct is sameas false %}&#10007;{% else %}&mdash;{% endif %}</td>
+        <td>{{ p.home_team }}</td>
+        <td>{{ p.away_team }}</td>
+        <td>{{ winner }} ({{ ([p.home_win_prob, p.away_win_prob] | max * 100) | round(0) }}%)</td>
+        <td class="score">{% if p.actual_home_runs is not none %}{{ p.actual_home_runs }}&ndash;{{ p.actual_away_runs }}{% else %}&mdash;{% endif %}</td>
+        <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}Correct{% elif p.correct is sameas false %}Wrong{% else %}Pending{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color: #4b5563; padding: 20px 0;">No results from yesterday.</p>
+  {% endif %}
+
+  <div class="section-header">
+    <h2>Power Rankings</h2>
+    <span class="date">Top 25</span>
+  </div>
+  <div class="rankings-grid">
+    {% for t in rankings[:25] %}
+    <div class="rank-card">
+      <div class="rank-num {% if loop.index <= 5 %}top5{% elif loop.index <= 10 %}top10{% endif %}">{{ loop.index }}</div>
+      <div class="rank-team">
+        <div class="rank-name">{{ t.name }}</div>
+        <div class="rank-conf">{{ t.conference }}</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">{{ t.wins }}-{{ t.losses }}</div>
+        <div class="rank-pythag">{{ (t.pythag_pct * 100) | round(1) }}%</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="about" id="about">
+    <h3>How It Works</h3>
+    <p>ForgeStream Baseball uses a three-layer prediction model to generate calibrated win probabilities for every NCAA D1 baseball game.</p>
+    <p><strong>Layer 1:</strong> Pythagenport Expected Win% with variable exponent calibrated for college baseball ({{ "%.2f" | format(pythag_exp) }}, not MLB's 1.83).</p>
+    <p><strong>Layer 2:</strong> Dynamic Bradley-Terry ratings via MM algorithm with temporal decay.</p>
+    <p><strong>Layer 3:</strong> Log5 matchup probability with home-field adjustment (~53% baseline).</p>
+    <h3 style="margin-top: 16px;">Technical Details</h3>
+    <div class="qa"><span class="q">Data sources:</span> <span class="a">NCAA Scoreboard API, PEAR Ratings API, The Odds API (baseball_ncaa)</span></div>
+    <div class="qa"><span class="q">Refresh:</span> <span class="a">Daily automated pipeline &mdash; scrape &rarr; rate &rarr; predict &rarr; publish</span></div>
+    <div class="qa"><span class="q">Coverage:</span> <span class="a">{{ total_teams }} D1 teams, ~8,400 games/season</span></div>
+    <div class="qa"><span class="q">Stack:</span> <span class="a">Python 3.12, SQLite, static HTML. No ML frameworks.</span></div>
+    <div class="qa"><span class="q">Odds:</span> <span class="a">The Odds API &mdash; moneyline, run line, totals from 40+ bookmakers. Free tier.</span></div>
+    <div class="qa"><span class="q">Backtest:</span> <span class="a">Chronological replay with Brier score calibration. No future data leakage.</span></div>
+    <p style="margin-top: 12px; color: #6b7280; font-size: 0.75em;">No neural networks. The accuracy comes from correct modeling of college baseball's unique run environment, not from complexity.</p>
+  </div>
+
+  <div class="footer">
+    <p>ForgeStream Baseball v0.1 &mdash; Built by Mergim Gashi</p>
+    <p>Predictions are probabilistic estimates, not guarantees. Not financial advice.</p>
+  </div>
+</div>
+</body>
+</html>

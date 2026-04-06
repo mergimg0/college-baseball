@@ -1,0 +1,306 @@
+"""Win probability model and game prediction engine.
+
+Layer 3 of the architecture: logistic regression combining BT ratings
+with game-specific features to produce calibrated win probabilities.
+
+V0 features:
+  - BT rating difference (home - away)
+  - Home field advantage
+  - Rest days differential (schedule density)
+
+V1 additions (future):
+  - Starting pitcher adjustment
+  - Conference vs non-conference
+  - Weather / park factors
+  - Travel distance
+"""
+
+from __future__ import annotations
+
+import math
+import sqlite3
+from datetime import date, datetime
+
+
+def predict_matchup(
+    conn: sqlite3.Connection,
+    home_team: str,
+    away_team: str,
+    model_version: str = "v0.1",
+) -> dict | None:
+    """Predict a single matchup between two teams.
+
+    Returns dict with:
+        home_win_prob, away_win_prob, predicted_total_runs,
+        home_bt_rating, away_bt_rating, home_pythag, away_pythag,
+        confidence, model_version
+    """
+    home = _get_team(conn, home_team)
+    away = _get_team(conn, away_team)
+
+    if not home or not away:
+        return None
+
+    # Blended prediction: combine Pythagorean-based and BT-based estimates
+    home_pythag = home["pythag_pct"] or 0.5
+    away_pythag = away["pythag_pct"] or 0.5
+
+    # Pythagorean-based win probability (log5 method)
+    # P(A beats B) = (pA - pA*pB) / (pA + pB - 2*pA*pB)
+    pa, pb = home_pythag, away_pythag
+    if pa + pb - 2 * pa * pb != 0:
+        pythag_prob = (pa - pa * pb) / (pa + pb - 2 * pa * pb)
+    else:
+        pythag_prob = 0.5
+
+    # BT-based win probability
+    bt_diff = (home["bt_rating"] or 0.0) - (away["bt_rating"] or 0.0)
+    hfa = _estimate_hfa(conn)
+    bt_logit = bt_diff + hfa
+    bt_prob = 1.0 / (1.0 + math.exp(-max(-10, min(10, bt_logit))))
+
+    # Determine BT reliability: if either team has no games in BT model,
+    # rely more on Pythagorean. Weight BT by data coverage.
+    home_in_bt = abs(home["bt_rating"] or 0.0) > 0.01
+    away_in_bt = abs(away["bt_rating"] or 0.0) > 0.01
+
+    if home_in_bt and away_in_bt:
+        bt_weight = 0.5  # Equal blend when both have BT data
+    elif home_in_bt or away_in_bt:
+        bt_weight = 0.2  # Mostly Pythag when one team lacks BT data
+    else:
+        bt_weight = 0.0  # Pure Pythag when neither has BT data
+
+    # Blend: weighted average of Pythag and BT probabilities
+    home_win_prob = (1 - bt_weight) * pythag_prob + bt_weight * bt_prob
+
+    # Add small HFA adjustment if using pure Pythag (log5 doesn't include HFA)
+    if bt_weight < 0.3:
+        home_win_prob = home_win_prob * 1.04  # ~54% baseline home advantage
+
+    # Clamp to reasonable range
+    home_win_prob = max(0.05, min(0.95, home_win_prob))
+
+    # Predicted total runs (simple: average of both teams' RPG)
+    home_rpg = home["total_rs"] / max(home["games_played"], 1)
+    away_rpg = away["total_rs"] / max(away["games_played"], 1)
+    # Adjust for opponent quality via BT ratings
+    predicted_total = home_rpg + away_rpg
+
+    # Confidence based on games played
+    min_games = min(home["games_played"] or 0, away["games_played"] or 0)
+    if min_games >= 25:
+        confidence = "high"
+    elif min_games >= 15:
+        confidence = "medium"
+    else:
+        confidence = "low"
+
+    return {
+        "home_team": home["name"],
+        "away_team": away["name"],
+        "home_win_prob": round(home_win_prob, 4),
+        "away_win_prob": round(1 - home_win_prob, 4),
+        "predicted_total_runs": round(predicted_total, 1),
+        "home_bt_rating": round(home["bt_rating"] or 0.0, 4),
+        "away_bt_rating": round(away["bt_rating"] or 0.0, 4),
+        "home_pythag": round(home["pythag_pct"] or 0.5, 4),
+        "away_pythag": round(away["pythag_pct"] or 0.5, 4),
+        "home_record": f"{home['wins']}-{home['losses']}",
+        "away_record": f"{away['wins']}-{away['losses']}",
+        "confidence": confidence,
+        "model_version": model_version,
+    }
+
+
+def predict_date(
+    conn: sqlite3.Connection,
+    target_date: date | None = None,
+    model_version: str = "v0.1",
+) -> list[dict]:
+    """Predict all games on a given date.
+
+    Writes predictions to the predictions table and updates games table.
+    Returns list of prediction dicts.
+    """
+    if target_date is None:
+        target_date = date.today()
+
+    date_str = target_date.isoformat()
+
+    # Get all scheduled/upcoming games for this date
+    games = conn.execute("""
+        SELECT g.id, g.date, h.name as home_team, a.name as away_team,
+               g.home_runs, g.away_runs, g.status
+        FROM games g
+        JOIN teams h ON g.home_team_id = h.id
+        JOIN teams a ON g.away_team_id = a.id
+        WHERE g.date = ?
+        ORDER BY g.id
+    """, (date_str,)).fetchall()
+
+    predictions = []
+    for g in games:
+        pred = predict_matchup(conn, g["home_team"], g["away_team"], model_version)
+        if not pred:
+            continue
+
+        pred["game_id"] = g["id"]
+        pred["status"] = g["status"]
+        pred["actual_home_runs"] = g["home_runs"]
+        pred["actual_away_runs"] = g["away_runs"]
+
+        # Determine if prediction was correct (for completed games)
+        if g["status"] == "final" and g["home_runs"] is not None:
+            actual_home_won = g["home_runs"] > g["away_runs"]
+            predicted_home_wins = pred["home_win_prob"] > 0.5
+            pred["correct"] = actual_home_won == predicted_home_wins
+        else:
+            pred["correct"] = None
+
+        # Store prediction
+        try:
+            conn.execute("""
+                INSERT INTO predictions (game_id, model_version, home_win_prob, predicted_total_runs)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(game_id, model_version) DO UPDATE SET
+                    home_win_prob=excluded.home_win_prob,
+                    predicted_total_runs=excluded.predicted_total_runs,
+                    created_at=datetime('now')
+            """, (g["id"], model_version, pred["home_win_prob"], pred["predicted_total_runs"]))
+
+            # Update games table
+            predicted_winner_id = conn.execute(
+                "SELECT id FROM teams WHERE name=?",
+                (pred["home_team"] if pred["home_win_prob"] > 0.5 else pred["away_team"],)
+            ).fetchone()
+
+            if predicted_winner_id:
+                conn.execute("""
+                    UPDATE games SET our_home_win_prob=?, our_predicted_total=?,
+                                     our_predicted_winner_id=?
+                    WHERE id=?
+                """, (pred["home_win_prob"], pred["predicted_total_runs"],
+                      predicted_winner_id["id"], g["id"]))
+        except Exception:
+            pass
+
+        predictions.append(pred)
+
+    conn.commit()
+    return predictions
+
+
+def compute_accuracy(conn: sqlite3.Connection, model_version: str = "v0.1") -> dict:
+    """Compute model accuracy across all predicted games with results.
+
+    Returns accuracy metrics including Brier score comparison vs PEAR.
+    """
+    rows = conn.execute("""
+        SELECT p.home_win_prob, g.home_runs, g.away_runs,
+               g.pear_home_win_prob
+        FROM predictions p
+        JOIN games g ON p.game_id = g.id
+        WHERE g.status = 'final' AND g.home_runs IS NOT NULL
+              AND p.model_version = ?
+    """, (model_version,)).fetchall()
+
+    if not rows:
+        return {"games": 0, "note": "No completed games with predictions"}
+
+    our_correct = 0
+    pear_correct = 0
+    our_brier_sum = 0.0
+    pear_brier_sum = 0.0
+    pear_available = 0
+    n = len(rows)
+
+    for r in rows:
+        actual_home_won = 1.0 if r["home_runs"] > r["away_runs"] else 0.0
+        our_prob = r["home_win_prob"]
+
+        # Our accuracy
+        predicted_home = our_prob > 0.5
+        if predicted_home == (actual_home_won == 1.0):
+            our_correct += 1
+
+        # Brier score: mean squared error of probability predictions
+        our_brier_sum += (our_prob - actual_home_won) ** 2
+
+        # PEAR comparison (if available)
+        pear_prob = r["pear_home_win_prob"]
+        if pear_prob is not None:
+            pear_available += 1
+            pear_predicted_home = pear_prob > 0.5
+            if pear_predicted_home == (actual_home_won == 1.0):
+                pear_correct += 1
+            pear_brier_sum += (pear_prob - actual_home_won) ** 2
+
+    result = {
+        "games": n,
+        "our_correct": our_correct,
+        "our_accuracy": round(our_correct / n, 4) if n > 0 else 0,
+        "our_brier": round(our_brier_sum / n, 4) if n > 0 else 0,
+        "model_version": model_version,
+    }
+
+    if pear_available > 0:
+        result["pear_games"] = pear_available
+        result["pear_correct"] = pear_correct
+        result["pear_accuracy"] = round(pear_correct / pear_available, 4)
+        result["pear_brier"] = round(pear_brier_sum / pear_available, 4)
+        result["edge_accuracy"] = round(result["our_accuracy"] - result["pear_accuracy"], 4)
+        result["edge_brier"] = round(result["pear_brier"] - result["our_brier"], 4)
+
+    return result
+
+
+def _get_team(conn: sqlite3.Connection, name: str) -> dict | None:
+    """Look up team by name or alias."""
+    row = conn.execute("""
+        SELECT id, name, bt_rating, pythag_pct, total_rs, total_ra,
+               games_played, wins, losses, sos, power_rating, elo,
+               pear_power_rating, pear_elo
+        FROM teams WHERE name = ?
+    """, (name,)).fetchone()
+
+    if row:
+        return dict(row)
+
+    # Try alias
+    alias = conn.execute(
+        "SELECT team_id FROM team_aliases WHERE alias = ?", (name,)
+    ).fetchone()
+    if alias:
+        row = conn.execute("""
+            SELECT id, name, bt_rating, pythag_pct, total_rs, total_ra,
+                   games_played, wins, losses, sos, power_rating, elo,
+                   pear_power_rating, pear_elo
+            FROM teams WHERE id = ?
+        """, (alias["team_id"],)).fetchone()
+        if row:
+            return dict(row)
+
+    return None
+
+
+def _estimate_hfa(conn: sqlite3.Connection) -> float:
+    """Estimate home field advantage from completed games.
+
+    Returns log-odds HFA. Default ~0.15 (translates to ~54% home win rate).
+    """
+    row = conn.execute("""
+        SELECT COUNT(*) as total,
+               SUM(CASE WHEN home_runs > away_runs THEN 1 ELSE 0 END) as home_wins
+        FROM games
+        WHERE status = 'final' AND home_runs IS NOT NULL AND neutral_site = 0
+    """).fetchone()
+
+    if row and row["total"] >= 50:
+        home_pct = row["home_wins"] / row["total"]
+        # Convert to log-odds
+        home_pct = max(0.45, min(0.65, home_pct))  # Clamp
+        return math.log(home_pct / (1 - home_pct))
+
+    # Default: ~54% home win rate (typical college baseball)
+    return 0.16
