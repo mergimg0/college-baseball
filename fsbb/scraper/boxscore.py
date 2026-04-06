@@ -255,19 +255,26 @@ def recompute_pitcher_stats(conn: sqlite3.Connection) -> None:
 
 
 def get_starter_quality(conn: sqlite3.Connection, game_id: int, team_id: int) -> float | None:
-    """Get the starting pitcher's season ERA for a game.
+    """Get the starting pitcher's quality rating for a game.
 
-    Returns None if no starter data available or insufficient IP.
+    Returns quality_rating (0-100 scale, 50=average) if available,
+    falls back to inverted ERA (lower ERA → higher rating).
+    Returns None if no starter data or insufficient IP.
     """
     row = conn.execute("""
-        SELECT p.season_era, p.season_ip, p.games_started
+        SELECT p.quality_rating, p.season_era, p.season_ip
         FROM game_pitchers gp
         JOIN pitchers p ON gp.pitcher_id = p.id
         WHERE gp.game_id = ? AND gp.team_id = ? AND gp.is_starter = 1
     """, (game_id, team_id)).fetchone()
-    if row and row[1] and row[1] >= 10:  # Min 10 IP for reliability
+    if not row or not row[2] or row[2] < 10:
+        return None
+    # Prefer quality_rating if computed, else derive from ERA
+    if row[0] is not None:
         return row[0]
-    return None
+    # Fallback: invert ERA to 0-100 scale (ERA 0 → 100, ERA 9+ → 0)
+    era = row[1] if row[1] else 4.5
+    return max(0, min(100, 100 - era * 11))
 
 
 def fetch_play_by_play(game_id: str | int) -> dict | None:

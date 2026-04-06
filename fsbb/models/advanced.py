@@ -184,27 +184,21 @@ def get_starter_quality_feature(
 ) -> float:
     """Compute starter quality differential for a game.
 
-    Returns away_starter_era - home_starter_era (positive = home advantage).
-    Falls back to team ERA if no starter data.
+    Uses quality_rating (0-100 scale, 50=average).
+    Returns home_quality - away_quality (positive = home pitcher better).
+    Falls back to 50 (average) if no starter data.
     """
     from fsbb.scraper.boxscore import get_starter_quality
 
-    home_era = get_starter_quality(conn, game_id, home_team_id)
-    away_era = get_starter_quality(conn, game_id, away_team_id)
+    home_q = get_starter_quality(conn, game_id, home_team_id)
+    away_q = get_starter_quality(conn, game_id, away_team_id)
 
-    if home_era is None:
-        row = conn.execute(
-            "SELECT ERA FROM team_features WHERE team_id = ?", (home_team_id,)
-        ).fetchone()
-        home_era = float(row[0]) if row and row[0] else 4.5
+    if home_q is None:
+        home_q = 50.0  # average
+    if away_q is None:
+        away_q = 50.0
 
-    if away_era is None:
-        row = conn.execute(
-            "SELECT ERA FROM team_features WHERE team_id = ?", (away_team_id,)
-        ).fetchone()
-        away_era = float(row[0]) if row and row[0] else 4.5
-
-    return away_era - home_era  # positive = home pitcher better
+    return home_q - away_q  # positive = home pitcher better
 
 
 def compute_matchup_features(
