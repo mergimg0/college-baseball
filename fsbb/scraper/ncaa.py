@@ -99,8 +99,8 @@ def scrape_date(conn: sqlite3.Connection, d: date) -> dict:
         home_info = g.get("home", {})
         away_info = g.get("away", {})
 
-        home_name = home_info.get("names", {}).get("full") or home_info.get("names", {}).get("short", "")
-        away_name = away_info.get("names", {}).get("full") or away_info.get("names", {}).get("short", "")
+        home_name = home_info.get("names", {}).get("short") or home_info.get("names", {}).get("full", "")
+        away_name = away_info.get("names", {}).get("short") or away_info.get("names", {}).get("full", "")
 
         if not home_name or not away_name:
             skipped += 1
