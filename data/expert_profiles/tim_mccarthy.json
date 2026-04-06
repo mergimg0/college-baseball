@@ -1,0 +1,43 @@
+{
+  "name": "Tim McCarthy",
+  "title": "Director, Bank Relationships",
+  "organization": "Wellington Management",
+  "cfa": true,
+  "relationship": "friend_former_colleague",
+  "expertise_topics": {
+    "bank_relationships": 0.95,
+    "counterparty_risk": 0.90,
+    "private_credit": 0.85,
+    "trading_operations": 0.85,
+    "research_services": 0.80,
+    "esg_proxy": 0.70,
+    "investor_services": 0.85
+  },
+  "communication_style": {
+    "directness": 0.75,
+    "formality": 0.55,
+    "technical_depth": 0.80
+  },
+  "rapport_with_user": 0.80,
+  "meetings_count": 1,
+  "total_claims": 170,
+  "background": {
+    "education": "Boston College (1982-1985)",
+    "division": "Investor & Counterparty Services (ICS), Investment Services",
+    "location": "Wellesley, MA"
+  },
+  "family": {
+    "son_ryan": "Works in private equity, married, in his 30s"
+  },
+  "interests": {
+    "college_baseball": "Big fan, follows analytics closely",
+    "baseball_analytics_tools": [
+      "https://mcmillanai.com/",
+      "https://www.64analytics.com/",
+      "https://pearatings.com/",
+      "https://baseballsavant.mlb.com/"
+    ],
+    "jeff_mcmillan": "Contact/connection related to McMillan AI"
+  },
+  "notes": "Old friend from when user worked at Wellington. Director-level, interfaces at CEO level with banking counterparties. Role covers research relationships, market data, counterparty risk, due diligence on broker-dealers. Meeting 1 (2026-03-30): discussed baseball analytics tools, his son Ryan in PE, business model strategy (bespoke vs subscription), and potential collaboration."
+}

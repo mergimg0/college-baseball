@@ -1,0 +1,35 @@
+{
+  "Tim": {
+    "f0_mean": 129.38260746567704,
+    "f0_std": 31.67795899642728,
+    "spectral_centroid": 1871.898256648161,
+    "energy_rms": 0.1104434426153294,
+    "hnr": 8.18508297678892,
+    "segment_count": 89,
+    "voiced_count": 89,
+    "total_duration_s": 304.28999999999917,
+    "pyannote_id": "SPEAKER_02"
+  },
+  "Ryan": {
+    "f0_mean": 102.1096387563737,
+    "f0_std": 39.2647414770649,
+    "spectral_centroid": 1264.2417342150345,
+    "energy_rms": 0.03272007085315945,
+    "hnr": 11.57267697616952,
+    "segment_count": 135,
+    "voiced_count": 135,
+    "total_duration_s": 1023.3900000000012,
+    "pyannote_id": "SPEAKER_00"
+  },
+  "Mergim": {
+    "f0_mean": 125.37645809103984,
+    "f0_std": 41.78763894492277,
+    "spectral_centroid": 1756.4381791436435,
+    "energy_rms": 0.0588711428925834,
+    "hnr": 6.387113686987624,
+    "segment_count": 313,
+    "voiced_count": 313,
+    "total_duration_s": 877.2499999999953,
+    "pyannote_id": "SPEAKER_01"
+  }
+}

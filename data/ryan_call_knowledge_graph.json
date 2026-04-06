@@ -1,0 +1,336 @@
+{
+  "entities": {
+    "people": {
+      "Ryan": {
+        "mentions": 3,
+        "by_speaker": {
+          "Tim": 2,
+          "Mergim": 1
+        }
+      },
+      "Ken Pomeroy": {
+        "mentions": 3,
+        "by_speaker": {
+          "Mergim": 3
+        }
+      },
+      "Evan Miyakawa": {
+        "mentions": 6,
+        "by_speaker": {
+          "Mergim": 5,
+          "Ryan": 1
+        }
+      },
+      "Bill Petti": {
+        "mentions": 1,
+        "by_speaker": {
+          "Ryan": 1
+        }
+      },
+      "Tim": {
+        "mentions": 10,
+        "by_speaker": {
+          "Mergim": 6,
+          "Ryan": 4
+        }
+      },
+      "Connor": {
+        "mentions": 1,
+        "by_speaker": {
+          "Mergim": 1
+        }
+      }
+    },
+    "companies": {
+      "MLB": {
+        "mentions": 3,
+        "by_speaker": {
+          "Tim": 1,
+          "Mergim": 1,
+          "Ryan": 1
+        }
+      },
+      "PEARatings": {
+        "mentions": 6,
+        "by_speaker": {
+          "Ryan": 3,
+          "Mergim": 1,
+          "Tim": 2
+        }
+      },
+      "64 Analytics": {
+        "mentions": 8,
+        "by_speaker": {
+          "Ryan": 5,
+          "Mergim": 3
+        }
+      },
+      "NCAA": {
+        "mentions": 9,
+        "by_speaker": {
+          "Mergim": 3,
+          "Ryan": 4,
+          "Tim": 2
+        }
+      },
+      "KenPom": {
+        "mentions": 3,
+        "by_speaker": {
+          "Mergim": 3
+        }
+      },
+      "EvanMiya": {
+        "mentions": 6,
+        "by_speaker": {
+          "Mergim": 5,
+          "Ryan": 1
+        }
+      },
+      "6-4-3 Charts": {
+        "mentions": 2,
+        "by_speaker": {
+          "Ryan": 2
+        }
+      }
+    },
+    "concepts": {
+      "team_ratings": {
+        "mentions": 13,
+        "by_speaker": {
+          "Tim": 3,
+          "Ryan": 6,
+          "Mergim": 4
+        }
+      },
+      "player_metrics": {
+        "mentions": 25,
+        "by_speaker": {
+          "Tim": 3,
+          "Mergim": 16,
+          "Ryan": 6
+        }
+      },
+      "differentiation": {
+        "mentions": 8,
+        "by_speaker": {
+          "Tim": 1,
+          "Ryan": 4,
+          "Mergim": 3
+        }
+      },
+      "prediction_markets": {
+        "mentions": 3,
+        "by_speaker": {
+          "Tim": 1,
+          "Mergim": 1,
+          "Ryan": 1
+        }
+      },
+      "reinforcement_learning": {
+        "mentions": 9,
+        "by_speaker": {
+          "Tim": 2,
+          "Ryan": 5,
+          "Mergim": 2
+        }
+      },
+      "the_equation": {
+        "mentions": 5,
+        "by_speaker": {
+          "Tim": 1,
+          "Ryan": 2,
+          "Mergim": 2
+        }
+      },
+      "data_pipeline": {
+        "mentions": 18,
+        "by_speaker": {
+          "Ryan": 9,
+          "Mergim": 6,
+          "Tim": 3
+        }
+      },
+      "data_cleaning": {
+        "mentions": 3,
+        "by_speaker": {
+          "Mergim": 2,
+          "Ryan": 1
+        }
+      },
+      "monte_carlo": {
+        "mentions": 1,
+        "by_speaker": {
+          "Tim": 1
+        }
+      },
+      "bayesian_model": {
+        "mentions": 2,
+        "by_speaker": {
+          "Mergim": 1,
+          "Ryan": 1
+        }
+      },
+      "v0_mvp": {
+        "mentions": 4,
+        "by_speaker": {
+          "Ryan": 4
+        }
+      },
+      "transfer_portal": {
+        "mentions": 2,
+        "by_speaker": {
+          "Ryan": 2
+        }
+      }
+    }
+  },
+  "edges": [
+    {
+      "source": "PEARatings",
+      "target": "team_ratings",
+      "weight": 6
+    },
+    {
+      "source": "Evan Miyakawa",
+      "target": "EvanMiya",
+      "weight": 6
+    },
+    {
+      "source": "NCAA",
+      "target": "data_pipeline",
+      "weight": 4
+    },
+    {
+      "source": "Ken Pomeroy",
+      "target": "KenPom",
+      "weight": 3
+    },
+    {
+      "source": "64 Analytics",
+      "target": "team_ratings",
+      "weight": 3
+    },
+    {
+      "source": "Tim",
+      "target": "player_metrics",
+      "weight": 2
+    },
+    {
+      "source": "PEARatings",
+      "target": "data_pipeline",
+      "weight": 2
+    },
+    {
+      "source": "data_pipeline",
+      "target": "team_ratings",
+      "weight": 2
+    },
+    {
+      "source": "player_metrics",
+      "target": "team_ratings",
+      "weight": 1
+    },
+    {
+      "source": "reinforcement_learning",
+      "target": "the_equation",
+      "weight": 1
+    },
+    {
+      "source": "data_pipeline",
+      "target": "reinforcement_learning",
+      "weight": 1
+    },
+    {
+      "source": "differentiation",
+      "target": "reinforcement_learning",
+      "weight": 1
+    },
+    {
+      "source": "Evan Miyakawa",
+      "target": "Ken Pomeroy",
+      "weight": 1
+    },
+    {
+      "source": "EvanMiya",
+      "target": "Ken Pomeroy",
+      "weight": 1
+    },
+    {
+      "source": "Evan Miyakawa",
+      "target": "KenPom",
+      "weight": 1
+    },
+    {
+      "source": "EvanMiya",
+      "target": "KenPom",
+      "weight": 1
+    },
+    {
+      "source": "64 Analytics",
+      "target": "player_metrics",
+      "weight": 1
+    },
+    {
+      "source": "Bill Petti",
+      "target": "NCAA",
+      "weight": 1
+    },
+    {
+      "source": "Evan Miyakawa",
+      "target": "bayesian_model",
+      "weight": 1
+    },
+    {
+      "source": "EvanMiya",
+      "target": "bayesian_model",
+      "weight": 1
+    },
+    {
+      "source": "reinforcement_learning",
+      "target": "v0_mvp",
+      "weight": 1
+    },
+    {
+      "source": "player_metrics",
+      "target": "v0_mvp",
+      "weight": 1
+    },
+    {
+      "source": "player_metrics",
+      "target": "the_equation",
+      "weight": 1
+    },
+    {
+      "source": "the_equation",
+      "target": "v0_mvp",
+      "weight": 1
+    },
+    {
+      "source": "bayesian_model",
+      "target": "player_metrics",
+      "weight": 1
+    },
+    {
+      "source": "Connor",
+      "target": "Ryan",
+      "weight": 1
+    },
+    {
+      "source": "64 Analytics",
+      "target": "PEARatings",
+      "weight": 1
+    },
+    {
+      "source": "player_metrics",
+      "target": "transfer_portal",
+      "weight": 1
+    }
+  ],
+  "speaker_distribution": {
+    "Tim": 92,
+    "Ryan": 167,
+    "Mergim": 251
+  },
+  "claim_count": 510,
+  "note": "Re-generated after x-vector speaker correction. 508/510 claims have voice-verified speaker labels."
+}

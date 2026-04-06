@@ -1,0 +1,2815 @@
+[
+  {
+    "text": "I'm happy to be helpful to you behind the scenes if you need any guidance.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "helpful"
+    ],
+    "topic_keywords": [
+      "guidance",
+      "help",
+      "behind the scenes"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:00"
+  },
+  {
+    "text": "I had another question for you because of something you said to me about having your own idea.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "inquisitive"
+    ],
+    "topic_keywords": [
+      "question",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:12"
+  },
+  {
+    "text": "My son Ryan is in his 30s, married, and works in a private equity firm.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "son",
+      "Ryan",
+      "private equity",
+      "firm",
+      "age",
+      "married"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:19"
+  },
+  {
+    "text": "I am a big college baseball guy in the US.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "college baseball",
+      "US",
+      "sports"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:28"
+  },
+  {
+    "text": "There are many analytical tools out there for college baseball, like 64 Analytics and Peer Ratings, and also prediction markets.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "analytical tools",
+      "64 Analytics",
+      "Peer Ratings",
+      "prediction markets",
+      "college baseball"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:37"
+  },
+  {
+    "text": "Ryan wants to get involved with these analytical tools and prediction markets.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "involvement",
+      "analytical tools",
+      "prediction markets"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:49"
+  },
+  {
+    "text": "Ryan is reaching out to these people.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "reaching out",
+      "people"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:52"
+  },
+  {
+    "text": "There's a guy (Speaker 2) that Ryan should talk to.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "guy",
+      "talk to",
+      "suggestion"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "00:56"
+  },
+  {
+    "text": "Somebody with your talent could be doing so much, even if just providing guidance or thought.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "talent",
+      "guidance",
+      "potential"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:02"
+  },
+  {
+    "text": "This is especially true with the AI stuff.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "AI",
+      "talent"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:15"
+  },
+  {
+    "text": "My expertise is around the college baseball thing, but more broadly this industry.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "expertise",
+      "college baseball",
+      "industry"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:22"
+  },
+  {
+    "text": "It's not clear to me that Ryan's current path is in his best interest.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "honest"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "best interest",
+      "path"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:29"
+  },
+  {
+    "text": "I want to go with whatever's flowing right now.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "decisive"
+    ],
+    "topic_keywords": [
+      "flowing",
+      "opportunities",
+      "pursue"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:34"
+  },
+  {
+    "text": "I know that going with what's flowing is the only right answer.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective"
+    ],
+    "topic_keywords": [
+      "right answer",
+      "flowing"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:38"
+  },
+  {
+    "text": "I don't want to try and push on a dead horse when there are so many different ways to go into whatever type of work is in front of me.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "pragmatic"
+    ],
+    "topic_keywords": [
+      "push",
+      "dead horse",
+      "opportunities",
+      "work"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:42"
+  },
+  {
+    "text": "This (the idea for Ryan) sounds amazing, honestly, Tim.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "amazing",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "01:56"
+  },
+  {
+    "text": "I would love to be involved in any way.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "eager"
+    ],
+    "topic_keywords": [
+      "involved",
+      "interest"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:01"
+  },
+  {
+    "text": "Being involved means creating something that's more of an integrated platform for all these statistics and dispersed data.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "clarifying",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "involved",
+      "integrated platform",
+      "statistics",
+      "data",
+      "dispersed"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:04"
+  },
+  {
+    "text": "Could you create something that's more of an integrated platform?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "create",
+      "integrated platform"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "02:20"
+  },
+  {
+    "text": "You could charge a small fee, like $30 a year, for the platform.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "business idea"
+    ],
+    "topic_keywords": [
+      "charge",
+      "fee",
+      "$30",
+      "year"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:25"
+  },
+  {
+    "text": "The project would be bootstrapped.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "bootstrapped",
+      "project"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:34"
+  },
+  {
+    "text": "I don't know what the exact demands of the project are.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "uncertain"
+    ],
+    "topic_keywords": [
+      "demands",
+      "project"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:37"
+  },
+  {
+    "text": "Taking a look at a few things and talking to Ryan might spark your interest.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "project",
+      "Ryan",
+      "interest"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:41"
+  },
+  {
+    "text": "Even if you're not interested, you could at least say what you would think about this.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "thoughts",
+      "project",
+      "advice"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:47"
+  },
+  {
+    "text": "Making this stuff user-friendly, like we're doing with the portal, would be so easy for you to do.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "user-friendly",
+      "portal",
+      "easy",
+      "project"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:51"
+  },
+  {
+    "text": "I need to look up Jeff McMillan and the name of his company.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "task-oriented"
+    ],
+    "topic_keywords": [
+      "Jeff McMillan",
+      "company",
+      "research"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "02:59"
+  },
+  {
+    "text": "I don't know Jeff McMillan well enough to get a direct connection.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Jeff McMillan",
+      "connection",
+      "direct"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:08"
+  },
+  {
+    "text": "Jeff McMillan had a job at Morgan Stanley and left.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Jeff McMillan",
+      "Morgan Stanley",
+      "left job"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:14"
+  },
+  {
+    "text": "Morgan Stanley didn't want to lose him.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Morgan Stanley",
+      "Jeff McMillan",
+      "retention"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:19"
+  },
+  {
+    "text": "I definitely think the path forward is down the AI route, not the coding route.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "opinionated",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "AI route",
+      "coding route",
+      "path forward"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:26"
+  },
+  {
+    "text": "Does that make sense?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "questioning"
+    ],
+    "topic_keywords": [
+      "clarity",
+      "understanding"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "03:32"
+  },
+  {
+    "text": "What I'm doing right now is also specifically down the AI route.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "confirming"
+    ],
+    "topic_keywords": [
+      "AI route",
+      "current work"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:33"
+  },
+  {
+    "text": "My AI work can be applied to so many domains.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "AI",
+      "domains",
+      "applicability"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:41"
+  },
+  {
+    "text": "I was running a 12-hour training on training different AI models on how they can learn through architectural thinking.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "12-hour training",
+      "AI models",
+      "architectural thinking",
+      "learning"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:44"
+  },
+  {
+    "text": "Applying those results in coding made the models so much more efficient.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "AI training",
+      "coding",
+      "efficiency",
+      "results"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "03:57"
+  },
+  {
+    "text": "Just this morning, my own AI terminal told me that the user (me) is the bottleneck.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "slightly humorous"
+    ],
+    "topic_keywords": [
+      "AI terminal",
+      "bottleneck",
+      "user",
+      "slow"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:03"
+  },
+  {
+    "text": "The AI terminal indicated that we need to automate things because they're too slow.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "automation",
+      "slow",
+      "AI suggestion"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:14"
+  },
+  {
+    "text": "Applying that sort of self-learning reinforcement learning to any other dimension would lead to endless possibilities.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "enthusiastic",
+      "speculative"
+    ],
+    "topic_keywords": [
+      "reinforcement learning",
+      "self-learning",
+      "possibilities",
+      "endless",
+      "dimensions"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:17"
+  },
+  {
+    "text": "The idea for the baseball proposition is insane, and I really love that.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "baseball proposition",
+      "insane",
+      "love",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:29"
+  },
+  {
+    "text": "I've seen different ways that new companies now position themselves.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective"
+    ],
+    "topic_keywords": [
+      "new companies",
+      "positioning",
+      "observation"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:38"
+  },
+  {
+    "text": "I've had to detach and decouple from the idea of creating a service that people subscribe to.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective",
+      "critical"
+    ],
+    "topic_keywords": [
+      "detach",
+      "decouple",
+      "service",
+      "subscription",
+      "traditional model"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "04:46"
+  },
+  {
+    "text": "We can create subscription services, and I've tried to do that as well.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective"
+    ],
+    "topic_keywords": [
+      "subscription service",
+      "tried",
+      "possible"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "05:00"
+  },
+  {
+    "text": "I've really seen the big gains from creating things bespoke during this time.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "insightful"
+    ],
+    "topic_keywords": [
+      "big gains",
+      "bespoke",
+      "solutions"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "05:09"
+  },
+  {
+    "text": "We can create an engine and sell it to many businesses that perform analysis, just selling the engine and branding it on top.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "strategic",
+      "business model"
+    ],
+    "topic_keywords": [
+      "engine",
+      "sell",
+      "multiple businesses",
+      "analysis",
+      "branding"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "05:14"
+  },
+  {
+    "text": "Another way to look at it is to become a one-stop shop in an industry, create a dashboard, and have people subscribe to the solution you've created.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "strategic",
+      "business model"
+    ],
+    "topic_keywords": [
+      "one-stop shop",
+      "dashboard",
+      "subscription",
+      "unique solution"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "05:33"
+  },
+  {
+    "text": "I would definitely love to have that conversation and understand more about what's happening here and how I can be of value.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "eager",
+      "inquisitive"
+    ],
+    "topic_keywords": [
+      "conversation",
+      "understand",
+      "value",
+      "interest"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "05:52"
+  },
+  {
+    "text": "I just sent you the McMillan thing.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "sent info"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:01"
+  },
+  {
+    "text": "It's interesting to have a guy with such a big job go out on his own.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective",
+      "observant"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "big job",
+      "independent"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:07"
+  },
+  {
+    "text": "He's a very good guy and is getting in touch.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "positive",
+      "informative"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "good guy",
+      "in touch"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:13"
+  },
+  {
+    "text": "The two sites are 64 Analytics and PeerRatings.com.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "64 Analytics",
+      "PeerRatings.com",
+      "sites"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:18"
+  },
+  {
+    "text": "In the United States, there are great statistics around American football, basketball, and pro baseball.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "US",
+      "statistics",
+      "American football",
+      "basketball",
+      "pro baseball"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:25"
+  },
+  {
+    "text": "This discussion is about collegiate sports, which is Ryan's niche.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "collegiate sports",
+      "Ryan",
+      "niche"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:40"
+  },
+  {
+    "text": "I just sent you a couple of sites to digest.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "sites",
+      "digest",
+      "information"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:46"
+  },
+  {
+    "text": "I can get Ryan, and maybe the three of us could have a chat because he's done an even deeper dive on it.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "informative"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "chat",
+      "deeper dive"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:49"
+  },
+  {
+    "text": "My other son, Connor, is a player development person who uses data left and right.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Connor",
+      "player development",
+      "data usage"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "06:56"
+  },
+  {
+    "text": "Ryan and Connor have a long-standing interest in this area.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "Connor",
+      "interest",
+      "passion"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:03"
+  },
+  {
+    "text": "I think there could be something interesting here.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "interesting",
+      "opportunity"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:10"
+  },
+  {
+    "text": "You are so far advanced relative to me; I probably think more linearly.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "self-deprecating"
+    ],
+    "topic_keywords": [
+      "advanced",
+      "linear thinking"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:13"
+  },
+  {
+    "text": "I had this guy, Kazem, who was an analyst, create a dashboard and database for me.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Kazem",
+      "analyst",
+      "dashboard",
+      "database"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:23"
+  },
+  {
+    "text": "Now I have to get the database connected to Tableau, but I'm not a Tableau guy.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "self-deprecating"
+    ],
+    "topic_keywords": [
+      "database",
+      "Tableau",
+      "connection",
+      "not proficient"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:33"
+  },
+  {
+    "text": "You guys are so much more advanced; you could create some engine.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "speculative"
+    ],
+    "topic_keywords": [
+      "advanced",
+      "engine",
+      "creation"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:38"
+  },
+  {
+    "text": "If I partnered up with you on stuff, your brain is exceptional.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "partnership",
+      "brain",
+      "exceptional"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:42"
+  },
+  {
+    "text": "You could figure out multiple ways to approach this stuff, including how to aggregate all the data.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "complimentary"
+    ],
+    "topic_keywords": [
+      "approach",
+      "aggregation",
+      "problem-solving"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:50"
+  },
+  {
+    "text": "My son wants to partner with somebody with technical knowledge to at least guide us on how we could totally recreate and improve things.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "request"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "partner",
+      "technical knowledge",
+      "guide",
+      "recreate",
+      "improve"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "07:59"
+  },
+  {
+    "text": "I don't want to impose on your time.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "considerate"
+    ],
+    "topic_keywords": [
+      "time",
+      "impose"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:17"
+  },
+  {
+    "text": "If there's an opportunity, we could create something and get you involved.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "opportunity",
+      "create",
+      "involved"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:21"
+  },
+  {
+    "text": "This is not some big, full-blown thing; it's more like a fun hobby project.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "downplaying",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "hobby project",
+      "not big",
+      "fun"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:26"
+  },
+  {
+    "text": "You could add some technical expertise, and we could add other expertise, and maybe it becomes something, maybe not.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "collaborative"
+    ],
+    "topic_keywords": [
+      "technical expertise",
+      "other expertise",
+      "partnership",
+      "potential"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:30"
+  },
+  {
+    "text": "This project idea is completely separate from trying to be helpful to you in other places.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "clarifying"
+    ],
+    "topic_keywords": [
+      "separate",
+      "help",
+      "other places"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:39"
+  },
+  {
+    "text": "I'm honored that you think of me when it comes to stuff like this.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "appreciative",
+      "honored"
+    ],
+    "topic_keywords": [
+      "honored",
+      "thought of",
+      "projects"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:44"
+  },
+  {
+    "text": "It brings me nothing but excitement to go into this and see what comes out of it.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "excited",
+      "curious"
+    ],
+    "topic_keywords": [
+      "excitement",
+      "explore",
+      "outcome"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "08:55"
+  },
+  {
+    "text": "I'm a big fan of this type of working relationship and way of working.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "appreciative",
+      "supportive"
+    ],
+    "topic_keywords": [
+      "working relationship",
+      "way of working",
+      "fan"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "09:02"
+  },
+  {
+    "text": "This type of collaboration always starts off with 'let's just see what happens' and then ends up becoming some megalithic structure.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective",
+      "optimistic"
+    ],
+    "topic_keywords": [
+      "collaboration",
+      "small start",
+      "massive outcome",
+      "megalithic structure"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "09:13"
+  },
+  {
+    "text": "I found it remarkable when I, as the business user, tried to articulate my needs to a group of people, many of whom had technical expertise.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective",
+      "observant"
+    ],
+    "topic_keywords": [
+      "remarkable",
+      "business user",
+      "articulate",
+      "technical expertise"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "09:23"
+  },
+  {
+    "text": "It could have been the way I was communicating it, but you were able to take it and advance it so far in such a brief period of time.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "self-deprecating",
+      "complimentary"
+    ],
+    "topic_keywords": [
+      "communication",
+      "advance",
+      "quickly",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "09:42"
+  },
+  {
+    "text": "Kazem, who was helping me with this database thing, felt like he had 10 analysts with him when working with you, even though he was just one person on the EM debt team.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "illustrative",
+      "complimentary"
+    ],
+    "topic_keywords": [
+      "Kazem",
+      "database",
+      "EM debt team",
+      "10 analysts",
+      "efficiency"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "09:55"
+  },
+  {
+    "text": "With the right person (you), we could create something that scales, is data-driven with a few interfaces, and can blend other data.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "visionary"
+    ],
+    "topic_keywords": [
+      "right person",
+      "scalable",
+      "data-driven",
+      "interfaces",
+      "blend data"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:09"
+  },
+  {
+    "text": "This kind of work doesn't require a team of 50 people.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "efficient"
+    ],
+    "topic_keywords": [
+      "team size",
+      "efficiency",
+      "small team"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:26"
+  },
+  {
+    "text": "Correct.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:30"
+  },
+  {
+    "text": "I learned that you could be a team of three or four.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "learned lesson"
+    ],
+    "topic_keywords": [
+      "team size",
+      "three or four",
+      "efficiency"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:30"
+  },
+  {
+    "text": "Especially in this new AI era, all I need are the experts of their own domains.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "insightful",
+      "strategic"
+    ],
+    "topic_keywords": [
+      "AI era",
+      "experts",
+      "domains",
+      "collaboration"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:34"
+  },
+  {
+    "text": "I can never be an expert in your domain because you've spent the time there and understand not only best practices but also nuanced and in-between knowledge.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "self-aware"
+    ],
+    "topic_keywords": [
+      "expert",
+      "domain",
+      "best practices",
+      "nuanced knowledge",
+      "in-between knowledge"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "10:44"
+  },
+  {
+    "text": "I've created a system where you can extract domain knowledge, not just on the surface, but also tacit knowledge and the nuanced information between the lines.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "innovative"
+    ],
+    "topic_keywords": [
+      "system",
+      "extract",
+      "domain knowledge",
+      "tacit knowledge",
+      "nuanced",
+      "between the lines"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:03"
+  },
+  {
+    "text": "That deep, nuanced knowledge is what drives a system.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "insightful"
+    ],
+    "topic_keywords": [
+      "nuanced knowledge",
+      "system driver"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:18"
+  },
+  {
+    "text": "The system is driven by understanding how a domain expert feels when looking at a fixed income chart or a holdings chart, and we should be encoding that.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "insightful",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "domain expert",
+      "feelings",
+      "fixed income",
+      "holdings chart",
+      "encoding"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:20"
+  },
+  {
+    "text": "All you need are a maximum of two or three domain experts.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "efficient"
+    ],
+    "topic_keywords": [
+      "domain experts",
+      "two or three",
+      "max"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:34"
+  },
+  {
+    "text": "Yeah.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:39"
+  },
+  {
+    "text": "I sent you a few links, including one for McMillan.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "links",
+      "McMillan",
+      "sent"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:41"
+  },
+  {
+    "text": "It's interesting, but I don't know exactly what McMillan is doing.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reflective",
+      "uncertain"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "interesting",
+      "unknown activities"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:45"
+  },
+  {
+    "text": "McMillan is involved with C-suite direction, executive training, and AI.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "C-suite",
+      "executive training",
+      "AI"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "11:54"
+  },
+  {
+    "text": "Maybe McMillan is someone that could use some help.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "help",
+      "need"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:06"
+  },
+  {
+    "text": "Yes, exactly.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement",
+      "McMillan",
+      "help"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:10"
+  },
+  {
+    "text": "You can definitely use me as a reference.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "offering help"
+    ],
+    "topic_keywords": [
+      "reference",
+      "offer"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:14"
+  },
+  {
+    "text": "I'd love this opportunity.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "love",
+      "opportunity"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:16"
+  },
+  {
+    "text": "The idea sounds really similar to what I've been building, especially in an infrastructural manner.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "comparative",
+      "informative"
+    ],
+    "topic_keywords": [
+      "similar",
+      "building",
+      "infrastructure"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:21"
+  },
+  {
+    "text": "The architecture involves extracting all the domain knowledge and then training C-suite members.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "architecture",
+      "domain knowledge",
+      "C-suite training"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:30"
+  },
+  {
+    "text": "McMillan is doing the enterprise version of what I'm doing locally with small to medium businesses, which is really cool.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "comparative",
+      "informative",
+      "appreciative"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "enterprise version",
+      "Speaker 2",
+      "local",
+      "SMBs",
+      "cool"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:37"
+  },
+  {
+    "text": "That's pretty cool, right?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "cool",
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:45"
+  },
+  {
+    "text": "There might be a way where you could help McMillan, even if it was behind the scenes, just to make a few bucks.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "opportunity"
+    ],
+    "topic_keywords": [
+      "help",
+      "McMillan",
+      "behind the scenes",
+      "income"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:47"
+  },
+  {
+    "text": "I actually think the opportunity is going to be in these mid-small businesses.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "opinionated",
+      "strategic"
+    ],
+    "topic_keywords": [
+      "opportunity",
+      "mid-small businesses"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:55"
+  },
+  {
+    "text": "You could throw your own shingle out and do it.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "encouraging"
+    ],
+    "topic_keywords": [
+      "own venture",
+      "shingle"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "12:59"
+  },
+  {
+    "text": "I would go through this guy's (McMillan's) website and figure out how to do it yourself.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "strategic"
+    ],
+    "topic_keywords": [
+      "McMillan's website",
+      "figure out",
+      "do it yourself"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:04"
+  },
+  {
+    "text": "You could just ping him.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "ping",
+      "McMillan"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:10"
+  },
+  {
+    "text": "It's just an idea.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "downplaying"
+    ],
+    "topic_keywords": [
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:13"
+  },
+  {
+    "text": "It's a really good idea.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "appreciative",
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "good idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:15"
+  },
+  {
+    "text": "I'm going to talk into this completely today.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "committed",
+      "enthusiastic"
+    ],
+    "topic_keywords": [
+      "explore",
+      "idea",
+      "today"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:20"
+  },
+  {
+    "text": "I will look into the McMillan AI, the analytics, and peer ratings.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "McMillan AI",
+      "analytics",
+      "peer ratings",
+      "research"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:23"
+  },
+  {
+    "text": "Peer Ratings is one area, and 64 Analytics might need a specific tool.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Peer Ratings",
+      "64 Analytics",
+      "tool"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:29"
+  },
+  {
+    "text": "I should have you talk to Ryan, and we could set up a call.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "action-oriented"
+    ],
+    "topic_keywords": [
+      "talk to Ryan",
+      "call",
+      "setup"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:39"
+  },
+  {
+    "text": "There's completely no pressure.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "reassuring"
+    ],
+    "topic_keywords": [
+      "no pressure"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:47"
+  },
+  {
+    "text": "I know your brain would be incredibly helpful as Ryan thinks about how to create a business around this.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "brain",
+      "helpful",
+      "Ryan",
+      "business creation"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "13:52"
+  },
+  {
+    "text": "There are predictive markets, and Ryan has spent an insane amount of time on them.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "predictive markets",
+      "Ryan",
+      "time spent"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:02"
+  },
+  {
+    "text": "I would love for you to talk to Ryan, for him to give you some more information and sites, and to discuss what we're trying to do.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "eager",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "talk to Ryan",
+      "information",
+      "sites",
+      "objective"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:09"
+  },
+  {
+    "text": "Correct.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:20"
+  },
+  {
+    "text": "This opportunity comes at a time when I've completed research that is quite similar to or lends itself to this idea with the predictive markets.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "opportune",
+      "informative"
+    ],
+    "topic_keywords": [
+      "opportunity",
+      "timing",
+      "research",
+      "predictive markets"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:24"
+  },
+  {
+    "text": "There is a mathematical equation that I've stumbled upon that can deterministically prove an outcome.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "groundbreaking"
+    ],
+    "topic_keywords": [
+      "mathematical equation",
+      "deterministically prove",
+      "outcome"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:37"
+  },
+  {
+    "text": "That equation works in the coding realm.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "equation",
+      "coding realm"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:47"
+  },
+  {
+    "text": "I initially built the equation for trade organization and alpha generation.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "equation",
+      "trade organization",
+      "alpha generation",
+      "initial purpose"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:50"
+  },
+  {
+    "text": "It worked so well with coding that I pushed it in that direction.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "equation",
+      "coding",
+      "success",
+      "direction"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "14:57"
+  },
+  {
+    "text": "The equation can be tweaked once we learn all the parameters and once I understand more from Ryan.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "collaborative"
+    ],
+    "topic_keywords": [
+      "equation",
+      "tweak",
+      "parameters",
+      "Ryan",
+      "understanding"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:02"
+  },
+  {
+    "text": "The goal is to turn the equation into something really crazy by embedding it into this program.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "enthusiastic",
+      "ambitious"
+    ],
+    "topic_keywords": [
+      "equation",
+      "program",
+      "crazy",
+      "ambitious"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:19"
+  },
+  {
+    "text": "I can see the dots and I'm getting excited.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "excited",
+      "insightful"
+    ],
+    "topic_keywords": [
+      "connections",
+      "excited"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:25"
+  },
+  {
+    "text": "If you wouldn't mind investing a little time, we could at least talk it through.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "conditional"
+    ],
+    "topic_keywords": [
+      "talk through",
+      "invest time"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:29"
+  },
+  {
+    "text": "Ryan will do a deep dive and identify the lack of technical expertise.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "deep dive",
+      "technical expertise",
+      "lack"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:35"
+  },
+  {
+    "text": "The person behind Peer Ratings likely has it up and running, but there are some limitations to it.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "observant",
+      "critical"
+    ],
+    "topic_keywords": [
+      "Peer Ratings",
+      "up and running",
+      "limitations"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:45"
+  },
+  {
+    "text": "If there's anyone that could recreate it or do it better, it's you.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "complimentary",
+      "confident"
+    ],
+    "topic_keywords": [
+      "recreate",
+      "improve",
+      "best person",
+      "Peer Ratings"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:53"
+  },
+  {
+    "text": "This is especially true as we think about the AI thing.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "emphasizing"
+    ],
+    "topic_keywords": [
+      "AI",
+      "emphasis"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "15:59"
+  },
+  {
+    "text": "Correct, and it's actually backed by some serious math that actually works.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement",
+      "confident"
+    ],
+    "topic_keywords": [
+      "agreement",
+      "serious math",
+      "working",
+      "backing"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:01"
+  },
+  {
+    "text": "Yes.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:09"
+  },
+  {
+    "text": "I'm happy to set up a call with Ryan if you want to take a look.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "offering",
+      "conditional"
+    ],
+    "topic_keywords": [
+      "call",
+      "Ryan",
+      "setup",
+      "offer"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:13"
+  },
+  {
+    "text": "I don't want to impose.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "considerate"
+    ],
+    "topic_keywords": [
+      "impose",
+      "considerate"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:17"
+  },
+  {
+    "text": "If I can be a resource for you, just let me know.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "offering help"
+    ],
+    "topic_keywords": [
+      "resource",
+      "help",
+      "offer"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:18"
+  },
+  {
+    "text": "I'm definitely looking to sink into anything at the moment.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "eager",
+      "open"
+    ],
+    "topic_keywords": [
+      "involved",
+      "anything",
+      "open"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:22"
+  },
+  {
+    "text": "This idea sounds like something that really excites me.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "excited"
+    ],
+    "topic_keywords": [
+      "exciting",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:31"
+  },
+  {
+    "text": "I'd love to just go and do a deep dive on it.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "eager"
+    ],
+    "topic_keywords": [
+      "deep dive",
+      "idea"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:36"
+  },
+  {
+    "text": "I'll take a look at the McMillan thing.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "task-oriented"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "look into",
+      "research"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:39"
+  },
+  {
+    "text": "I'll ask for your advice and see what you think would be the best way forward with McMillan.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "seeking advice"
+    ],
+    "topic_keywords": [
+      "advice",
+      "McMillan",
+      "best way forward"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:45"
+  },
+  {
+    "text": "I'll do some research on McMillan.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "task-oriented"
+    ],
+    "topic_keywords": [
+      "research",
+      "McMillan"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:52"
+  },
+  {
+    "text": "We'll figure out the best approach for contacting McMillan, whether an intro is better or if I should hit him directly.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "collaborative",
+      "planning"
+    ],
+    "topic_keywords": [
+      "contact",
+      "McMillan",
+      "approach",
+      "intro",
+      "direct"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "16:55"
+  },
+  {
+    "text": "I'm definitely going to do a deep dive into the analytics part and will let you know.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "committed",
+      "informative"
+    ],
+    "topic_keywords": [
+      "analytics",
+      "deep dive",
+      "inform"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:05"
+  },
+  {
+    "text": "You might look at McMillan's work and identify how you could be helpful, possibly with something you've already worked on.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative",
+      "suggestive"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "helpful",
+      "previous work"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:11"
+  },
+  {
+    "text": "Maybe McMillan has a team, but you never know.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "speculative"
+    ],
+    "topic_keywords": [
+      "McMillan",
+      "team",
+      "explore"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:24"
+  },
+  {
+    "text": "You don't know until you knock on that door.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement",
+      "philosophical"
+    ],
+    "topic_keywords": [
+      "know",
+      "try",
+      "door"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:29"
+  },
+  {
+    "text": "That's true.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:32"
+  },
+  {
+    "text": "That's right.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement"
+    ],
+    "topic_keywords": [
+      "agreement"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:33"
+  },
+  {
+    "text": "I really appreciate that, Tim.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "appreciative"
+    ],
+    "topic_keywords": [
+      "appreciation"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:35"
+  },
+  {
+    "text": "It's come at the perfect time.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "grateful",
+      "opportune"
+    ],
+    "topic_keywords": [
+      "perfect time",
+      "timing"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:39"
+  },
+  {
+    "text": "I'm going to hit Ryan.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "action-oriented"
+    ],
+    "topic_keywords": [
+      "contact",
+      "Ryan"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:44"
+  },
+  {
+    "text": "Are you still having crazy hours, or what's your schedule if you want to do something later today or tomorrow?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "inquiring",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "availability",
+      "schedule",
+      "meeting"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "17:46"
+  },
+  {
+    "text": "Today I'm free up until late.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "free",
+      "today",
+      "availability"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:53"
+  },
+  {
+    "text": "Tomorrow I'm blocked up from my morning, maybe up until your 3 PM.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "busy",
+      "tomorrow",
+      "morning"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "17:58"
+  },
+  {
+    "text": "Your late afternoon tomorrow, I'll be free.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "free",
+      "tomorrow",
+      "late afternoon"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:04"
+  },
+  {
+    "text": "On Wednesday, I'm going door-to-door to different law firms to try and shop this engine.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "business activity"
+    ],
+    "topic_keywords": [
+      "Wednesday",
+      "law firms",
+      "pitch",
+      "engine"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:07"
+  },
+  {
+    "text": "I'll always be free in the evening because our time difference works.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "free",
+      "evening",
+      "time difference"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:15"
+  },
+  {
+    "text": "Your evening and my late night works perfectly for scheduling.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "perfect",
+      "scheduling",
+      "time difference"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:20"
+  },
+  {
+    "text": "I'll probably see if Ryan is around at like 5 PM my time.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "suggestive",
+      "scheduling"
+    ],
+    "topic_keywords": [
+      "Ryan",
+      "availability",
+      "5 PM"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:23"
+  },
+  {
+    "text": "Is 5 PM my time 10 PM your time?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "questioning",
+      "time difference"
+    ],
+    "topic_keywords": [
+      "time difference",
+      "5 PM",
+      "10 PM"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "18:26"
+  },
+  {
+    "text": "What's the time difference today?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "inquiring",
+      "time difference"
+    ],
+    "topic_keywords": [
+      "time difference",
+      "current"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "18:28"
+  },
+  {
+    "text": "It might be a six-hour difference because we went one hour forward yesterday.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "time difference"
+    ],
+    "topic_keywords": [
+      "six-hour difference",
+      "time change",
+      "daylight saving"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:32"
+  },
+  {
+    "text": "We already had the time change, so it's a five-hour difference.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "confirming",
+      "time difference"
+    ],
+    "topic_keywords": [
+      "time change",
+      "five-hour difference"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:36"
+  },
+  {
+    "text": "Okay, cool.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "acknowledging"
+    ],
+    "topic_keywords": [
+      "acknowledgment"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:39"
+  },
+  {
+    "text": "It'll be five hours.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "confirming"
+    ],
+    "topic_keywords": [
+      "five-hour difference"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:40"
+  },
+  {
+    "text": "Is that okay?",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "inquiring"
+    ],
+    "topic_keywords": [
+      "acceptable",
+      "time difference"
+    ],
+    "is_requirement": false,
+    "is_question": true,
+    "timestamp_approx": "18:42"
+  },
+  {
+    "text": "Yes, definitely, your 5 PM is my 10 PM, which is perfect.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "confirming",
+      "positive"
+    ],
+    "topic_keywords": [
+      "five-hour difference",
+      "5 PM",
+      "10 PM",
+      "perfect"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:42"
+  },
+  {
+    "text": "I'll ping you, and we'll get it done.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "action-oriented",
+      "committed"
+    ],
+    "topic_keywords": [
+      "ping",
+      "get it done",
+      "commitment"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:49"
+  },
+  {
+    "text": "Sounds good, I'm really looking forward to it.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "agreement",
+      "eager"
+    ],
+    "topic_keywords": [
+      "agreement",
+      "looking forward"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:51"
+  },
+  {
+    "text": "Awesome.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "positive"
+    ],
+    "topic_keywords": [
+      "positive"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:55"
+  },
+  {
+    "text": "Alright, my friend, I'll text you.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "informative",
+      "closing"
+    ],
+    "topic_keywords": [
+      "text",
+      "closing"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:56"
+  },
+  {
+    "text": "Alright then, Tim. Thanks a lot.",
+    "speaker": "Speaker 2",
+    "confidence": 1.0,
+    "tone_markers": [
+      "appreciative"
+    ],
+    "topic_keywords": [
+      "thanks"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:57"
+  },
+  {
+    "text": "See you, bye. Take care. Bye bye.",
+    "speaker": "Speaker 1",
+    "confidence": 1.0,
+    "tone_markers": [
+      "closing"
+    ],
+    "topic_keywords": [
+      "goodbye"
+    ],
+    "is_requirement": false,
+    "is_question": false,
+    "timestamp_approx": "18:59"
+  }
+]

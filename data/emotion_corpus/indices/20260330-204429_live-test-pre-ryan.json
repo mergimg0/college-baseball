@@ -1,0 +1,544 @@
+{
+  "session_id": "live-test-pre-ryan",
+  "created": "2026-03-30T20:44:29.885263+00:00",
+  "prosodic_features": [
+    {
+      "event_id": "ab6b8ce4-f676-484f-b19b-e7a56717cee4",
+      "timestamp_ms": 500,
+      "arousal": 0.09002122837249868,
+      "valence": 0.24023873532608422,
+      "dominance": 0.43940735369844364,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "9043d074-0371-4917-926a-b0343e812d35",
+      "timestamp_ms": 1500,
+      "arousal": 0.07148939337064716,
+      "valence": 0.24423496525087887,
+      "dominance": 0.42253879280688644,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "59e6386f-9307-4ad4-bec4-f458e137d263",
+      "timestamp_ms": 2500,
+      "arousal": 0.3146566971177131,
+      "valence": 0.22703425262505228,
+      "dominance": 0.40524177459985405,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "fb4b076b-3cae-45c8-82a7-cea36be731bf",
+      "timestamp_ms": 3500,
+      "arousal": 0.42213814839402,
+      "valence": 0.2266149696852768,
+      "dominance": 0.38067478402745236,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "da313420-0ec0-4b1f-b549-87e184e4b4ab",
+      "timestamp_ms": 4500,
+      "arousal": 0.42888157944660765,
+      "valence": 0.20140744594222565,
+      "dominance": 0.3853952863279885,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "61a6e545-b303-4112-b7db-d7efd9e5f285",
+      "timestamp_ms": 5500,
+      "arousal": 0.42859311434142594,
+      "valence": 0.2108465409414788,
+      "dominance": 0.38933743138734667,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "2771db5e-7b89-4d90-9e7e-9c3f9a1dad82",
+      "timestamp_ms": 6500,
+      "arousal": 0.4297261354885269,
+      "valence": 0.20326196647064454,
+      "dominance": 0.38737536514944776,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d827f810-3038-407f-af01-b7984d9cef24",
+      "timestamp_ms": 7500,
+      "arousal": 0.4297061138400162,
+      "valence": 0.22291708447236513,
+      "dominance": 0.3845709334863062,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "600aa396-4230-4b42-8e53-ef733de079b1",
+      "timestamp_ms": 8500,
+      "arousal": 0.43201431344282365,
+      "valence": 0.21858421324327243,
+      "dominance": 0.37858377444901664,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "2416ccc2-ff98-48fc-a032-8afc8949e45e",
+      "timestamp_ms": 9500,
+      "arousal": 0.3765974245305437,
+      "valence": 0.21373577367476979,
+      "dominance": 0.393902323940346,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "4de8ff02-2792-4bbf-9522-4584626a62c2",
+      "timestamp_ms": 10500,
+      "arousal": 0.38069639489835194,
+      "valence": 0.24750304151173988,
+      "dominance": 0.3904589252948939,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "ae0a31dd-51b6-423d-b76b-b1b6969eb2c5",
+      "timestamp_ms": 11500,
+      "arousal": 0.19685939774904582,
+      "valence": 0.24776940314657994,
+      "dominance": 0.4136327623788088,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "b6553685-177a-42bf-b60b-99d5969603db",
+      "timestamp_ms": 12500,
+      "arousal": 0.4277309172841175,
+      "valence": 0.2675957917809002,
+      "dominance": 0.38041202203679936,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "0cae1dd7-12ef-44f2-b031-e068e0d6b9a1",
+      "timestamp_ms": 13500,
+      "arousal": 0.42604880204396917,
+      "valence": 0.22203691528359398,
+      "dominance": 0.3635089491794541,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d77eae7f-a512-4f79-8e2a-7309949662c8",
+      "timestamp_ms": 14500,
+      "arousal": 0.4344097429276961,
+      "valence": 0.19203241130195436,
+      "dominance": 0.3593913837619322,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "64214a9f-6e4e-435e-8681-92c0ebd15f2b",
+      "timestamp_ms": 15500,
+      "arousal": 0.43615704472642264,
+      "valence": 0.1930151876480688,
+      "dominance": 0.3515660783089068,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "58628992-dfa8-4bae-ba7d-00bb7f3987a6",
+      "timestamp_ms": 16500,
+      "arousal": 0.43186425403650014,
+      "valence": 0.187223273727534,
+      "dominance": 0.3777459723925444,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "e554459a-ccdb-453e-8c73-852dfa157c4d",
+      "timestamp_ms": 17500,
+      "arousal": 0.4316120341474215,
+      "valence": 0.2718842159366304,
+      "dominance": 0.3635476983357628,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "24177fa9-ef30-4c0a-b1f4-74a76ee171e7",
+      "timestamp_ms": 18500,
+      "arousal": 0.35604097707636573,
+      "valence": 0.2582570970331089,
+      "dominance": 0.3955293045364807,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "59d4a8e5-6864-4d69-a0c9-0b04562ff0e4",
+      "timestamp_ms": 19500,
+      "arousal": 0.409148602092871,
+      "valence": 0.2302709453417773,
+      "dominance": 0.42262454940303873,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "1bb44451-ea01-4855-8d5c-a5ba18644795",
+      "timestamp_ms": 20500,
+      "arousal": 0.22386316029637493,
+      "valence": 0.18388216272515473,
+      "dominance": 0.4534879066216962,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "75d827a0-5cce-4a42-a834-fc53dbd48d92",
+      "timestamp_ms": 21500,
+      "arousal": 0.48623968826450487,
+      "valence": 0.21137256050854336,
+      "dominance": 0.44023271146940673,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "0cf542d0-0a77-4e46-a6f3-3360c41445ca",
+      "timestamp_ms": 22500,
+      "arousal": 0.456755557857774,
+      "valence": 0.2336163569645673,
+      "dominance": 0.37482316285971756,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "1e8c7b00-06d8-4810-93a6-15c30ccf0bff",
+      "timestamp_ms": 23500,
+      "arousal": 0.43010745238658227,
+      "valence": 0.27223204989646915,
+      "dominance": 0.36019630562366733,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "aef34fed-bd95-45cf-83cc-8726ad4c8cd6",
+      "timestamp_ms": 24500,
+      "arousal": 0.4294993966440873,
+      "valence": 0.25101901853542574,
+      "dominance": 0.3753574000140173,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "65ce64cc-adb7-4acb-ae1a-be50feb623e9",
+      "timestamp_ms": 25500,
+      "arousal": 0.43225860755693896,
+      "valence": 0.19097436400617257,
+      "dominance": 0.3731380267893843,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "12164b5d-705d-4693-b9a6-7b28ce41278a",
+      "timestamp_ms": 26500,
+      "arousal": 0.43824860762456963,
+      "valence": 0.1829586732065288,
+      "dominance": 0.36719995582490683,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "c8eff3f6-2653-4e0d-884b-f9d50f159f88",
+      "timestamp_ms": 27500,
+      "arousal": 0.4446183821451653,
+      "valence": 0.1561961643759577,
+      "dominance": 0.3759073983878897,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d5077694-5df0-4603-8220-e24c1bfa84c2",
+      "timestamp_ms": 28500,
+      "arousal": 0.437516374813338,
+      "valence": 0.14813841270663897,
+      "dominance": 0.4112716434223621,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "97de27e4-94d9-4955-8813-3a9b3ed2b9e2",
+      "timestamp_ms": 29500,
+      "arousal": 0.07442436949482101,
+      "valence": 0.17864323966939497,
+      "dominance": 0.4203320965473082,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "6726efb0-519b-48a2-9329-8d65b0abd07e",
+      "timestamp_ms": 30500,
+      "arousal": 0.4430313240479509,
+      "valence": 0.24054798772147196,
+      "dominance": 0.39959453297205066,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "1792383a-1300-455f-9879-9bd1932ea503",
+      "timestamp_ms": 31500,
+      "arousal": 0.44388741726666736,
+      "valence": 0.24653733359646085,
+      "dominance": 0.3926758507210323,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "80342d3e-b6c3-4e13-91fc-a4eea92dfb2e",
+      "timestamp_ms": 32500,
+      "arousal": 0.447891423419439,
+      "valence": 0.2474821750185413,
+      "dominance": 0.3771331568051571,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d6d0ed9b-ffae-496a-812a-fcbfe420f69c",
+      "timestamp_ms": 33500,
+      "arousal": 0.43926587849875587,
+      "valence": 0.24755534945689228,
+      "dominance": 0.3520586274172827,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "819ae865-8b36-40c4-ab86-7048c936a658",
+      "timestamp_ms": 34500,
+      "arousal": 0.4407942639747717,
+      "valence": 0.26794980111106437,
+      "dominance": 0.3414465611287061,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "904f76ec-8312-4175-a4a9-af8879525e42",
+      "timestamp_ms": 35500,
+      "arousal": 0.4520441082481512,
+      "valence": 0.23805173228132237,
+      "dominance": 0.38257024698441516,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "0c456e79-1df1-441d-beb4-2c99cded76cd",
+      "timestamp_ms": 36500,
+      "arousal": 0.45957719609350695,
+      "valence": 0.24183884981403306,
+      "dominance": 0.4195722870013615,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "9114f08a-fd8e-45b9-9963-1cd1675982aa",
+      "timestamp_ms": 37500,
+      "arousal": 0.4490578821074424,
+      "valence": 0.2080258572031044,
+      "dominance": 0.43594558550931983,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "24dfed40-afe4-43a3-83ad-d90960e092c5",
+      "timestamp_ms": 38500,
+      "arousal": 0.44982053378673376,
+      "valence": 0.2799794066724867,
+      "dominance": 0.42828827724682095,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "2b3755ee-35fd-4821-917c-d748c23a942a",
+      "timestamp_ms": 39500,
+      "arousal": 0.08095800879733306,
+      "valence": 0.29756787345536007,
+      "dominance": 0.4346475340842666,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "7e571923-58af-4e34-8ad4-4a518cae24ed",
+      "timestamp_ms": 40500,
+      "arousal": 0.07089120532962845,
+      "valence": 0.30869580337128844,
+      "dominance": 0.42658022586815825,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "6fb7a91d-9cb2-4c8c-bfab-56885e9fb4ab",
+      "timestamp_ms": 41500,
+      "arousal": 0.15087829184125784,
+      "valence": 0.21923352516415429,
+      "dominance": 0.46304981038425314,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "c6a9be29-3eeb-4b05-95b9-87a243c738a1",
+      "timestamp_ms": 42500,
+      "arousal": 0.1424715118728354,
+      "valence": 0.19336797806147496,
+      "dominance": 0.4620177419371989,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "ed0ca081-1ee4-4a6a-ad7b-fdb35d590b07",
+      "timestamp_ms": 43500,
+      "arousal": 0.3412898575840577,
+      "valence": 0.1876656644534744,
+      "dominance": 0.45361630795090563,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "82c4b6b8-5d60-4ccf-96c2-ac4b2e4c742f",
+      "timestamp_ms": 44500,
+      "arousal": 0.2981995292944181,
+      "valence": 0.23179015053543628,
+      "dominance": 0.4137628474927846,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "a3abbfd6-5826-42d0-85e8-21680c6fa634",
+      "timestamp_ms": 45500,
+      "arousal": 0.4343387564683452,
+      "valence": 0.2339725351779104,
+      "dominance": 0.38946825747339575,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d0d4d10c-de6d-4a1f-874a-d8daf0492744",
+      "timestamp_ms": 46500,
+      "arousal": 0.43506398135240976,
+      "valence": 0.25234806526081827,
+      "dominance": 0.36301475751784484,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "f8618ec7-bbbc-4259-b1cb-4daa0c7406ab",
+      "timestamp_ms": 47500,
+      "arousal": 0.4486905934038597,
+      "valence": 0.2242478346913944,
+      "dominance": 0.382309318490009,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "81b5634e-b6d5-4508-8016-e1574bb41abc",
+      "timestamp_ms": 48500,
+      "arousal": 0.4435862822542666,
+      "valence": 0.22001664852343134,
+      "dominance": 0.40433582688358616,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "11dcc617-83e0-489d-b95d-84e8e57e5f39",
+      "timestamp_ms": 49500,
+      "arousal": 0.3705503523241863,
+      "valence": 0.18890436727456347,
+      "dominance": 0.4204371476692818,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "ba455755-8c00-49b4-af47-25b6cf977c49",
+      "timestamp_ms": 50500,
+      "arousal": 0.3554547230252509,
+      "valence": 0.20905383983193268,
+      "dominance": 0.39794023584924687,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "4c78c001-87da-467a-a207-1e3c65e85331",
+      "timestamp_ms": 51500,
+      "arousal": 0.3740390315179806,
+      "valence": 0.2217753685938763,
+      "dominance": 0.4186861638038594,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "d460311f-edec-4444-8cd9-b5477685e9b6",
+      "timestamp_ms": 52500,
+      "arousal": 0.08572201095130036,
+      "valence": 0.23103562122048404,
+      "dominance": 0.445400491474486,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "50178533-1a46-4624-91ef-fcba4b17b097",
+      "timestamp_ms": 53500,
+      "arousal": 0.11412273676144924,
+      "valence": 0.25922942503675384,
+      "dominance": 0.47072514490045697,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "c1a3a176-54e6-4179-a340-65e516ffed4c",
+      "timestamp_ms": 54500,
+      "arousal": 0.1196735783832995,
+      "valence": 0.26250805835707336,
+      "dominance": 0.4752371303305979,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "961a7795-9c4e-46c4-9822-5c28547a7caf",
+      "timestamp_ms": 55500,
+      "arousal": 0.18456523787146123,
+      "valence": 0.2551465459599249,
+      "dominance": 0.4769302017684872,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "ebc2e735-6044-4cda-a770-17d5760e0d4b",
+      "timestamp_ms": 56500,
+      "arousal": 0.176983163267704,
+      "valence": 0.2312150856663964,
+      "dominance": 0.46396937193679716,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    },
+    {
+      "event_id": "050355f4-dbc7-49cf-aca6-839abd485f29",
+      "timestamp_ms": 57500,
+      "arousal": 0.16941425580364222,
+      "valence": 0.20989834488484838,
+      "dominance": 0.44870024946320264,
+      "speaker_id": "unknown",
+      "emotion_tag": null
+    }
+  ],
+  "claims": [
+    {
+      "event_id": "5de94d25-8dbb-462a-be53-aac05048710c",
+      "text": "Call me after your call. Okay. But no later",
+      "audio_timestamp": null,
+      "confidence": 0.7,
+      "speaker": "Speaker 1"
+    },
+    {
+      "event_id": "ad490389-55bb-4b19-ab8b-76cfe265d4a3",
+      "text": "The user wants to be called after the current call, but not later than a specific time.",
+      "audio_timestamp": null,
+      "confidence": 0.95,
+      "speaker": "Speaker 1"
+    }
+  ]
+}

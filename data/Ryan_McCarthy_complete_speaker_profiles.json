@@ -1,0 +1,29 @@
+{
+  "SPEAKER_02": {
+    "f0_mean": 128.896002522348,
+    "f0_std": 44.69311738425889,
+    "spectral_centroid": 2138.7787977462394,
+    "energy_rms": 0.154463440691515,
+    "hnr": 7.5574394627728365,
+    "segment_count": 3,
+    "total_duration_s": 140.0
+  },
+  "SPEAKER_00": {
+    "f0_mean": 130.2216240753458,
+    "f0_std": 70.40831581667393,
+    "spectral_centroid": 1704.4140760395717,
+    "energy_rms": 0.04489681056072953,
+    "hnr": 8.21515653422733,
+    "segment_count": 130,
+    "total_duration_s": 1380.0
+  },
+  "SPEAKER_01": {
+    "f0_mean": 104.82847241572189,
+    "f0_std": 26.636999423486735,
+    "spectral_centroid": 1279.6111290291801,
+    "energy_rms": 0.03337509900125139,
+    "hnr": 9.101269788211683,
+    "segment_count": 133,
+    "total_duration_s": 1160.0
+  }
+}
