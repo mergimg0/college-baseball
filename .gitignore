@@ -15,3 +15,5 @@ data/fsbb.db
 .tldr/
 .tldrignore
 uv.lock
+*.db-shm
+*.db-wal

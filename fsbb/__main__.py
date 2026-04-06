@@ -293,6 +293,40 @@ def odds():
 
 
 @cli.command()
+@click.option("--days", default=3, help="Days of box scores to scrape (0=full season)")
+def pitchers(days: int):
+    """Scrape pitcher box scores from NCAA API."""
+    from fsbb.scraper.boxscore import scrape_season_boxscores, scrape_date_boxscores
+    from datetime import timedelta
+
+    conn = init_db()
+
+    if days == 0:
+        click.echo("Scraping full season box scores (this takes a while)...")
+        result = scrape_season_boxscores(conn, max_days=50, progress=True)
+    else:
+        click.echo(f"Scraping last {days} days of box scores...")
+        total_g, total_p = 0, 0
+        for i in range(days):
+            d = date.today() - timedelta(days=i+1)
+            r = scrape_date_boxscores(conn, d)
+            total_g += r["games"]
+            total_p += r["pitchers"]
+            click.echo(f"  {d}: {r['games']} games, {r['pitchers']} pitchers")
+        result = {"games": total_g, "pitchers": total_p}
+
+    click.echo(f"\nScraped {result['games']} games, {result['pitchers']} pitcher entries")
+
+    # Show summary
+    total = conn.execute("SELECT COUNT(*) FROM pitchers").fetchone()[0]
+    starters = conn.execute(
+        "SELECT COUNT(DISTINCT pitcher_id) FROM game_pitchers WHERE is_starter=1"
+    ).fetchone()[0]
+    click.echo(f"Database: {total} pitchers total, {starters} unique starters identified")
+    conn.close()
+
+
+@cli.command()
 def accuracy():
     """Show model accuracy metrics vs PEAR."""
     from fsbb.models.predict import compute_accuracy

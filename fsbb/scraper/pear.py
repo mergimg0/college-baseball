@@ -222,17 +222,34 @@ def import_team_games(conn: sqlite3.Connection, team_name: str, detail: dict) ->
             except (ValueError, IndexError):
                 status = "unknown"
 
+        # Extract PEAR game-level metrics (previously discarded)
+        pear_spread = g.get("Spread")
+        pear_elo_prob = g.get("elo_win_prob")
+        pear_gqi = g.get("GQI")
+        pear_tq = g.get("TQ")
+        pear_ned = g.get("NED")
+        pear_home_wp = g.get("home_win_prob")
+
         try:
             conn.execute("""
                 INSERT INTO games (date, home_team_id, away_team_id, home_runs, away_runs,
-                                   status, actual_winner_id, source)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'pear')
+                                   status, actual_winner_id, source,
+                                   pear_home_win_prob, pear_spread, pear_elo_win_prob,
+                                   pear_gqi, pear_tq, pear_ned)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'pear', ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(date, home_team_id, away_team_id) DO UPDATE SET
                     home_runs=COALESCE(excluded.home_runs, games.home_runs),
                     away_runs=COALESCE(excluded.away_runs, games.away_runs),
                     status=excluded.status,
-                    actual_winner_id=COALESCE(excluded.actual_winner_id, games.actual_winner_id)
-            """, (game_date, home_id, away_id, home_runs, away_runs, status, actual_winner))
+                    actual_winner_id=COALESCE(excluded.actual_winner_id, games.actual_winner_id),
+                    pear_home_win_prob=COALESCE(excluded.pear_home_win_prob, games.pear_home_win_prob),
+                    pear_spread=COALESCE(excluded.pear_spread, games.pear_spread),
+                    pear_elo_win_prob=COALESCE(excluded.pear_elo_win_prob, games.pear_elo_win_prob),
+                    pear_gqi=COALESCE(excluded.pear_gqi, games.pear_gqi),
+                    pear_tq=COALESCE(excluded.pear_tq, games.pear_tq),
+                    pear_ned=COALESCE(excluded.pear_ned, games.pear_ned)
+            """, (game_date, home_id, away_id, home_runs, away_runs, status, actual_winner,
+                  pear_home_wp, pear_spread, pear_elo_prob, pear_gqi, pear_tq, pear_ned))
             count += 1
         except sqlite3.IntegrityError:
             pass  # Duplicate game — expected when importing from both teams' perspectives

@@ -19,8 +19,14 @@ from __future__ import annotations
 
 import json
 import os
+import ssl
 import urllib.request
 
+try:
+    import certifi
+    _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    _SSL_CTX = ssl.create_default_context()
 
 SPORT = "baseball_ncaa"
 BASE_URL = "https://api.the-odds-api.com/v4"
@@ -60,7 +66,7 @@ def fetch_odds(
 
     try:
         req = urllib.request.Request(url)
-        resp = urllib.request.urlopen(req, timeout=30)
+        resp = urllib.request.urlopen(req, timeout=30, context=_SSL_CTX)
         data = json.loads(resp.read().decode())
         return data if isinstance(data, list) else None
     except Exception:
@@ -91,7 +97,7 @@ def fetch_scores(
     )
 
     try:
-        resp = urllib.request.urlopen(urllib.request.Request(url), timeout=30)
+        resp = urllib.request.urlopen(urllib.request.Request(url), timeout=30, context=_SSL_CTX)
         data = json.loads(resp.read().decode())
         return data if isinstance(data, list) else None
     except Exception:
@@ -161,6 +167,52 @@ def odds_to_probability(american_odds: int | float) -> float:
         return 100 / (american_odds + 100)
     else:
         return abs(american_odds) / (abs(american_odds) + 100)
+
+
+def store_odds(conn, parsed_odds: list[dict]) -> int:
+    """Match parsed odds to games in DB and store implied probabilities.
+
+    Returns number of games updated.
+    """
+    import sqlite3 as _sqlite3
+    stored = 0
+    for o in parsed_odds:
+        home = o["home_team"]
+        away = o["away_team"]
+        commence = o.get("commence_time", "")[:10]  # YYYY-MM-DD
+
+        if not commence or o.get("home_ml") is None:
+            continue
+
+        implied = odds_to_probability(o["home_ml"])
+
+        # Find matching game — try direct name match, then alias
+        game = conn.execute("""
+            SELECT g.id FROM games g
+            JOIN teams h ON g.home_team_id = h.id
+            JOIN teams a ON g.away_team_id = a.id
+            WHERE g.date = ? AND (h.name = ? OR EXISTS (
+                SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = h.id
+            )) AND (a.name = ? OR EXISTS (
+                SELECT 1 FROM team_aliases WHERE alias = ? AND team_id = a.id
+            ))
+        """, (commence, home, home, away, away)).fetchone()
+
+        if game:
+            try:
+                conn.execute("""
+                    UPDATE games SET
+                        odds_home_ml=?, odds_away_ml=?, odds_spread=?,
+                        odds_total=?, odds_implied_home_prob=?, odds_bookmaker=?
+                    WHERE id=?
+                """, (o["home_ml"], o["away_ml"], o.get("spread"),
+                      o.get("total"), round(implied, 4), o.get("bookmaker"), game[0]))
+                stored += 1
+            except _sqlite3.OperationalError:
+                pass
+
+    conn.commit()
+    return stored
 
 
 def display_odds(parsed: list[dict]) -> None:
