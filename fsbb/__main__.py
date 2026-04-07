@@ -505,5 +505,97 @@ def render(output: str | None):
     click.echo(f"Rendered to {out_path}")
 
 
+@cli.command()
+@click.option("--start", default=None, help="Start date YYYY-MM-DD")
+@click.option("--end", default=None, help="End date YYYY-MM-DD")
+def coverage(start: str | None, end: str | None):
+    """Audit box score coverage across the season."""
+    conn = init_db()
+
+    s = date.fromisoformat(start) if start else date(date.today().year, 2, 14)
+    e = date.fromisoformat(end) if end else date.today() - timedelta(days=1)
+
+    # Per-date breakdown
+    rows = conn.execute("""
+        SELECT g.date,
+               COUNT(DISTINCT g.id) as total,
+               COUNT(DISTINCT CASE WHEN gp.id IS NOT NULL THEN g.id END) as with_box
+        FROM games g
+        LEFT JOIN game_pitchers gp ON gp.game_id = g.id
+        WHERE g.date >= ? AND g.date <= ? AND g.status = 'final'
+        GROUP BY g.date
+        ORDER BY g.date
+    """, (s.isoformat(), e.isoformat())).fetchall()
+
+    # Duplicate check
+    dupes = conn.execute("""
+        SELECT COUNT(*) FROM (
+            SELECT date, home_team_id, away_team_id, COUNT(*) as cnt
+            FROM games GROUP BY date, home_team_id, away_team_id HAVING cnt > 1
+        )
+    """).fetchone()[0]
+
+    # Summary stats
+    total_games = sum(r["total"] for r in rows)
+    total_with_box = sum(r["with_box"] for r in rows)
+    coverage_pct = (total_with_box / total_games * 100) if total_games else 0
+
+    # Display per-date table
+    gap_dates = []
+    table = []
+    for r in rows:
+        total = r["total"]
+        with_box = r["with_box"]
+        pct = with_box / total * 100 if total else 0
+        flag = "⚠ GAP" if pct < 95 and total > 0 else ""
+        if flag:
+            gap_dates.append(r["date"])
+        table.append([r["date"], total, with_box, f"{pct:.1f}%", flag])
+
+    click.echo(f"\n{'='*60}")
+    click.echo(f"  Box Score Coverage Audit: {s} to {e}")
+    click.echo(f"{'='*60}\n")
+
+    headers = ["Date", "Games", "Box Scores", "Coverage", "Status"]
+    click.echo(tabulate(table, headers=headers, tablefmt="simple"))
+
+    # Summary
+    click.echo(f"\n{'='*60}")
+    click.echo(f"  Summary")
+    click.echo(f"{'='*60}")
+    click.echo(f"  Date range:      {s} to {e}")
+    click.echo(f"  Total games:     {total_games}")
+    click.echo(f"  With box scores: {total_with_box}")
+    click.echo(f"  Coverage:        {coverage_pct:.1f}%")
+    click.echo(f"  Duplicate pairs: {dupes}")
+    click.echo(f"  Dates with gaps: {len(gap_dates)}")
+
+    if gap_dates:
+        click.echo(f"\n  Gap dates (<95% coverage):")
+        for d in gap_dates:
+            row = next(r for r in rows if r["date"] == d)
+            click.echo(f"    {d}: {row['with_box']}/{row['total']} ({row['with_box']/row['total']*100:.1f}%)")
+
+    # Games that failed entity resolution (games without any pitcher data)
+    unmatched = conn.execute("""
+        SELECT g.date, h.name as home, a.name as away
+        FROM games g
+        JOIN teams h ON g.home_team_id = h.id
+        JOIN teams a ON g.away_team_id = a.id
+        WHERE g.date >= ? AND g.date <= ? AND g.status = 'final'
+        AND NOT EXISTS (SELECT 1 FROM game_pitchers gp WHERE gp.game_id = g.id)
+        ORDER BY g.date
+    """, (s.isoformat(), e.isoformat())).fetchall()
+
+    if unmatched:
+        click.echo(f"\n  Games missing box scores ({len(unmatched)}):")
+        for u in unmatched[:20]:
+            click.echo(f"    {u['date']}: {u['home']} vs {u['away']}")
+        if len(unmatched) > 20:
+            click.echo(f"    ... and {len(unmatched) - 20} more")
+
+    conn.close()
+
+
 if __name__ == "__main__":
     cli()
