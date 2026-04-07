@@ -27,6 +27,7 @@ def predict_matchup(
     home_team: str,
     away_team: str,
     model_version: str = "v0.1",
+    game_id: int | None = None,
 ) -> dict | None:
     """Predict a single matchup between two teams.
 
@@ -84,6 +85,23 @@ def predict_matchup(
         log_odds += 0.16  # ~54% baseline home advantage in log-odds
         home_win_prob = 1.0 / (1.0 + math.exp(-log_odds))
 
+    # Pitcher quality adjustment (if game_id provided and starter data available)
+    pitcher_adj = 0.0
+    if game_id:
+        from fsbb.scraper.boxscore import get_starter_quality
+        home_tid = home["id"]
+        away_tid = away["id"]
+        hq = get_starter_quality(conn, game_id, home_tid)
+        aq = get_starter_quality(conn, game_id, away_tid)
+        if hq is not None and aq is not None:
+            pitcher_diff = hq - aq  # [-100, +100] scale
+            # 20-point quality difference ≈ 4% win probability shift
+            pitcher_adj = pitcher_diff / 125.0
+            eps = 1e-10
+            log_odds = math.log(max(home_win_prob, eps) / max(1 - home_win_prob, eps))
+            log_odds += pitcher_adj
+            home_win_prob = 1.0 / (1.0 + math.exp(-log_odds))
+
     # Clamp to reasonable range
     home_win_prob = max(0.05, min(0.95, home_win_prob))
 
@@ -115,6 +133,7 @@ def predict_matchup(
         "home_record": f"{home['wins']}-{home['losses']}",
         "away_record": f"{away['wins']}-{away['losses']}",
         "confidence": confidence,
+        "pitcher_adjustment": round(pitcher_adj, 4),
         "model_version": model_version,
     }
 
@@ -147,7 +166,7 @@ def predict_date(
 
     predictions = []
     for g in games:
-        pred = predict_matchup(conn, g["home_team"], g["away_team"], model_version)
+        pred = predict_matchup(conn, g["home_team"], g["away_team"], model_version, game_id=g["id"])
         if not pred:
             continue
 
