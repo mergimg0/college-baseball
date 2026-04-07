@@ -252,12 +252,12 @@
 
     <div class="faq-item">
       <div class="faq-q">5. How deep does the data go &mdash; team level? Player level? Play by play?</div>
-      <div class="faq-a">Right now, team level. We track runs scored, runs allowed, win/loss records, conference, and a full suite of ratings for every D1 team. We also have every individual game result with final scores. What we don't have yet: player stats, starting pitcher data, or play-by-play. That's the single biggest unlock on our roadmap &mdash; starting pitcher identification is worth an estimated 2&ndash;3% accuracy improvement and is something the existing rating systems (including PEAR) can't do.</div>
+      <div class="faq-a">Three levels deep. <strong>Team level:</strong> 308 D1 teams with runs scored/allowed, win-loss records, conference, and a full rating suite (Pythagorean, Bradley-Terry, ELO, SOS, composite power). <strong>Player level:</strong> 9,140 pitchers with game-by-game IP/K/BB/ERA, 4,808 with advanced metrics (FIP, xFIP, SIERA from 64 Analytics), 5,130 hitters with wRCE/wOBA/ISO, and 1,113 pitchers with computed quality ratings used in predictions. <strong>Play-by-play:</strong> 245,000+ events parsed from NCAA box scores covering 18 event types (strikeouts, groundouts, hits, walks, HBP, errors, steals, etc.) with inning-by-inning scoring.</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-q">6. What happens when team names don't match across sources?</div>
-      <div class="faq-a">This is a real problem &mdash; NCAA might say "Mississippi St." while PEAR says "Mississippi State" and The Odds API says "Mississippi State Bulldogs." We handle it with a two-layer system. First, we try an exact name match. If that fails, we try common substitutions (State/St., Southern/So., etc.). When a fuzzy match works, we permanently cache it so future lookups are instant. There are currently 44 known aliases in the system. It's not perfect &mdash; some games get skipped when we can't match a team &mdash; but it handles the vast majority automatically.</div>
+      <div class="faq-a">This is a real problem &mdash; NCAA might say "Mississippi St." while PEAR says "Mississippi State" and The Odds API says "Mississippi State Bulldogs." We handle it with a multi-layer system. First, exact name match. Then alias table lookup (351 known aliases covering 170+ teams). Then fuzzy substitutions (State/St., Southern/So., etc.). Then home/away swap detection for games where PEAR and NCAA disagree on who's home. When a fuzzy match works, we permanently cache it. Box score coverage is 99.9% across the season (4,145 of 4,149 games) with only 4 genuinely unavailable games.</div>
     </div>
 
     <div class="faq-item">
