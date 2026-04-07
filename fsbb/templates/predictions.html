@@ -73,6 +73,14 @@
   .faq-q { color: #a5b4fc; font-weight: 700; font-size: 0.95em; margin-bottom: 6px; }
   .faq-a { color: #9ca3af; font-size: 0.85em; line-height: 1.65; }
   .faq-a strong { color: #c7d2fe; }
+  .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
+  .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
+  .nav-brand:hover { text-decoration: none; color: #c7d2fe; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af; transition: all 0.15s; }
+  .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
+  .nav-link.active { background: #312e81; color: #c7d2fe; }
   .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
   @media (max-width: 640px) {
     .accuracy-banner { gap: 20px; padding: 14px; }
@@ -85,6 +93,17 @@
 </style>
 </head>
 <body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">ForgeStream</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Predictions</a>
+      <a href="rankings.html" class="nav-link">Rankings</a>
+      <a href="edge.html" class="nav-link">Edge</a>
+      <a href="index.html#about" class="nav-link">About</a>
+    </div>
+  </div>
+</nav>
 <div class="container">
   <div class="header">
     <h1>College Baseball Predictions</h1>

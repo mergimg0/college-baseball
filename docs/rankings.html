@@ -1,0 +1,3989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Rankings — ForgeStream Baseball</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
+  .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
+  .nav-brand:hover { text-decoration: none; color: #c7d2fe; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af; transition: all 0.15s; }
+  .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
+  .nav-link.active { background: #312e81; color: #c7d2fe; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+  .conf-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
+  .conf-btn { padding: 4px 12px; border-radius: 20px; font-size: 0.72em; font-weight: 600; background: #1f2937; color: #9ca3af; border: 1px solid #374151; cursor: pointer; transition: all 0.15s; }
+  .conf-btn:hover, .conf-btn.active { background: #312e81; color: #c7d2fe; border-color: #4338ca; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 48px; cursor: pointer; }
+  thead th:hover { color: #e8eaed; }
+  tbody td { padding: 8px 12px; border-bottom: 1px solid #111827; font-size: 0.85em; }
+  tbody tr:hover { background: #0f172a; }
+  .rank { font-weight: 800; color: #4b5563; width: 40px; }
+  .rank.top5 { color: #a5b4fc; }
+  .rank.top10 { color: #818cf8; }
+  .rank.top25 { color: #6366f1; }
+  .team-name { font-weight: 600; color: #e8eaed; }
+  .conf-tag { font-size: 0.7em; color: #6b7280; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+  .power { font-weight: 700; color: #a5b4fc; }
+  .elo { color: #c7d2fe; }
+  .pythag { color: #34d399; }
+  .record { color: #9ca3af; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+  @media (max-width: 640px) {
+    table { font-size: 0.78em; }
+    td, th { padding: 6px 6px; }
+    .hide-mobile { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">ForgeStream</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Predictions</a>
+      <a href="rankings.html" class="nav-link active">Rankings</a>
+      <a href="edge.html" class="nav-link">Edge</a>
+      <a href="index.html#about" class="nav-link">About</a>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <div class="header">
+    <h1>Power Rankings</h1>
+    <div class="meta">All 294 D1 teams | Updated 2026-04-07 13:25 | Sorted by composite power rating</div>
+  </div>
+
+  <div class="conf-filter" id="conf-filter">
+    <span class="conf-btn active" onclick="filterConf('all')">All</span>
+    
+    <span class="conf-btn" onclick="filterConf('ACC')">ACC</span>
+    
+    <span class="conf-btn" onclick="filterConf('ASUN')">ASUN</span>
+    
+    <span class="conf-btn" onclick="filterConf('America East')">America East</span>
+    
+    <span class="conf-btn" onclick="filterConf('American')">American</span>
+    
+    <span class="conf-btn" onclick="filterConf('Atlantic 10')">Atlantic 10</span>
+    
+    <span class="conf-btn" onclick="filterConf('Big 12')">Big 12</span>
+    
+    <span class="conf-btn" onclick="filterConf('Big East')">Big East</span>
+    
+    <span class="conf-btn" onclick="filterConf('Big South')">Big South</span>
+    
+    <span class="conf-btn" onclick="filterConf('Big Ten')">Big Ten</span>
+    
+    <span class="conf-btn" onclick="filterConf('Big West')">Big West</span>
+    
+    <span class="conf-btn" onclick="filterConf('Coastal Athletic')">Coastal Athletic</span>
+    
+    <span class="conf-btn" onclick="filterConf('Conference USA')">Conference USA</span>
+    
+    <span class="conf-btn" onclick="filterConf('Horizon League')">Horizon League</span>
+    
+    <span class="conf-btn" onclick="filterConf('Independent')">Independent</span>
+    
+    <span class="conf-btn" onclick="filterConf('Ivy League')">Ivy League</span>
+    
+    <span class="conf-btn" onclick="filterConf('MAAC')">MAAC</span>
+    
+    <span class="conf-btn" onclick="filterConf('Mid-American')">Mid-American</span>
+    
+    <span class="conf-btn" onclick="filterConf('Missouri Valley')">Missouri Valley</span>
+    
+    <span class="conf-btn" onclick="filterConf('Mountain West')">Mountain West</span>
+    
+    <span class="conf-btn" onclick="filterConf('NEC')">NEC</span>
+    
+    <span class="conf-btn" onclick="filterConf('Ohio Valley')">Ohio Valley</span>
+    
+    <span class="conf-btn" onclick="filterConf('Patriot League')">Patriot League</span>
+    
+    <span class="conf-btn" onclick="filterConf('SEC')">SEC</span>
+    
+    <span class="conf-btn" onclick="filterConf('SWAC')">SWAC</span>
+    
+    <span class="conf-btn" onclick="filterConf('Southern')">Southern</span>
+    
+    <span class="conf-btn" onclick="filterConf('Southland')">Southland</span>
+    
+    <span class="conf-btn" onclick="filterConf('Sun Belt')">Sun Belt</span>
+    
+    <span class="conf-btn" onclick="filterConf('The Summit League')">The Summit League</span>
+    
+    <span class="conf-btn" onclick="filterConf('West Coast')">West Coast</span>
+    
+    <span class="conf-btn" onclick="filterConf('Western Athletic')">Western Athletic</span>
+    
+  </div>
+
+  <table id="rankings-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Team</th>
+        <th>Conf</th>
+        <th class="num">Record</th>
+        <th class="num">Power</th>
+        <th class="num">ELO</th>
+        <th class="num">Pythag</th>
+        <th class="num hide-mobile">BT</th>
+        <th class="num hide-mobile">SOS</th>
+        <th class="num hide-mobile">PEAR NET</th>
+      </tr>
+    </thead>
+    <tbody>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank top5">1</td>
+        <td class="team-name">UCLA</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">29-2</td>
+        <td class="num power">0.948</td>
+        <td class="num elo">2367</td>
+        <td class="num pythag">90.1%</td>
+        <td class="num hide-mobile">4.99</td>
+        <td class="num hide-mobile">1.09</td>
+        <td class="num hide-mobile">1</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top5">2</td>
+        <td class="team-name">Texas</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">26-5</td>
+        <td class="num power">0.851</td>
+        <td class="num elo">2003</td>
+        <td class="num pythag">88.2%</td>
+        <td class="num hide-mobile">2.90</td>
+        <td class="num hide-mobile">1.07</td>
+        <td class="num hide-mobile">2</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top5">3</td>
+        <td class="team-name">Mississippi St.</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">25-7</td>
+        <td class="num power">0.850</td>
+        <td class="num elo">2013</td>
+        <td class="num pythag">90.4%</td>
+        <td class="num hide-mobile">2.95</td>
+        <td class="num hide-mobile">0.86</td>
+        <td class="num hide-mobile">7</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top5">4</td>
+        <td class="team-name">Georgia</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">27-6</td>
+        <td class="num power">0.830</td>
+        <td class="num elo">2088</td>
+        <td class="num pythag">85.4%</td>
+        <td class="num hide-mobile">3.38</td>
+        <td class="num hide-mobile">0.92</td>
+        <td class="num hide-mobile">5</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top5">5</td>
+        <td class="team-name">Georgia Tech</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">26-5</td>
+        <td class="num power">0.827</td>
+        <td class="num elo">1957</td>
+        <td class="num pythag">88.9%</td>
+        <td class="num hide-mobile">2.63</td>
+        <td class="num hide-mobile">0.75</td>
+        <td class="num hide-mobile">3</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top10">6</td>
+        <td class="team-name">Texas A&M</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">25-6</td>
+        <td class="num power">0.821</td>
+        <td class="num elo">2002</td>
+        <td class="num pythag">86.5%</td>
+        <td class="num hide-mobile">2.89</td>
+        <td class="num hide-mobile">0.95</td>
+        <td class="num hide-mobile">11</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top10">7</td>
+        <td class="team-name">North Carolina</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">27-5</td>
+        <td class="num power">0.805</td>
+        <td class="num elo">1953</td>
+        <td class="num pythag">85.1%</td>
+        <td class="num hide-mobile">2.61</td>
+        <td class="num hide-mobile">0.57</td>
+        <td class="num hide-mobile">6</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top10">8</td>
+        <td class="team-name">Florida St.</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">24-7</td>
+        <td class="num power">0.796</td>
+        <td class="num elo">1957</td>
+        <td class="num pythag">79.6%</td>
+        <td class="num hide-mobile">2.63</td>
+        <td class="num hide-mobile">1.15</td>
+        <td class="num hide-mobile">4</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top10">9</td>
+        <td class="team-name">Alabama</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">25-8</td>
+        <td class="num power">0.793</td>
+        <td class="num elo">1997</td>
+        <td class="num pythag">77.2%</td>
+        <td class="num hide-mobile">2.86</td>
+        <td class="num hide-mobile">1.24</td>
+        <td class="num hide-mobile">10</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank top10">10</td>
+        <td class="team-name">Southern California</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">27-6</td>
+        <td class="num power">0.792</td>
+        <td class="num elo">1902</td>
+        <td class="num pythag">84.2%</td>
+        <td class="num hide-mobile">2.31</td>
+        <td class="num hide-mobile">0.80</td>
+        <td class="num hide-mobile">12</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank top25">11</td>
+        <td class="team-name">West Virginia</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">21-7</td>
+        <td class="num power">0.786</td>
+        <td class="num elo">1874</td>
+        <td class="num pythag">82.9%</td>
+        <td class="num hide-mobile">2.15</td>
+        <td class="num hide-mobile">0.84</td>
+        <td class="num hide-mobile">17</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top25">12</td>
+        <td class="team-name">Auburn</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">22-9</td>
+        <td class="num power">0.775</td>
+        <td class="num elo">1920</td>
+        <td class="num pythag">76.1%</td>
+        <td class="num hide-mobile">2.42</td>
+        <td class="num hide-mobile">1.68</td>
+        <td class="num hide-mobile">8</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top25">13</td>
+        <td class="team-name">Florida</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">24-9</td>
+        <td class="num power">0.767</td>
+        <td class="num elo">1912</td>
+        <td class="num pythag">75.0%</td>
+        <td class="num hide-mobile">2.37</td>
+        <td class="num hide-mobile">1.18</td>
+        <td class="num hide-mobile">13</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top25">14</td>
+        <td class="team-name">Miami (FL)</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">24-8</td>
+        <td class="num power">0.763</td>
+        <td class="num elo">1858</td>
+        <td class="num pythag">82.3%</td>
+        <td class="num hide-mobile">2.06</td>
+        <td class="num hide-mobile">0.71</td>
+        <td class="num hide-mobile">22</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top25">15</td>
+        <td class="team-name">Oklahoma</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.761</td>
+        <td class="num elo">1887</td>
+        <td class="num pythag">75.7%</td>
+        <td class="num hide-mobile">2.23</td>
+        <td class="num hide-mobile">1.04</td>
+        <td class="num hide-mobile">15</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank top25">16</td>
+        <td class="team-name">Arizona St.</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">23-9</td>
+        <td class="num power">0.751</td>
+        <td class="num elo">1852</td>
+        <td class="num pythag">75.9%</td>
+        <td class="num hide-mobile">2.03</td>
+        <td class="num hide-mobile">0.87</td>
+        <td class="num hide-mobile">16</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank top25">17</td>
+        <td class="team-name">UCF</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">20-9</td>
+        <td class="num power">0.745</td>
+        <td class="num elo">1908</td>
+        <td class="num pythag">71.8%</td>
+        <td class="num hide-mobile">2.35</td>
+        <td class="num hide-mobile">0.84</td>
+        <td class="num hide-mobile">20</td>
+      </tr>
+    
+      <tr data-conf="Independent">
+        <td class="rank top25">18</td>
+        <td class="team-name">Oregon St.</td>
+        <td class="conf-tag">Independent</td>
+        <td class="num record">24-6</td>
+        <td class="num power">0.743</td>
+        <td class="num elo">1908</td>
+        <td class="num pythag">70.8%</td>
+        <td class="num hide-mobile">2.35</td>
+        <td class="num hide-mobile">0.72</td>
+        <td class="num hide-mobile">9</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank top25">19</td>
+        <td class="team-name">Oregon</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">24-8</td>
+        <td class="num power">0.742</td>
+        <td class="num elo">1748</td>
+        <td class="num pythag">83.5%</td>
+        <td class="num hide-mobile">1.43</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">27</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top25">20</td>
+        <td class="team-name">Pittsburgh</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">21-9</td>
+        <td class="num power">0.741</td>
+        <td class="num elo">1764</td>
+        <td class="num pythag">83.2%</td>
+        <td class="num hide-mobile">1.52</td>
+        <td class="num hide-mobile">0.38</td>
+        <td class="num hide-mobile">33</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top25">21</td>
+        <td class="team-name">Virginia</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">24-9</td>
+        <td class="num power">0.741</td>
+        <td class="num elo">1881</td>
+        <td class="num pythag">74.5%</td>
+        <td class="num hide-mobile">2.20</td>
+        <td class="num hide-mobile">0.87</td>
+        <td class="num hide-mobile">18</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank top25">22</td>
+        <td class="team-name">Nebraska</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">26-6</td>
+        <td class="num power">0.734</td>
+        <td class="num elo">1927</td>
+        <td class="num pythag">73.1%</td>
+        <td class="num hide-mobile">2.46</td>
+        <td class="num hide-mobile">0.45</td>
+        <td class="num hide-mobile">14</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank top25">23</td>
+        <td class="team-name">Ole Miss</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">22-11</td>
+        <td class="num power">0.733</td>
+        <td class="num elo">1874</td>
+        <td class="num pythag">70.6%</td>
+        <td class="num hide-mobile">2.16</td>
+        <td class="num hide-mobile">1.39</td>
+        <td class="num hide-mobile">19</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank top25">24</td>
+        <td class="team-name">Jacksonville St.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">27-6</td>
+        <td class="num power">0.733</td>
+        <td class="num elo">1896</td>
+        <td class="num pythag">79.8%</td>
+        <td class="num hide-mobile">2.28</td>
+        <td class="num hide-mobile">0.19</td>
+        <td class="num hide-mobile">28</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank top25">25</td>
+        <td class="team-name">Wake Forest</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">23-10</td>
+        <td class="num power">0.725</td>
+        <td class="num elo">1826</td>
+        <td class="num pythag">73.8%</td>
+        <td class="num hide-mobile">1.87</td>
+        <td class="num hide-mobile">0.68</td>
+        <td class="num hide-mobile">26</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">26</td>
+        <td class="team-name">Kansas St.</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.723</td>
+        <td class="num elo">1756</td>
+        <td class="num pythag">75.4%</td>
+        <td class="num hide-mobile">1.48</td>
+        <td class="num hide-mobile">0.90</td>
+        <td class="num hide-mobile">42</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">27</td>
+        <td class="team-name">LSU</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">22-11</td>
+        <td class="num power">0.722</td>
+        <td class="num elo">1801</td>
+        <td class="num pythag">76.1%</td>
+        <td class="num hide-mobile">1.73</td>
+        <td class="num hide-mobile">0.60</td>
+        <td class="num hide-mobile">31</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">28</td>
+        <td class="team-name">East Carolina</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.718</td>
+        <td class="num elo">1825</td>
+        <td class="num pythag">70.5%</td>
+        <td class="num hide-mobile">1.87</td>
+        <td class="num hide-mobile">0.87</td>
+        <td class="num hide-mobile">39</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">29</td>
+        <td class="team-name">Coastal Carolina</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">23-8</td>
+        <td class="num power">0.716</td>
+        <td class="num elo">1856</td>
+        <td class="num pythag">70.6%</td>
+        <td class="num hide-mobile">2.05</td>
+        <td class="num hide-mobile">0.87</td>
+        <td class="num hide-mobile">23</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">30</td>
+        <td class="team-name">Tennessee</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.716</td>
+        <td class="num elo">1782</td>
+        <td class="num pythag">73.2%</td>
+        <td class="num hide-mobile">1.62</td>
+        <td class="num hide-mobile">1.20</td>
+        <td class="num hide-mobile">32</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">31</td>
+        <td class="team-name">NC State</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">21-11</td>
+        <td class="num power">0.715</td>
+        <td class="num elo">1785</td>
+        <td class="num pythag">78.5%</td>
+        <td class="num hide-mobile">1.64</td>
+        <td class="num hide-mobile">0.60</td>
+        <td class="num hide-mobile">43</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">32</td>
+        <td class="team-name">Arkansas</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">20-13</td>
+        <td class="num power">0.714</td>
+        <td class="num elo">1721</td>
+        <td class="num pythag">74.7%</td>
+        <td class="num hide-mobile">1.28</td>
+        <td class="num hide-mobile">0.88</td>
+        <td class="num hide-mobile">38</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">33</td>
+        <td class="team-name">Kentucky</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">23-8</td>
+        <td class="num power">0.713</td>
+        <td class="num elo">1846</td>
+        <td class="num pythag">72.7%</td>
+        <td class="num hide-mobile">1.99</td>
+        <td class="num hide-mobile">0.91</td>
+        <td class="num hide-mobile">25</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">34</td>
+        <td class="team-name">Boston College</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">22-11</td>
+        <td class="num power">0.712</td>
+        <td class="num elo">1809</td>
+        <td class="num pythag">72.1%</td>
+        <td class="num hide-mobile">1.78</td>
+        <td class="num hide-mobile">0.63</td>
+        <td class="num hide-mobile">30</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">35</td>
+        <td class="team-name">Vanderbilt</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">19-14</td>
+        <td class="num power">0.699</td>
+        <td class="num elo">1790</td>
+        <td class="num pythag">71.0%</td>
+        <td class="num hide-mobile">1.67</td>
+        <td class="num hide-mobile">0.58</td>
+        <td class="num hide-mobile">51</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">36</td>
+        <td class="team-name">Missouri St.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">21-9</td>
+        <td class="num power">0.699</td>
+        <td class="num elo">1844</td>
+        <td class="num pythag">66.9%</td>
+        <td class="num hide-mobile">1.98</td>
+        <td class="num hide-mobile">0.97</td>
+        <td class="num hide-mobile">29</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">37</td>
+        <td class="team-name">Notre Dame</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">15-12</td>
+        <td class="num power">0.697</td>
+        <td class="num elo">1710</td>
+        <td class="num pythag">70.9%</td>
+        <td class="num hide-mobile">1.21</td>
+        <td class="num hide-mobile">0.74</td>
+        <td class="num hide-mobile">41</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">38</td>
+        <td class="team-name">Southern Miss.</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">23-9</td>
+        <td class="num power">0.695</td>
+        <td class="num elo">1767</td>
+        <td class="num pythag">69.3%</td>
+        <td class="num hide-mobile">1.54</td>
+        <td class="num hide-mobile">0.77</td>
+        <td class="num hide-mobile">24</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">39</td>
+        <td class="team-name">California Baptist</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">26-6</td>
+        <td class="num power">0.693</td>
+        <td class="num elo">1743</td>
+        <td class="num pythag">81.2%</td>
+        <td class="num hide-mobile">1.40</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">44</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">40</td>
+        <td class="team-name">Cincinnati</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">21-13</td>
+        <td class="num power">0.689</td>
+        <td class="num elo">1716</td>
+        <td class="num pythag">69.6%</td>
+        <td class="num hide-mobile">1.24</td>
+        <td class="num hide-mobile">0.98</td>
+        <td class="num hide-mobile">48</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">41</td>
+        <td class="team-name">UC Santa Barbara</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">19-10</td>
+        <td class="num power">0.685</td>
+        <td class="num elo">1671</td>
+        <td class="num pythag">71.2%</td>
+        <td class="num hide-mobile">0.98</td>
+        <td class="num hide-mobile">0.47</td>
+        <td class="num hide-mobile">34</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">42</td>
+        <td class="team-name">Liberty</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">22-9</td>
+        <td class="num power">0.681</td>
+        <td class="num elo">1827</td>
+        <td class="num pythag">67.7%</td>
+        <td class="num hide-mobile">1.88</td>
+        <td class="num hide-mobile">0.54</td>
+        <td class="num hide-mobile">35</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">43</td>
+        <td class="team-name">TCU</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">20-11</td>
+        <td class="num power">0.681</td>
+        <td class="num elo">1903</td>
+        <td class="num pythag">58.8%</td>
+        <td class="num hide-mobile">2.32</td>
+        <td class="num hide-mobile">1.12</td>
+        <td class="num hide-mobile">21</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">44</td>
+        <td class="team-name">South Fla.</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">24-8</td>
+        <td class="num power">0.680</td>
+        <td class="num elo">1698</td>
+        <td class="num pythag">77.9%</td>
+        <td class="num hide-mobile">1.14</td>
+        <td class="num hide-mobile">0.12</td>
+        <td class="num hide-mobile">46</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">45</td>
+        <td class="team-name">Charlotte</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">18-13</td>
+        <td class="num power">0.671</td>
+        <td class="num elo">1666</td>
+        <td class="num pythag">71.3%</td>
+        <td class="num hide-mobile">0.96</td>
+        <td class="num hide-mobile">0.73</td>
+        <td class="num hide-mobile">68</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">46</td>
+        <td class="team-name">UTSA</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.668</td>
+        <td class="num elo">1707</td>
+        <td class="num pythag">71.0%</td>
+        <td class="num hide-mobile">1.19</td>
+        <td class="num hide-mobile">0.54</td>
+        <td class="num hide-mobile">49</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">47</td>
+        <td class="team-name">Oklahoma St.</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">21-11</td>
+        <td class="num power">0.667</td>
+        <td class="num elo">1802</td>
+        <td class="num pythag">63.7%</td>
+        <td class="num hide-mobile">1.74</td>
+        <td class="num hide-mobile">0.73</td>
+        <td class="num hide-mobile">40</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">48</td>
+        <td class="team-name">Louisville</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.666</td>
+        <td class="num elo">1725</td>
+        <td class="num pythag">68.5%</td>
+        <td class="num hide-mobile">1.30</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">58</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">49</td>
+        <td class="team-name">ETSU</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">21-8</td>
+        <td class="num power">0.665</td>
+        <td class="num elo">1674</td>
+        <td class="num pythag">80.9%</td>
+        <td class="num hide-mobile">1.00</td>
+        <td class="num hide-mobile">-0.14</td>
+        <td class="num hide-mobile">75</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">50</td>
+        <td class="team-name">Campbell</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.657</td>
+        <td class="num elo">1753</td>
+        <td class="num pythag">67.8%</td>
+        <td class="num hide-mobile">1.46</td>
+        <td class="num hide-mobile">0.36</td>
+        <td class="num hide-mobile">53</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">51</td>
+        <td class="team-name">Arkansas St.</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">19-12</td>
+        <td class="num power">0.654</td>
+        <td class="num elo">1621</td>
+        <td class="num pythag">74.4%</td>
+        <td class="num hide-mobile">0.70</td>
+        <td class="num hide-mobile">0.45</td>
+        <td class="num hide-mobile">77</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">52</td>
+        <td class="team-name">Kansas</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.653</td>
+        <td class="num elo">1774</td>
+        <td class="num pythag">62.1%</td>
+        <td class="num hide-mobile">1.58</td>
+        <td class="num hide-mobile">0.34</td>
+        <td class="num hide-mobile">36</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">53</td>
+        <td class="team-name">Portland</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">19-10</td>
+        <td class="num power">0.652</td>
+        <td class="num elo">1661</td>
+        <td class="num pythag">72.6%</td>
+        <td class="num hide-mobile">0.92</td>
+        <td class="num hide-mobile">0.08</td>
+        <td class="num hide-mobile">62</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">54</td>
+        <td class="team-name">South Alabama</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.650</td>
+        <td class="num elo">1650</td>
+        <td class="num pythag">69.1%</td>
+        <td class="num hide-mobile">0.86</td>
+        <td class="num hide-mobile">0.60</td>
+        <td class="num hide-mobile">74</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">55</td>
+        <td class="team-name">Duke</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">21-13</td>
+        <td class="num power">0.649</td>
+        <td class="num elo">1773</td>
+        <td class="num pythag">65.5%</td>
+        <td class="num hide-mobile">1.57</td>
+        <td class="num hide-mobile">0.69</td>
+        <td class="num hide-mobile">59</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">56</td>
+        <td class="team-name">Clemson</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">21-12</td>
+        <td class="num power">0.648</td>
+        <td class="num elo">1692</td>
+        <td class="num pythag">66.6%</td>
+        <td class="num hide-mobile">1.10</td>
+        <td class="num hide-mobile">0.67</td>
+        <td class="num hide-mobile">45</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">57</td>
+        <td class="team-name">UNCW</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">19-12</td>
+        <td class="num power">0.645</td>
+        <td class="num elo">1560</td>
+        <td class="num pythag">76.8%</td>
+        <td class="num hide-mobile">0.34</td>
+        <td class="num hide-mobile">0.07</td>
+        <td class="num hide-mobile">90</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">58</td>
+        <td class="team-name">Minnesota</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">18-13</td>
+        <td class="num power">0.644</td>
+        <td class="num elo">1549</td>
+        <td class="num pythag">74.2%</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">0.21</td>
+        <td class="num hide-mobile">86</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">59</td>
+        <td class="team-name">Texas Tech</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">18-13</td>
+        <td class="num power">0.643</td>
+        <td class="num elo">1656</td>
+        <td class="num pythag">66.8%</td>
+        <td class="num hide-mobile">0.90</td>
+        <td class="num hide-mobile">0.46</td>
+        <td class="num hide-mobile">63</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">60</td>
+        <td class="team-name">Texas St.</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.642</td>
+        <td class="num elo">1748</td>
+        <td class="num pythag">65.0%</td>
+        <td class="num hide-mobile">1.43</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">56</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">61</td>
+        <td class="team-name">Mercer</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">24-8</td>
+        <td class="num power">0.639</td>
+        <td class="num elo">1709</td>
+        <td class="num pythag">72.7%</td>
+        <td class="num hide-mobile">1.20</td>
+        <td class="num hide-mobile">-0.43</td>
+        <td class="num hide-mobile">54</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">62</td>
+        <td class="team-name">DBU</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">18-14</td>
+        <td class="num power">0.638</td>
+        <td class="num elo">1672</td>
+        <td class="num pythag">65.5%</td>
+        <td class="num hide-mobile">0.99</td>
+        <td class="num hide-mobile">0.75</td>
+        <td class="num hide-mobile">79</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">63</td>
+        <td class="team-name">Baylor</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">18-13</td>
+        <td class="num power">0.636</td>
+        <td class="num elo">1745</td>
+        <td class="num pythag">57.6%</td>
+        <td class="num hide-mobile">1.41</td>
+        <td class="num hide-mobile">1.06</td>
+        <td class="num hide-mobile">52</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">64</td>
+        <td class="team-name">VMI</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">23-8</td>
+        <td class="num power">0.636</td>
+        <td class="num elo">1614</td>
+        <td class="num pythag">81.0%</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">-0.85</td>
+        <td class="num hide-mobile">94</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">65</td>
+        <td class="team-name">Missouri</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">19-14</td>
+        <td class="num power">0.634</td>
+        <td class="num elo">1694</td>
+        <td class="num pythag">67.3%</td>
+        <td class="num hide-mobile">1.12</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">71</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">66</td>
+        <td class="team-name">Wichita St.</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.629</td>
+        <td class="num elo">1584</td>
+        <td class="num pythag">75.8%</td>
+        <td class="num hide-mobile">0.48</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">100</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">67</td>
+        <td class="team-name">Southeast Mo. St.</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.627</td>
+        <td class="num elo">1673</td>
+        <td class="num pythag">69.8%</td>
+        <td class="num hide-mobile">1.00</td>
+        <td class="num hide-mobile">-0.01</td>
+        <td class="num hide-mobile">69</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">68</td>
+        <td class="team-name">UAB</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.626</td>
+        <td class="num elo">1833</td>
+        <td class="num pythag">55.1%</td>
+        <td class="num hide-mobile">1.92</td>
+        <td class="num hide-mobile">0.40</td>
+        <td class="num hide-mobile">37</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">69</td>
+        <td class="team-name">Miami (OH)</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">20-10</td>
+        <td class="num power">0.619</td>
+        <td class="num elo">1667</td>
+        <td class="num pythag">68.9%</td>
+        <td class="num hide-mobile">0.96</td>
+        <td class="num hide-mobile">0.07</td>
+        <td class="num hide-mobile">82</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">70</td>
+        <td class="team-name">Purdue</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">20-10</td>
+        <td class="num power">0.619</td>
+        <td class="num elo">1648</td>
+        <td class="num pythag">65.9%</td>
+        <td class="num hide-mobile">0.85</td>
+        <td class="num hide-mobile">0.16</td>
+        <td class="num hide-mobile">57</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">71</td>
+        <td class="team-name">Michigan</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">16-14</td>
+        <td class="num power">0.617</td>
+        <td class="num elo">1678</td>
+        <td class="num pythag">56.0%</td>
+        <td class="num hide-mobile">1.02</td>
+        <td class="num hide-mobile">1.13</td>
+        <td class="num hide-mobile">50</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">72</td>
+        <td class="team-name">Iowa</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">15-12</td>
+        <td class="num power">0.616</td>
+        <td class="num elo">1628</td>
+        <td class="num pythag">66.4%</td>
+        <td class="num hide-mobile">0.74</td>
+        <td class="num hide-mobile">0.63</td>
+        <td class="num hide-mobile">73</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">73</td>
+        <td class="team-name">Tarleton St.</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.613</td>
+        <td class="num elo">1669</td>
+        <td class="num pythag">65.9%</td>
+        <td class="num hide-mobile">0.97</td>
+        <td class="num hide-mobile">0.06</td>
+        <td class="num hide-mobile">66</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">74</td>
+        <td class="team-name">Kent St.</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">22-7</td>
+        <td class="num power">0.612</td>
+        <td class="num elo">1725</td>
+        <td class="num pythag">65.6%</td>
+        <td class="num hide-mobile">1.30</td>
+        <td class="num hide-mobile">-0.13</td>
+        <td class="num hide-mobile">47</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">75</td>
+        <td class="team-name">Illinois</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.610</td>
+        <td class="num elo">1560</td>
+        <td class="num pythag">64.3%</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">0.38</td>
+        <td class="num hide-mobile">102</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">76</td>
+        <td class="team-name">High Point</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.609</td>
+        <td class="num elo">1715</td>
+        <td class="num pythag">63.4%</td>
+        <td class="num hide-mobile">1.24</td>
+        <td class="num hide-mobile">0.30</td>
+        <td class="num hide-mobile">60</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">77</td>
+        <td class="team-name">Wofford</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">21-11</td>
+        <td class="num power">0.608</td>
+        <td class="num elo">1627</td>
+        <td class="num pythag">72.0%</td>
+        <td class="num hide-mobile">0.73</td>
+        <td class="num hide-mobile">-0.28</td>
+        <td class="num hide-mobile">117</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">78</td>
+        <td class="team-name">Northwestern St.</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">21-10</td>
+        <td class="num power">0.607</td>
+        <td class="num elo">1682</td>
+        <td class="num pythag">66.3%</td>
+        <td class="num hide-mobile">1.05</td>
+        <td class="num hide-mobile">-0.10</td>
+        <td class="num hide-mobile">88</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">79</td>
+        <td class="team-name">Winthrop</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.603</td>
+        <td class="num elo">1684</td>
+        <td class="num pythag">65.0%</td>
+        <td class="num hide-mobile">1.06</td>
+        <td class="num hide-mobile">0.12</td>
+        <td class="num hide-mobile">70</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">80</td>
+        <td class="team-name">Cal Poly</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">17-13</td>
+        <td class="num power">0.596</td>
+        <td class="num elo">1549</td>
+        <td class="num pythag">64.0%</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">85</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">81</td>
+        <td class="team-name">Charleston So.</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">20-10</td>
+        <td class="num power">0.595</td>
+        <td class="num elo">1615</td>
+        <td class="num pythag">69.9%</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">-0.16</td>
+        <td class="num hide-mobile">109</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">82</td>
+        <td class="team-name">Southeastern La.</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.591</td>
+        <td class="num elo">1701</td>
+        <td class="num pythag">58.7%</td>
+        <td class="num hide-mobile">1.16</td>
+        <td class="num hide-mobile">0.44</td>
+        <td class="num hide-mobile">93</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">83</td>
+        <td class="team-name">Rutgers</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">16-15</td>
+        <td class="num power">0.589</td>
+        <td class="num elo">1523</td>
+        <td class="num pythag">64.7%</td>
+        <td class="num hide-mobile">0.13</td>
+        <td class="num hide-mobile">0.18</td>
+        <td class="num hide-mobile">123</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">84</td>
+        <td class="team-name">Louisiana</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.585</td>
+        <td class="num elo">1678</td>
+        <td class="num pythag">51.6%</td>
+        <td class="num hide-mobile">1.02</td>
+        <td class="num hide-mobile">0.88</td>
+        <td class="num hide-mobile">61</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">85</td>
+        <td class="team-name">Middle Tenn.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">16-16</td>
+        <td class="num power">0.585</td>
+        <td class="num elo">1560</td>
+        <td class="num pythag">66.9%</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">0.16</td>
+        <td class="num hide-mobile">160</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">86</td>
+        <td class="team-name">FGCU</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">20-11</td>
+        <td class="num power">0.584</td>
+        <td class="num elo">1553</td>
+        <td class="num pythag">67.5%</td>
+        <td class="num hide-mobile">0.30</td>
+        <td class="num hide-mobile">0.00</td>
+        <td class="num hide-mobile">87</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">87</td>
+        <td class="team-name">Western Ky.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">16-16</td>
+        <td class="num power">0.581</td>
+        <td class="num elo">1615</td>
+        <td class="num pythag">56.3%</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">0.72</td>
+        <td class="num hide-mobile">114</td>
+      </tr>
+    
+      <tr data-conf="SEC">
+        <td class="rank ">88</td>
+        <td class="team-name">South Carolina</td>
+        <td class="conf-tag">SEC</td>
+        <td class="num record">15-18</td>
+        <td class="num power">0.580</td>
+        <td class="num elo">1623</td>
+        <td class="num pythag">53.8%</td>
+        <td class="num hide-mobile">0.71</td>
+        <td class="num hide-mobile">1.12</td>
+        <td class="num hide-mobile">84</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">89</td>
+        <td class="team-name">ULM</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">18-15</td>
+        <td class="num power">0.579</td>
+        <td class="num elo">1593</td>
+        <td class="num pythag">64.5%</td>
+        <td class="num hide-mobile">0.53</td>
+        <td class="num hide-mobile">0.08</td>
+        <td class="num hide-mobile">149</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">90</td>
+        <td class="team-name">Ohio St.</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">17-13</td>
+        <td class="num power">0.578</td>
+        <td class="num elo">1692</td>
+        <td class="num pythag">51.5%</td>
+        <td class="num hide-mobile">1.11</td>
+        <td class="num hide-mobile">0.86</td>
+        <td class="num hide-mobile">65</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">91</td>
+        <td class="team-name">Rice</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">19-14</td>
+        <td class="num power">0.576</td>
+        <td class="num elo">1626</td>
+        <td class="num pythag">53.8%</td>
+        <td class="num hide-mobile">0.73</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">72</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">92</td>
+        <td class="team-name">Tulane</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">17-16</td>
+        <td class="num power">0.576</td>
+        <td class="num elo">1572</td>
+        <td class="num pythag">61.9%</td>
+        <td class="num hide-mobile">0.41</td>
+        <td class="num hide-mobile">0.37</td>
+        <td class="num hide-mobile">126</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">93</td>
+        <td class="team-name">UConn</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">17-16</td>
+        <td class="num power">0.576</td>
+        <td class="num elo">1557</td>
+        <td class="num pythag">56.4%</td>
+        <td class="num hide-mobile">0.33</td>
+        <td class="num hide-mobile">0.15</td>
+        <td class="num hide-mobile">92</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">94</td>
+        <td class="team-name">Utah</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">16-13</td>
+        <td class="num power">0.574</td>
+        <td class="num elo">1619</td>
+        <td class="num pythag">51.8%</td>
+        <td class="num hide-mobile">0.68</td>
+        <td class="num hide-mobile">0.47</td>
+        <td class="num hide-mobile">67</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">95</td>
+        <td class="team-name">Hawaii</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">14-13</td>
+        <td class="num power">0.573</td>
+        <td class="num elo">1549</td>
+        <td class="num pythag">60.5%</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">0.24</td>
+        <td class="num hide-mobile">115</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">96</td>
+        <td class="team-name">Gonzaga</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">15-14</td>
+        <td class="num power">0.572</td>
+        <td class="num elo">1580</td>
+        <td class="num pythag">55.2%</td>
+        <td class="num hide-mobile">0.46</td>
+        <td class="num hide-mobile">0.38</td>
+        <td class="num hide-mobile">97</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">97</td>
+        <td class="team-name">BYU</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.570</td>
+        <td class="num elo">1645</td>
+        <td class="num pythag">48.0%</td>
+        <td class="num hide-mobile">0.84</td>
+        <td class="num hide-mobile">0.92</td>
+        <td class="num hide-mobile">83</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">98</td>
+        <td class="team-name">Stanford</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">14-15</td>
+        <td class="num power">0.569</td>
+        <td class="num elo">1614</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">0.72</td>
+        <td class="num hide-mobile">80</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">99</td>
+        <td class="team-name">Troy</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.566</td>
+        <td class="num elo">1602</td>
+        <td class="num pythag">51.8%</td>
+        <td class="num hide-mobile">0.59</td>
+        <td class="num hide-mobile">0.83</td>
+        <td class="num hide-mobile">99</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">100</td>
+        <td class="team-name">California</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.563</td>
+        <td class="num elo">1581</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">0.47</td>
+        <td class="num hide-mobile">0.93</td>
+        <td class="num hide-mobile">76</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">101</td>
+        <td class="team-name">Houston</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.562</td>
+        <td class="num elo">1628</td>
+        <td class="num pythag">49.4%</td>
+        <td class="num hide-mobile">0.74</td>
+        <td class="num hide-mobile">0.93</td>
+        <td class="num hide-mobile">81</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">102</td>
+        <td class="team-name">Western Caro.</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">20-13</td>
+        <td class="num power">0.562</td>
+        <td class="num elo">1631</td>
+        <td class="num pythag">58.9%</td>
+        <td class="num hide-mobile">0.75</td>
+        <td class="num hide-mobile">0.33</td>
+        <td class="num hide-mobile">107</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">103</td>
+        <td class="team-name">Southern Ind.</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.562</td>
+        <td class="num elo">1475</td>
+        <td class="num pythag">70.1%</td>
+        <td class="num hide-mobile">-0.15</td>
+        <td class="num hide-mobile">-0.41</td>
+        <td class="num hide-mobile">155</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">104</td>
+        <td class="team-name">Washington</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.557</td>
+        <td class="num elo">1609</td>
+        <td class="num pythag">54.9%</td>
+        <td class="num hide-mobile">0.63</td>
+        <td class="num hide-mobile">0.50</td>
+        <td class="num hide-mobile">133</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">105</td>
+        <td class="team-name">App State</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">16-14</td>
+        <td class="num power">0.556</td>
+        <td class="num elo">1545</td>
+        <td class="num pythag">60.6%</td>
+        <td class="num hide-mobile">0.26</td>
+        <td class="num hide-mobile">0.19</td>
+        <td class="num hide-mobile">122</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">106</td>
+        <td class="team-name">Murray St.</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">19-12</td>
+        <td class="num power">0.556</td>
+        <td class="num elo">1504</td>
+        <td class="num pythag">68.9%</td>
+        <td class="num hide-mobile">0.02</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">141</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">107</td>
+        <td class="team-name">Bethune-Cookman</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">22-10</td>
+        <td class="num power">0.552</td>
+        <td class="num elo">1465</td>
+        <td class="num pythag">71.1%</td>
+        <td class="num hide-mobile">-0.20</td>
+        <td class="num hide-mobile">-1.08</td>
+        <td class="num hide-mobile">120</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">108</td>
+        <td class="team-name">VCU</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">17-14</td>
+        <td class="num power">0.550</td>
+        <td class="num elo">1507</td>
+        <td class="num pythag">64.1%</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">-0.02</td>
+        <td class="num hide-mobile">138</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">109</td>
+        <td class="team-name">North Florida</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">18-14</td>
+        <td class="num power">0.548</td>
+        <td class="num elo">1570</td>
+        <td class="num pythag">59.7%</td>
+        <td class="num hide-mobile">0.40</td>
+        <td class="num hide-mobile">-0.10</td>
+        <td class="num hide-mobile">131</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">110</td>
+        <td class="team-name">Kennesaw St.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">15-13</td>
+        <td class="num power">0.545</td>
+        <td class="num elo">1681</td>
+        <td class="num pythag">43.3%</td>
+        <td class="num hide-mobile">1.04</td>
+        <td class="num hide-mobile">1.08</td>
+        <td class="num hide-mobile">64</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">111</td>
+        <td class="team-name">USC Upstate</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">16-17</td>
+        <td class="num power">0.545</td>
+        <td class="num elo">1579</td>
+        <td class="num pythag">53.3%</td>
+        <td class="num hide-mobile">0.45</td>
+        <td class="num hide-mobile">0.58</td>
+        <td class="num hide-mobile">125</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">112</td>
+        <td class="team-name">The Citadel</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.544</td>
+        <td class="num elo">1636</td>
+        <td class="num pythag">46.1%</td>
+        <td class="num hide-mobile">0.79</td>
+        <td class="num hide-mobile">0.88</td>
+        <td class="num hide-mobile">101</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">113</td>
+        <td class="team-name">Abilene Christian</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">16-16</td>
+        <td class="num power">0.542</td>
+        <td class="num elo">1544</td>
+        <td class="num pythag">54.9%</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">134</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">114</td>
+        <td class="team-name">Cal St. Fullerton</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.542</td>
+        <td class="num elo">1543</td>
+        <td class="num pythag">51.5%</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">0.26</td>
+        <td class="num hide-mobile">108</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">115</td>
+        <td class="team-name">Saint Mary's (CA)</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">17-13</td>
+        <td class="num power">0.541</td>
+        <td class="num elo">1565</td>
+        <td class="num pythag">54.5%</td>
+        <td class="num hide-mobile">0.37</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">113</td>
+      </tr>
+    
+      <tr data-conf="ACC">
+        <td class="rank ">116</td>
+        <td class="team-name">Virginia Tech</td>
+        <td class="conf-tag">ACC</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.540</td>
+        <td class="num elo">1706</td>
+        <td class="num pythag">39.0%</td>
+        <td class="num hide-mobile">1.18</td>
+        <td class="num hide-mobile">1.35</td>
+        <td class="num hide-mobile">55</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">117</td>
+        <td class="team-name">New Mexico</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">19-11</td>
+        <td class="num power">0.532</td>
+        <td class="num elo">1475</td>
+        <td class="num pythag">61.8%</td>
+        <td class="num hide-mobile">-0.15</td>
+        <td class="num hide-mobile">-0.38</td>
+        <td class="num hide-mobile">111</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">118</td>
+        <td class="team-name">Maryland</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">13-18</td>
+        <td class="num power">0.531</td>
+        <td class="num elo">1548</td>
+        <td class="num pythag">46.7%</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">0.95</td>
+        <td class="num hide-mobile">110</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">119</td>
+        <td class="team-name">Lamar University</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">17-15</td>
+        <td class="num power">0.530</td>
+        <td class="num elo">1604</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">0.60</td>
+        <td class="num hide-mobile">0.62</td>
+        <td class="num hide-mobile">112</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">120</td>
+        <td class="team-name">Santa Clara</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">13-17</td>
+        <td class="num power">0.529</td>
+        <td class="num elo">1443</td>
+        <td class="num pythag">54.8%</td>
+        <td class="num hide-mobile">-0.33</td>
+        <td class="num hide-mobile">0.13</td>
+        <td class="num hide-mobile">157</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">121</td>
+        <td class="team-name">Sacramento St.</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">12-20</td>
+        <td class="num power">0.528</td>
+        <td class="num elo">1471</td>
+        <td class="num pythag">53.8%</td>
+        <td class="num hide-mobile">-0.17</td>
+        <td class="num hide-mobile">0.34</td>
+        <td class="num hide-mobile">196</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">122</td>
+        <td class="team-name">Nevada</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">15-10</td>
+        <td class="num power">0.526</td>
+        <td class="num elo">1551</td>
+        <td class="num pythag">54.4%</td>
+        <td class="num hide-mobile">0.29</td>
+        <td class="num hide-mobile">-0.12</td>
+        <td class="num hide-mobile">91</td>
+      </tr>
+    
+      <tr data-conf="Horizon League">
+        <td class="rank ">123</td>
+        <td class="team-name">Wright St.</td>
+        <td class="conf-tag">Horizon League</td>
+        <td class="num record">14-14</td>
+        <td class="num power">0.525</td>
+        <td class="num elo">1661</td>
+        <td class="num pythag">42.9%</td>
+        <td class="num hide-mobile">0.92</td>
+        <td class="num hide-mobile">0.53</td>
+        <td class="num hide-mobile">89</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">124</td>
+        <td class="team-name">UNLV</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">18-14</td>
+        <td class="num power">0.523</td>
+        <td class="num elo">1451</td>
+        <td class="num pythag">59.9%</td>
+        <td class="num hide-mobile">-0.28</td>
+        <td class="num hide-mobile">-0.44</td>
+        <td class="num hide-mobile">140</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">125</td>
+        <td class="team-name">FDU</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">19-9</td>
+        <td class="num power">0.522</td>
+        <td class="num elo">1280</td>
+        <td class="num pythag">75.2%</td>
+        <td class="num hide-mobile">-1.27</td>
+        <td class="num hide-mobile">-2.40</td>
+        <td class="num hide-mobile">192</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">126</td>
+        <td class="team-name">McNeese</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.521</td>
+        <td class="num elo">1522</td>
+        <td class="num pythag">55.5%</td>
+        <td class="num hide-mobile">0.12</td>
+        <td class="num hide-mobile">0.32</td>
+        <td class="num hide-mobile">170</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">127</td>
+        <td class="team-name">Fairfield</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">14-12</td>
+        <td class="num power">0.521</td>
+        <td class="num elo">1433</td>
+        <td class="num pythag">65.7%</td>
+        <td class="num hide-mobile">-0.39</td>
+        <td class="num hide-mobile">-1.28</td>
+        <td class="num hide-mobile">200</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">128</td>
+        <td class="team-name">Rider</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">17-8</td>
+        <td class="num power">0.519</td>
+        <td class="num elo">1393</td>
+        <td class="num pythag">68.8%</td>
+        <td class="num hide-mobile">-0.61</td>
+        <td class="num hide-mobile">-1.40</td>
+        <td class="num hide-mobile">161</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">129</td>
+        <td class="team-name">Longwood</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.519</td>
+        <td class="num elo">1489</td>
+        <td class="num pythag">61.4%</td>
+        <td class="num hide-mobile">-0.06</td>
+        <td class="num hide-mobile">-0.24</td>
+        <td class="num hide-mobile">159</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">130</td>
+        <td class="team-name">SFA</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">17-15</td>
+        <td class="num power">0.519</td>
+        <td class="num elo">1513</td>
+        <td class="num pythag">58.5%</td>
+        <td class="num hide-mobile">0.08</td>
+        <td class="num hide-mobile">0.07</td>
+        <td class="num hide-mobile">169</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">131</td>
+        <td class="team-name">Eastern Ill.</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">17-11</td>
+        <td class="num power">0.517</td>
+        <td class="num elo">1546</td>
+        <td class="num pythag">58.3%</td>
+        <td class="num hide-mobile">0.27</td>
+        <td class="num hide-mobile">-0.24</td>
+        <td class="num hide-mobile">152</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">132</td>
+        <td class="team-name">Sam Houston</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.517</td>
+        <td class="num elo">1569</td>
+        <td class="num pythag">47.4%</td>
+        <td class="num hide-mobile">0.40</td>
+        <td class="num hide-mobile">0.59</td>
+        <td class="num hide-mobile">144</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">133</td>
+        <td class="team-name">Illinois St.</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.517</td>
+        <td class="num elo">1481</td>
+        <td class="num pythag">59.6%</td>
+        <td class="num hide-mobile">-0.11</td>
+        <td class="num hide-mobile">-0.40</td>
+        <td class="num hide-mobile">128</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">134</td>
+        <td class="team-name">Creighton</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">14-15</td>
+        <td class="num power">0.516</td>
+        <td class="num elo">1592</td>
+        <td class="num pythag">42.5%</td>
+        <td class="num hide-mobile">0.53</td>
+        <td class="num hide-mobile">0.53</td>
+        <td class="num hide-mobile">104</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">135</td>
+        <td class="team-name">Indiana</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">12-19</td>
+        <td class="num power">0.516</td>
+        <td class="num elo">1553</td>
+        <td class="num pythag">41.2%</td>
+        <td class="num hide-mobile">0.31</td>
+        <td class="num hide-mobile">0.91</td>
+        <td class="num hide-mobile">95</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">136</td>
+        <td class="team-name">Louisiana Tech</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">17-16</td>
+        <td class="num power">0.516</td>
+        <td class="num elo">1539</td>
+        <td class="num pythag">49.4%</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">0.53</td>
+        <td class="num hide-mobile">124</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">137</td>
+        <td class="team-name">San Diego St.</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">18-15</td>
+        <td class="num power">0.513</td>
+        <td class="num elo">1558</td>
+        <td class="num pythag">46.6%</td>
+        <td class="num hide-mobile">0.33</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">98</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">138</td>
+        <td class="team-name">SIUE</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">16-15</td>
+        <td class="num power">0.513</td>
+        <td class="num elo">1577</td>
+        <td class="num pythag">54.0%</td>
+        <td class="num hide-mobile">0.44</td>
+        <td class="num hide-mobile">-0.16</td>
+        <td class="num hide-mobile">176</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">139</td>
+        <td class="team-name">UC San Diego</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">14-14</td>
+        <td class="num power">0.513</td>
+        <td class="num elo">1620</td>
+        <td class="num pythag">39.5%</td>
+        <td class="num hide-mobile">0.69</td>
+        <td class="num hide-mobile">0.66</td>
+        <td class="num hide-mobile">78</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">140</td>
+        <td class="team-name">CSUN</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">17-13</td>
+        <td class="num power">0.512</td>
+        <td class="num elo">1524</td>
+        <td class="num pythag">51.2%</td>
+        <td class="num hide-mobile">0.14</td>
+        <td class="num hide-mobile">-0.03</td>
+        <td class="num hide-mobile">118</td>
+      </tr>
+    
+      <tr data-conf="Big 12">
+        <td class="rank ">141</td>
+        <td class="team-name">Arizona</td>
+        <td class="conf-tag">Big 12</td>
+        <td class="num record">10-21</td>
+        <td class="num power">0.511</td>
+        <td class="num elo">1517</td>
+        <td class="num pythag">42.2%</td>
+        <td class="num hide-mobile">0.10</td>
+        <td class="num hide-mobile">0.84</td>
+        <td class="num hide-mobile">142</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">142</td>
+        <td class="team-name">James Madison</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.510</td>
+        <td class="num elo">1594</td>
+        <td class="num pythag">45.7%</td>
+        <td class="num hide-mobile">0.54</td>
+        <td class="num hide-mobile">0.33</td>
+        <td class="num hide-mobile">121</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">143</td>
+        <td class="team-name">UMBC</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">16-10</td>
+        <td class="num power">0.510</td>
+        <td class="num elo">1430</td>
+        <td class="num pythag">64.1%</td>
+        <td class="num hide-mobile">-0.40</td>
+        <td class="num hide-mobile">-1.22</td>
+        <td class="num hide-mobile">172</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">144</td>
+        <td class="team-name">Marshall</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.507</td>
+        <td class="num elo">1496</td>
+        <td class="num pythag">53.0%</td>
+        <td class="num hide-mobile">-0.02</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">162</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">145</td>
+        <td class="team-name">Bryant</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">17-12</td>
+        <td class="num power">0.506</td>
+        <td class="num elo">1441</td>
+        <td class="num pythag">60.9%</td>
+        <td class="num hide-mobile">-0.34</td>
+        <td class="num hide-mobile">-0.50</td>
+        <td class="num hide-mobile">150</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">146</td>
+        <td class="team-name">Little Rock</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">19-13</td>
+        <td class="num power">0.503</td>
+        <td class="num elo">1537</td>
+        <td class="num pythag">53.2%</td>
+        <td class="num hide-mobile">0.21</td>
+        <td class="num hide-mobile">-0.12</td>
+        <td class="num hide-mobile">130</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">147</td>
+        <td class="team-name">UTRGV</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">14-18</td>
+        <td class="num power">0.502</td>
+        <td class="num elo">1497</td>
+        <td class="num pythag">48.6%</td>
+        <td class="num hide-mobile">-0.02</td>
+        <td class="num hide-mobile">0.45</td>
+        <td class="num hide-mobile">167</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">148</td>
+        <td class="team-name">Indiana St.</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">16-15</td>
+        <td class="num power">0.501</td>
+        <td class="num elo">1514</td>
+        <td class="num pythag">51.3%</td>
+        <td class="num hide-mobile">0.08</td>
+        <td class="num hide-mobile">0.05</td>
+        <td class="num hide-mobile">143</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">149</td>
+        <td class="team-name">Samford</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.497</td>
+        <td class="num elo">1588</td>
+        <td class="num pythag">44.6%</td>
+        <td class="num hide-mobile">0.50</td>
+        <td class="num hide-mobile">0.58</td>
+        <td class="num hide-mobile">139</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">150</td>
+        <td class="team-name">Michigan St.</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">10-19</td>
+        <td class="num power">0.496</td>
+        <td class="num elo">1470</td>
+        <td class="num pythag">41.7%</td>
+        <td class="num hide-mobile">-0.17</td>
+        <td class="num hide-mobile">0.93</td>
+        <td class="num hide-mobile">137</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">151</td>
+        <td class="team-name">Washington St.</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.496</td>
+        <td class="num elo">1507</td>
+        <td class="num pythag">42.2%</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">0.31</td>
+        <td class="num hide-mobile">119</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">152</td>
+        <td class="team-name">Saint Joseph's</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">19-10</td>
+        <td class="num power">0.495</td>
+        <td class="num elo">1640</td>
+        <td class="num pythag">47.6%</td>
+        <td class="num hide-mobile">0.81</td>
+        <td class="num hide-mobile">-0.32</td>
+        <td class="num hide-mobile">106</td>
+      </tr>
+    
+      <tr data-conf="The Summit League">
+        <td class="rank ">153</td>
+        <td class="team-name">Oral Roberts</td>
+        <td class="conf-tag">The Summit League</td>
+        <td class="num record">17-12</td>
+        <td class="num power">0.492</td>
+        <td class="num elo">1573</td>
+        <td class="num pythag">46.9%</td>
+        <td class="num hide-mobile">0.42</td>
+        <td class="num hide-mobile">-0.14</td>
+        <td class="num hide-mobile">105</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">154</td>
+        <td class="team-name">NIU</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">18-9</td>
+        <td class="num power">0.492</td>
+        <td class="num elo">1583</td>
+        <td class="num pythag">51.0%</td>
+        <td class="num hide-mobile">0.48</td>
+        <td class="num hide-mobile">-0.42</td>
+        <td class="num hide-mobile">116</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">155</td>
+        <td class="team-name">Monmouth</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">15-13</td>
+        <td class="num power">0.490</td>
+        <td class="num elo">1452</td>
+        <td class="num pythag">56.2%</td>
+        <td class="num hide-mobile">-0.28</td>
+        <td class="num hide-mobile">-0.55</td>
+        <td class="num hide-mobile">181</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">156</td>
+        <td class="team-name">Toledo</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.489</td>
+        <td class="num elo">1418</td>
+        <td class="num pythag">56.9%</td>
+        <td class="num hide-mobile">-0.47</td>
+        <td class="num hide-mobile">-0.29</td>
+        <td class="num hide-mobile">187</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">157</td>
+        <td class="team-name">Yale</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">16-9</td>
+        <td class="num power">0.489</td>
+        <td class="num elo">1390</td>
+        <td class="num pythag">61.9%</td>
+        <td class="num hide-mobile">-0.63</td>
+        <td class="num hide-mobile">-1.07</td>
+        <td class="num hide-mobile">165</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">158</td>
+        <td class="team-name">Jacksonville</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">14-18</td>
+        <td class="num power">0.489</td>
+        <td class="num elo">1429</td>
+        <td class="num pythag">53.1%</td>
+        <td class="num hide-mobile">-0.41</td>
+        <td class="num hide-mobile">0.15</td>
+        <td class="num hide-mobile">183</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">159</td>
+        <td class="team-name">Fla. Atlantic</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.485</td>
+        <td class="num elo">1508</td>
+        <td class="num pythag">44.3%</td>
+        <td class="num hide-mobile">0.05</td>
+        <td class="num hide-mobile">0.43</td>
+        <td class="num hide-mobile">132</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">160</td>
+        <td class="team-name">Austin Peay</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">16-16</td>
+        <td class="num power">0.484</td>
+        <td class="num elo">1459</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">-0.23</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">145</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">161</td>
+        <td class="team-name">UT Arlington</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">13-17</td>
+        <td class="num power">0.484</td>
+        <td class="num elo">1593</td>
+        <td class="num pythag">37.7%</td>
+        <td class="num hide-mobile">0.54</td>
+        <td class="num hide-mobile">0.63</td>
+        <td class="num hide-mobile">146</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">162</td>
+        <td class="team-name">Nicholls</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.484</td>
+        <td class="num elo">1513</td>
+        <td class="num pythag">46.7%</td>
+        <td class="num hide-mobile">0.07</td>
+        <td class="num hide-mobile">0.26</td>
+        <td class="num hide-mobile">153</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">163</td>
+        <td class="team-name">New Mexico St.</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">12-16</td>
+        <td class="num power">0.481</td>
+        <td class="num elo">1515</td>
+        <td class="num pythag">46.2%</td>
+        <td class="num hide-mobile">0.09</td>
+        <td class="num hide-mobile">0.15</td>
+        <td class="num hide-mobile">168</td>
+      </tr>
+    
+      <tr data-conf="American">
+        <td class="rank ">164</td>
+        <td class="team-name">Memphis</td>
+        <td class="conf-tag">American</td>
+        <td class="num record">10-20</td>
+        <td class="num power">0.479</td>
+        <td class="num elo">1542</td>
+        <td class="num pythag">37.5%</td>
+        <td class="num hide-mobile">0.24</td>
+        <td class="num hide-mobile">0.91</td>
+        <td class="num hide-mobile">199</td>
+      </tr>
+    
+      <tr data-conf="Patriot League">
+        <td class="rank ">165</td>
+        <td class="team-name">Navy</td>
+        <td class="conf-tag">Patriot League</td>
+        <td class="num record">18-12</td>
+        <td class="num power">0.478</td>
+        <td class="num elo">1310</td>
+        <td class="num pythag">64.4%</td>
+        <td class="num hide-mobile">-1.09</td>
+        <td class="num hide-mobile">-1.27</td>
+        <td class="num hide-mobile">205</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">166</td>
+        <td class="team-name">Houston Christian</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">14-18</td>
+        <td class="num power">0.478</td>
+        <td class="num elo">1472</td>
+        <td class="num pythag">48.2%</td>
+        <td class="num hide-mobile">-0.16</td>
+        <td class="num hide-mobile">-0.06</td>
+        <td class="num hide-mobile">190</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">167</td>
+        <td class="team-name">UT Martin</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.477</td>
+        <td class="num elo">1421</td>
+        <td class="num pythag">57.3%</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">-0.41</td>
+        <td class="num hide-mobile">239</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">168</td>
+        <td class="team-name">Northeastern</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">16-14</td>
+        <td class="num power">0.476</td>
+        <td class="num elo">1478</td>
+        <td class="num pythag">50.9%</td>
+        <td class="num hide-mobile">-0.13</td>
+        <td class="num hide-mobile">-0.27</td>
+        <td class="num hide-mobile">151</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">169</td>
+        <td class="team-name">Dayton</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">17-13</td>
+        <td class="num power">0.475</td>
+        <td class="num elo">1466</td>
+        <td class="num pythag">54.3%</td>
+        <td class="num hide-mobile">-0.19</td>
+        <td class="num hide-mobile">-0.52</td>
+        <td class="num hide-mobile">191</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">170</td>
+        <td class="team-name">Utah Tech</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">20-12</td>
+        <td class="num power">0.474</td>
+        <td class="num elo">1460</td>
+        <td class="num pythag">51.9%</td>
+        <td class="num hide-mobile">-0.23</td>
+        <td class="num hide-mobile">-0.59</td>
+        <td class="num hide-mobile">127</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">171</td>
+        <td class="team-name">Northwestern</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">12-15</td>
+        <td class="num power">0.473</td>
+        <td class="num elo">1573</td>
+        <td class="num pythag">33.7%</td>
+        <td class="num hide-mobile">0.42</td>
+        <td class="num hide-mobile">0.61</td>
+        <td class="num hide-mobile">96</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">172</td>
+        <td class="team-name">Ball St.</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">15-15</td>
+        <td class="num power">0.470</td>
+        <td class="num elo">1421</td>
+        <td class="num pythag">51.1%</td>
+        <td class="num hide-mobile">-0.46</td>
+        <td class="num hide-mobile">-0.31</td>
+        <td class="num hide-mobile">171</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">173</td>
+        <td class="team-name">San Diego</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">12-17</td>
+        <td class="num power">0.470</td>
+        <td class="num elo">1512</td>
+        <td class="num pythag">36.4%</td>
+        <td class="num hide-mobile">0.07</td>
+        <td class="num hide-mobile">0.62</td>
+        <td class="num hide-mobile">136</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">174</td>
+        <td class="team-name">Georgia St.</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">15-18</td>
+        <td class="num power">0.468</td>
+        <td class="num elo">1521</td>
+        <td class="num pythag">41.1%</td>
+        <td class="num hide-mobile">0.12</td>
+        <td class="num hide-mobile">0.61</td>
+        <td class="num hide-mobile">154</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">175</td>
+        <td class="team-name">UC Irvine</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.468</td>
+        <td class="num elo">1514</td>
+        <td class="num pythag">35.2%</td>
+        <td class="num hide-mobile">0.08</td>
+        <td class="num hide-mobile">0.75</td>
+        <td class="num hide-mobile">103</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">176</td>
+        <td class="team-name">UIW</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">16-16</td>
+        <td class="num power">0.466</td>
+        <td class="num elo">1479</td>
+        <td class="num pythag">46.3%</td>
+        <td class="num hide-mobile">-0.12</td>
+        <td class="num hide-mobile">0.05</td>
+        <td class="num hide-mobile">163</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">177</td>
+        <td class="team-name">UC Davis</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">11-17</td>
+        <td class="num power">0.466</td>
+        <td class="num elo">1428</td>
+        <td class="num pythag">39.9%</td>
+        <td class="num hide-mobile">-0.42</td>
+        <td class="num hide-mobile">0.30</td>
+        <td class="num hide-mobile">147</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">178</td>
+        <td class="team-name">Georgetown</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">17-15</td>
+        <td class="num power">0.465</td>
+        <td class="num elo">1380</td>
+        <td class="num pythag">56.4%</td>
+        <td class="num hide-mobile">-0.69</td>
+        <td class="num hide-mobile">-0.72</td>
+        <td class="num hide-mobile">203</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">179</td>
+        <td class="team-name">Radford</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">14-14</td>
+        <td class="num power">0.464</td>
+        <td class="num elo">1541</td>
+        <td class="num pythag">44.5%</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">184</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">180</td>
+        <td class="team-name">George Mason</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">15-14</td>
+        <td class="num power">0.464</td>
+        <td class="num elo">1464</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">-0.21</td>
+        <td class="num hide-mobile">-0.56</td>
+        <td class="num hide-mobile">173</td>
+      </tr>
+    
+      <tr data-conf="Southern">
+        <td class="rank ">181</td>
+        <td class="team-name">UNC Greensboro</td>
+        <td class="conf-tag">Southern</td>
+        <td class="num record">13-19</td>
+        <td class="num power">0.464</td>
+        <td class="num elo">1502</td>
+        <td class="num pythag">40.2%</td>
+        <td class="num hide-mobile">0.01</td>
+        <td class="num hide-mobile">0.27</td>
+        <td class="num hide-mobile">166</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">182</td>
+        <td class="team-name">Princeton</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">7-19</td>
+        <td class="num power">0.461</td>
+        <td class="num elo">1275</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">-1.30</td>
+        <td class="num hide-mobile">0.39</td>
+        <td class="num hide-mobile">243</td>
+      </tr>
+    
+      <tr data-conf="Western Athletic">
+        <td class="rank ">183</td>
+        <td class="team-name">Utah Valley</td>
+        <td class="conf-tag">Western Athletic</td>
+        <td class="num record">11-15</td>
+        <td class="num power">0.461</td>
+        <td class="num elo">1378</td>
+        <td class="num pythag">54.2%</td>
+        <td class="num hide-mobile">-0.70</td>
+        <td class="num hide-mobile">-0.38</td>
+        <td class="num hide-mobile">220</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">184</td>
+        <td class="team-name">New Orleans</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">14-20</td>
+        <td class="num power">0.460</td>
+        <td class="num elo">1465</td>
+        <td class="num pythag">47.6%</td>
+        <td class="num hide-mobile">-0.20</td>
+        <td class="num hide-mobile">-0.10</td>
+        <td class="num hide-mobile">229</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">185</td>
+        <td class="team-name">Hofstra</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">10-16</td>
+        <td class="num power">0.459</td>
+        <td class="num elo">1409</td>
+        <td class="num pythag">46.2%</td>
+        <td class="num hide-mobile">-0.52</td>
+        <td class="num hide-mobile">-0.18</td>
+        <td class="num hide-mobile">209</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">186</td>
+        <td class="team-name">San Jose St.</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">13-18</td>
+        <td class="num power">0.453</td>
+        <td class="num elo">1444</td>
+        <td class="num pythag">39.3%</td>
+        <td class="num hide-mobile">-0.32</td>
+        <td class="num hide-mobile">0.09</td>
+        <td class="num hide-mobile">174</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">187</td>
+        <td class="team-name">Fresno St.</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">9-19</td>
+        <td class="num power">0.452</td>
+        <td class="num elo">1370</td>
+        <td class="num pythag">43.6%</td>
+        <td class="num hide-mobile">-0.75</td>
+        <td class="num hide-mobile">0.03</td>
+        <td class="num hide-mobile">231</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">188</td>
+        <td class="team-name">Old Dominion</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.452</td>
+        <td class="num elo">1477</td>
+        <td class="num pythag">41.2%</td>
+        <td class="num hide-mobile">-0.13</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">158</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">189</td>
+        <td class="team-name">CSU Bakersfield</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">12-18</td>
+        <td class="num power">0.451</td>
+        <td class="num elo">1441</td>
+        <td class="num pythag">39.6%</td>
+        <td class="num hide-mobile">-0.34</td>
+        <td class="num hide-mobile">0.14</td>
+        <td class="num hide-mobile">178</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">190</td>
+        <td class="team-name">Towson</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">13-15</td>
+        <td class="num power">0.451</td>
+        <td class="num elo">1358</td>
+        <td class="num pythag">55.0%</td>
+        <td class="num hide-mobile">-0.82</td>
+        <td class="num hide-mobile">-0.79</td>
+        <td class="num hide-mobile">242</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">191</td>
+        <td class="team-name">Brown</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">12-12</td>
+        <td class="num power">0.450</td>
+        <td class="num elo">1454</td>
+        <td class="num pythag">48.1%</td>
+        <td class="num hide-mobile">-0.26</td>
+        <td class="num hide-mobile">-0.50</td>
+        <td class="num hide-mobile">215</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">192</td>
+        <td class="team-name">Stetson</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">14-18</td>
+        <td class="num power">0.449</td>
+        <td class="num elo">1479</td>
+        <td class="num pythag">37.8%</td>
+        <td class="num hide-mobile">-0.12</td>
+        <td class="num hide-mobile">0.49</td>
+        <td class="num hide-mobile">135</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">193</td>
+        <td class="team-name">Col. of Charleston</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">12-19</td>
+        <td class="num power">0.446</td>
+        <td class="num elo">1492</td>
+        <td class="num pythag">36.1%</td>
+        <td class="num hide-mobile">-0.04</td>
+        <td class="num hide-mobile">0.50</td>
+        <td class="num hide-mobile">185</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">194</td>
+        <td class="team-name">Texas Southern</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">14-11</td>
+        <td class="num power">0.446</td>
+        <td class="num elo">1310</td>
+        <td class="num pythag">58.2%</td>
+        <td class="num hide-mobile">-1.09</td>
+        <td class="num hide-mobile">-1.34</td>
+        <td class="num hide-mobile">233</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">195</td>
+        <td class="team-name">Richmond</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">17-15</td>
+        <td class="num power">0.443</td>
+        <td class="num elo">1435</td>
+        <td class="num pythag">48.8%</td>
+        <td class="num hide-mobile">-0.37</td>
+        <td class="num hide-mobile">-0.41</td>
+        <td class="num hide-mobile">189</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">196</td>
+        <td class="team-name">Lindenwood</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.443</td>
+        <td class="num elo">1462</td>
+        <td class="num pythag">45.3%</td>
+        <td class="num hide-mobile">-0.22</td>
+        <td class="num hide-mobile">-0.01</td>
+        <td class="num hide-mobile">218</td>
+      </tr>
+    
+      <tr data-conf="Southland">
+        <td class="rank ">197</td>
+        <td class="team-name">A&M-Corpus Christi</td>
+        <td class="conf-tag">Southland</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.440</td>
+        <td class="num elo">1441</td>
+        <td class="num pythag">45.7%</td>
+        <td class="num hide-mobile">-0.34</td>
+        <td class="num hide-mobile">-0.01</td>
+        <td class="num hide-mobile">206</td>
+      </tr>
+    
+      <tr data-conf="The Summit League">
+        <td class="rank ">198</td>
+        <td class="team-name">South Dakota St.</td>
+        <td class="conf-tag">The Summit League</td>
+        <td class="num record">9-19</td>
+        <td class="num power">0.438</td>
+        <td class="num elo">1329</td>
+        <td class="num pythag">43.5%</td>
+        <td class="num hide-mobile">-0.99</td>
+        <td class="num hide-mobile">0.20</td>
+        <td class="num hide-mobile">224</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">199</td>
+        <td class="team-name">Merrimack</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">13-15</td>
+        <td class="num power">0.438</td>
+        <td class="num elo">1343</td>
+        <td class="num pythag">53.4%</td>
+        <td class="num hide-mobile">-0.90</td>
+        <td class="num hide-mobile">-0.70</td>
+        <td class="num hide-mobile">249</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">200</td>
+        <td class="team-name">Lipscomb</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">14-14</td>
+        <td class="num power">0.438</td>
+        <td class="num elo">1473</td>
+        <td class="num pythag">43.8%</td>
+        <td class="num hide-mobile">-0.16</td>
+        <td class="num hide-mobile">-0.11</td>
+        <td class="num hide-mobile">177</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">201</td>
+        <td class="team-name">Ark.-Pine Bluff</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">14-19</td>
+        <td class="num power">0.438</td>
+        <td class="num elo">1359</td>
+        <td class="num pythag">51.3%</td>
+        <td class="num hide-mobile">-0.81</td>
+        <td class="num hide-mobile">-0.60</td>
+        <td class="num hide-mobile">250</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">202</td>
+        <td class="team-name">Western Mich.</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">14-14</td>
+        <td class="num power">0.436</td>
+        <td class="num elo">1363</td>
+        <td class="num pythag">47.4%</td>
+        <td class="num hide-mobile">-0.79</td>
+        <td class="num hide-mobile">-0.63</td>
+        <td class="num hide-mobile">175</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">203</td>
+        <td class="team-name">St. John's (NY)</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.435</td>
+        <td class="num elo">1528</td>
+        <td class="num pythag">35.1%</td>
+        <td class="num hide-mobile">0.16</td>
+        <td class="num hide-mobile">0.26</td>
+        <td class="num hide-mobile">148</td>
+      </tr>
+    
+      <tr data-conf="Sun Belt">
+        <td class="rank ">204</td>
+        <td class="team-name">Ga. Southern</td>
+        <td class="conf-tag">Sun Belt</td>
+        <td class="num record">11-21</td>
+        <td class="num power">0.434</td>
+        <td class="num elo">1529</td>
+        <td class="num pythag">29.0%</td>
+        <td class="num hide-mobile">0.17</td>
+        <td class="num hide-mobile">0.63</td>
+        <td class="num hide-mobile">179</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">205</td>
+        <td class="team-name">San Francisco</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">16-13</td>
+        <td class="num power">0.430</td>
+        <td class="num elo">1442</td>
+        <td class="num pythag">43.9%</td>
+        <td class="num hide-mobile">-0.33</td>
+        <td class="num hide-mobile">-0.37</td>
+        <td class="num hide-mobile">164</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">206</td>
+        <td class="team-name">Central Mich.</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">11-16</td>
+        <td class="num power">0.427</td>
+        <td class="num elo">1335</td>
+        <td class="num pythag">45.7%</td>
+        <td class="num hide-mobile">-0.95</td>
+        <td class="num hide-mobile">-0.21</td>
+        <td class="num hide-mobile">221</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">207</td>
+        <td class="team-name">Long Beach St.</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">10-20</td>
+        <td class="num power">0.426</td>
+        <td class="num elo">1409</td>
+        <td class="num pythag">35.2%</td>
+        <td class="num hide-mobile">-0.52</td>
+        <td class="num hide-mobile">0.24</td>
+        <td class="num hide-mobile">216</td>
+      </tr>
+    
+      <tr data-conf="Patriot League">
+        <td class="rank ">208</td>
+        <td class="team-name">Bucknell</td>
+        <td class="conf-tag">Patriot League</td>
+        <td class="num record">17-11</td>
+        <td class="num power">0.425</td>
+        <td class="num elo">1642</td>
+        <td class="num pythag">36.1%</td>
+        <td class="num hide-mobile">0.82</td>
+        <td class="num hide-mobile">-0.39</td>
+        <td class="num hide-mobile">156</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">209</td>
+        <td class="team-name">Binghamton</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">12-13</td>
+        <td class="num power">0.424</td>
+        <td class="num elo">1418</td>
+        <td class="num pythag">43.4%</td>
+        <td class="num hide-mobile">-0.47</td>
+        <td class="num hide-mobile">-0.63</td>
+        <td class="num hide-mobile">188</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">210</td>
+        <td class="team-name">Xavier</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">12-21</td>
+        <td class="num power">0.422</td>
+        <td class="num elo">1488</td>
+        <td class="num pythag">26.0%</td>
+        <td class="num hide-mobile">-0.07</td>
+        <td class="num hide-mobile">0.76</td>
+        <td class="num hide-mobile">129</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">211</td>
+        <td class="team-name">La Salle</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">15-18</td>
+        <td class="num power">0.420</td>
+        <td class="num elo">1248</td>
+        <td class="num pythag">54.5%</td>
+        <td class="num hide-mobile">-1.45</td>
+        <td class="num hide-mobile">-1.27</td>
+        <td class="num hide-mobile">246</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">212</td>
+        <td class="team-name">William & Mary</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">12-18</td>
+        <td class="num power">0.420</td>
+        <td class="num elo">1456</td>
+        <td class="num pythag">36.6%</td>
+        <td class="num hide-mobile">-0.25</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">210</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">213</td>
+        <td class="team-name">Seton Hall</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">11-12</td>
+        <td class="num power">0.419</td>
+        <td class="num elo">1426</td>
+        <td class="num pythag">43.0%</td>
+        <td class="num hide-mobile">-0.43</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">207</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">214</td>
+        <td class="team-name">North Ala.</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">14-17</td>
+        <td class="num power">0.416</td>
+        <td class="num elo">1444</td>
+        <td class="num pythag">38.1%</td>
+        <td class="num hide-mobile">-0.32</td>
+        <td class="num hide-mobile">0.16</td>
+        <td class="num hide-mobile">195</td>
+      </tr>
+    
+      <tr data-conf="Horizon League">
+        <td class="rank ">215</td>
+        <td class="team-name">Northern Ky.</td>
+        <td class="conf-tag">Horizon League</td>
+        <td class="num record">13-17</td>
+        <td class="num power">0.410</td>
+        <td class="num elo">1405</td>
+        <td class="num pythag">40.7%</td>
+        <td class="num hide-mobile">-0.54</td>
+        <td class="num hide-mobile">-0.14</td>
+        <td class="num hide-mobile">211</td>
+      </tr>
+    
+      <tr data-conf="Mountain West">
+        <td class="rank ">216</td>
+        <td class="team-name">Grand Canyon</td>
+        <td class="conf-tag">Mountain West</td>
+        <td class="num record">11-21</td>
+        <td class="num power">0.409</td>
+        <td class="num elo">1407</td>
+        <td class="num pythag">30.8%</td>
+        <td class="num hide-mobile">-0.54</td>
+        <td class="num hide-mobile">0.40</td>
+        <td class="num hide-mobile">198</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">217</td>
+        <td class="team-name">Fordham</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.408</td>
+        <td class="num elo">1444</td>
+        <td class="num pythag">38.2%</td>
+        <td class="num hide-mobile">-0.33</td>
+        <td class="num hide-mobile">-0.44</td>
+        <td class="num hide-mobile">208</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">218</td>
+        <td class="team-name">Central Ark.</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.407</td>
+        <td class="num elo">1418</td>
+        <td class="num pythag">37.7%</td>
+        <td class="num hide-mobile">-0.47</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">193</td>
+      </tr>
+    
+      <tr data-conf="The Summit League">
+        <td class="rank ">219</td>
+        <td class="team-name">Omaha</td>
+        <td class="conf-tag">The Summit League</td>
+        <td class="num record">10-15</td>
+        <td class="num power">0.405</td>
+        <td class="num elo">1308</td>
+        <td class="num pythag">40.2%</td>
+        <td class="num hide-mobile">-1.10</td>
+        <td class="num hide-mobile">-0.16</td>
+        <td class="num hide-mobile">202</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">220</td>
+        <td class="team-name">Morehead St.</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">15-16</td>
+        <td class="num power">0.404</td>
+        <td class="num elo">1510</td>
+        <td class="num pythag">36.0%</td>
+        <td class="num hide-mobile">0.06</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">213</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">221</td>
+        <td class="team-name">Southern Ill.</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">12-18</td>
+        <td class="num power">0.401</td>
+        <td class="num elo">1357</td>
+        <td class="num pythag">40.8%</td>
+        <td class="num hide-mobile">-0.83</td>
+        <td class="num hide-mobile">-0.31</td>
+        <td class="num hide-mobile">237</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">222</td>
+        <td class="team-name">Elon</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">13-18</td>
+        <td class="num power">0.401</td>
+        <td class="num elo">1406</td>
+        <td class="num pythag">37.5%</td>
+        <td class="num hide-mobile">-0.54</td>
+        <td class="num hide-mobile">-0.02</td>
+        <td class="num hide-mobile">214</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">223</td>
+        <td class="team-name">Gardner-Webb</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.401</td>
+        <td class="num elo">1424</td>
+        <td class="num pythag">37.3%</td>
+        <td class="num hide-mobile">-0.44</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">201</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">224</td>
+        <td class="team-name">Saint Louis</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">13-18</td>
+        <td class="num power">0.398</td>
+        <td class="num elo">1364</td>
+        <td class="num pythag">42.5%</td>
+        <td class="num hide-mobile">-0.78</td>
+        <td class="num hide-mobile">-0.30</td>
+        <td class="num hide-mobile">245</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">225</td>
+        <td class="team-name">LIU</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">10-14</td>
+        <td class="num power">0.396</td>
+        <td class="num elo">1086</td>
+        <td class="num pythag">58.5%</td>
+        <td class="num hide-mobile">-2.39</td>
+        <td class="num hide-mobile">-1.94</td>
+        <td class="num hide-mobile">274</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">226</td>
+        <td class="team-name">Pepperdine</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">10-21</td>
+        <td class="num power">0.392</td>
+        <td class="num elo">1438</td>
+        <td class="num pythag">28.7%</td>
+        <td class="num hide-mobile">-0.36</td>
+        <td class="num hide-mobile">0.28</td>
+        <td class="num hide-mobile">222</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">227</td>
+        <td class="team-name">Bellarmine</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">13-17</td>
+        <td class="num power">0.391</td>
+        <td class="num elo">1449</td>
+        <td class="num pythag">34.8%</td>
+        <td class="num hide-mobile">-0.29</td>
+        <td class="num hide-mobile">-0.19</td>
+        <td class="num hide-mobile">232</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">228</td>
+        <td class="team-name">Florida A&M</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">15-14</td>
+        <td class="num power">0.390</td>
+        <td class="num elo">1403</td>
+        <td class="num pythag">41.2%</td>
+        <td class="num hide-mobile">-0.56</td>
+        <td class="num hide-mobile">-0.75</td>
+        <td class="num hide-mobile">217</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">229</td>
+        <td class="team-name">Cornell</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">6-17</td>
+        <td class="num power">0.388</td>
+        <td class="num elo">1143</td>
+        <td class="num pythag">50.0%</td>
+        <td class="num hide-mobile">-2.06</td>
+        <td class="num hide-mobile">-0.44</td>
+        <td class="num hide-mobile">292</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">230</td>
+        <td class="team-name">UIC</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">9-19</td>
+        <td class="num power">0.387</td>
+        <td class="num elo">1361</td>
+        <td class="num pythag">35.8%</td>
+        <td class="num hide-mobile">-0.80</td>
+        <td class="num hide-mobile">-0.01</td>
+        <td class="num hide-mobile">255</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">231</td>
+        <td class="team-name">Penn</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">10-15</td>
+        <td class="num power">0.387</td>
+        <td class="num elo">1270</td>
+        <td class="num pythag">40.9%</td>
+        <td class="num hide-mobile">-1.32</td>
+        <td class="num hide-mobile">-0.03</td>
+        <td class="num hide-mobile">204</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">232</td>
+        <td class="team-name">UNC Asheville</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">15-17</td>
+        <td class="num power">0.386</td>
+        <td class="num elo">1315</td>
+        <td class="num pythag">44.7%</td>
+        <td class="num hide-mobile">-1.06</td>
+        <td class="num hide-mobile">-1.02</td>
+        <td class="num hide-mobile">248</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">233</td>
+        <td class="team-name">Pacific</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">10-20</td>
+        <td class="num power">0.384</td>
+        <td class="num elo">1335</td>
+        <td class="num pythag">34.8%</td>
+        <td class="num hide-mobile">-0.95</td>
+        <td class="num hide-mobile">-0.14</td>
+        <td class="num hide-mobile">251</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">234</td>
+        <td class="team-name">Quinnipiac</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">13-16</td>
+        <td class="num power">0.383</td>
+        <td class="num elo">1297</td>
+        <td class="num pythag">43.4%</td>
+        <td class="num hide-mobile">-1.17</td>
+        <td class="num hide-mobile">-0.89</td>
+        <td class="num hide-mobile">234</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">235</td>
+        <td class="team-name">FIU</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">10-22</td>
+        <td class="num power">0.382</td>
+        <td class="num elo">1386</td>
+        <td class="num pythag">30.2%</td>
+        <td class="num hide-mobile">-0.66</td>
+        <td class="num hide-mobile">0.47</td>
+        <td class="num hide-mobile">230</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">236</td>
+        <td class="team-name">Rhode Island</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">11-18</td>
+        <td class="num power">0.378</td>
+        <td class="num elo">1421</td>
+        <td class="num pythag">31.5%</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">-0.28</td>
+        <td class="num hide-mobile">225</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">237</td>
+        <td class="team-name">Maine</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">7-22</td>
+        <td class="num power">0.378</td>
+        <td class="num elo">1343</td>
+        <td class="num pythag">28.9%</td>
+        <td class="num hide-mobile">-0.90</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">252</td>
+      </tr>
+    
+      <tr data-conf="Big Ten">
+        <td class="rank ">238</td>
+        <td class="team-name">Penn St.</td>
+        <td class="conf-tag">Big Ten</td>
+        <td class="num record">8-21</td>
+        <td class="num power">0.378</td>
+        <td class="num elo">1408</td>
+        <td class="num pythag">24.6%</td>
+        <td class="num hide-mobile">-0.53</td>
+        <td class="num hide-mobile">0.45</td>
+        <td class="num hide-mobile">228</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">239</td>
+        <td class="team-name">Valparaiso</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">8-19</td>
+        <td class="num power">0.378</td>
+        <td class="num elo">1370</td>
+        <td class="num pythag">31.5%</td>
+        <td class="num hide-mobile">-0.75</td>
+        <td class="num hide-mobile">0.25</td>
+        <td class="num hide-mobile">256</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">240</td>
+        <td class="team-name">Stony Brook</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">9-19</td>
+        <td class="num power">0.377</td>
+        <td class="num elo">1364</td>
+        <td class="num pythag">31.0%</td>
+        <td class="num hide-mobile">-0.79</td>
+        <td class="num hide-mobile">-0.13</td>
+        <td class="num hide-mobile">223</td>
+      </tr>
+    
+      <tr data-conf="Conference USA">
+        <td class="rank ">241</td>
+        <td class="team-name">Delaware</td>
+        <td class="conf-tag">Conference USA</td>
+        <td class="num record">10-22</td>
+        <td class="num power">0.377</td>
+        <td class="num elo">1334</td>
+        <td class="num pythag">34.1%</td>
+        <td class="num hide-mobile">-0.96</td>
+        <td class="num hide-mobile">0.18</td>
+        <td class="num hide-mobile">244</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">242</td>
+        <td class="team-name">Evansville</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">10-19</td>
+        <td class="num power">0.373</td>
+        <td class="num elo">1460</td>
+        <td class="num pythag">22.2%</td>
+        <td class="num hide-mobile">-0.23</td>
+        <td class="num hide-mobile">0.41</td>
+        <td class="num hide-mobile">194</td>
+      </tr>
+    
+      <tr data-conf="Missouri Valley">
+        <td class="rank ">243</td>
+        <td class="team-name">Belmont</td>
+        <td class="conf-tag">Missouri Valley</td>
+        <td class="num record">12-20</td>
+        <td class="num power">0.373</td>
+        <td class="num elo">1373</td>
+        <td class="num pythag">31.0%</td>
+        <td class="num hide-mobile">-0.73</td>
+        <td class="num hide-mobile">0.18</td>
+        <td class="num hide-mobile">227</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">244</td>
+        <td class="team-name">Niagara</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">11-13</td>
+        <td class="num power">0.371</td>
+        <td class="num elo">1398</td>
+        <td class="num pythag">35.6%</td>
+        <td class="num hide-mobile">-0.58</td>
+        <td class="num hide-mobile">-0.77</td>
+        <td class="num hide-mobile">226</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">245</td>
+        <td class="team-name">Eastern Ky.</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">9-23</td>
+        <td class="num power">0.371</td>
+        <td class="num elo">1345</td>
+        <td class="num pythag">32.4%</td>
+        <td class="num hide-mobile">-0.89</td>
+        <td class="num hide-mobile">0.14</td>
+        <td class="num hide-mobile">267</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">246</td>
+        <td class="team-name">Eastern Mich.</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">10-20</td>
+        <td class="num power">0.369</td>
+        <td class="num elo">1343</td>
+        <td class="num pythag">31.9%</td>
+        <td class="num hide-mobile">-0.90</td>
+        <td class="num hide-mobile">-0.11</td>
+        <td class="num hide-mobile">247</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">247</td>
+        <td class="team-name">Southern U.</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">9-19</td>
+        <td class="num power">0.369</td>
+        <td class="num elo">1325</td>
+        <td class="num pythag">38.9%</td>
+        <td class="num hide-mobile">-1.01</td>
+        <td class="num hide-mobile">-0.45</td>
+        <td class="num hide-mobile">276</td>
+      </tr>
+    
+      <tr data-conf="Patriot League">
+        <td class="rank ">248</td>
+        <td class="team-name">Holy Cross</td>
+        <td class="conf-tag">Patriot League</td>
+        <td class="num record">12-16</td>
+        <td class="num power">0.368</td>
+        <td class="num elo">1390</td>
+        <td class="num pythag">34.9%</td>
+        <td class="num hide-mobile">-0.63</td>
+        <td class="num hide-mobile">-0.47</td>
+        <td class="num hide-mobile">240</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">249</td>
+        <td class="team-name">Western Ill.</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">7-22</td>
+        <td class="num power">0.366</td>
+        <td class="num elo">1341</td>
+        <td class="num pythag">33.0%</td>
+        <td class="num hide-mobile">-0.91</td>
+        <td class="num hide-mobile">0.01</td>
+        <td class="num hide-mobile">282</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">250</td>
+        <td class="team-name">Bowling Green</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">10-16</td>
+        <td class="num power">0.366</td>
+        <td class="num elo">1466</td>
+        <td class="num pythag">24.8%</td>
+        <td class="num hide-mobile">-0.20</td>
+        <td class="num hide-mobile">0.35</td>
+        <td class="num hide-mobile">182</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">251</td>
+        <td class="team-name">LMU (CA)</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">10-24</td>
+        <td class="num power">0.361</td>
+        <td class="num elo">1426</td>
+        <td class="num pythag">18.0%</td>
+        <td class="num hide-mobile">-0.43</td>
+        <td class="num hide-mobile">0.80</td>
+        <td class="num hide-mobile">197</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">252</td>
+        <td class="team-name">Akron</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">13-17</td>
+        <td class="num power">0.360</td>
+        <td class="num elo">1268</td>
+        <td class="num pythag">41.3%</td>
+        <td class="num hide-mobile">-1.33</td>
+        <td class="num hide-mobile">-0.99</td>
+        <td class="num hide-mobile">259</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">253</td>
+        <td class="team-name">Mount St. Mary's</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">13-15</td>
+        <td class="num power">0.360</td>
+        <td class="num elo">1241</td>
+        <td class="num pythag">44.2%</td>
+        <td class="num hide-mobile">-1.49</td>
+        <td class="num hide-mobile">-1.43</td>
+        <td class="num hide-mobile">265</td>
+      </tr>
+    
+      <tr data-conf="Horizon League">
+        <td class="rank ">254</td>
+        <td class="team-name">Oakland</td>
+        <td class="conf-tag">Horizon League</td>
+        <td class="num record">6-19</td>
+        <td class="num power">0.359</td>
+        <td class="num elo">1397</td>
+        <td class="num pythag">20.3%</td>
+        <td class="num hide-mobile">-0.59</td>
+        <td class="num hide-mobile">0.68</td>
+        <td class="num hide-mobile">219</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">255</td>
+        <td class="team-name">Stonehill</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">12-14</td>
+        <td class="num power">0.354</td>
+        <td class="num elo">1206</td>
+        <td class="num pythag">43.5%</td>
+        <td class="num hide-mobile">-1.69</td>
+        <td class="num hide-mobile">-1.74</td>
+        <td class="num hide-mobile">254</td>
+      </tr>
+    
+      <tr data-conf="West Coast">
+        <td class="rank ">256</td>
+        <td class="team-name">Seattle U</td>
+        <td class="conf-tag">West Coast</td>
+        <td class="num record">7-19</td>
+        <td class="num power">0.352</td>
+        <td class="num elo">1325</td>
+        <td class="num pythag">31.0%</td>
+        <td class="num hide-mobile">-1.00</td>
+        <td class="num hide-mobile">-0.04</td>
+        <td class="num hide-mobile">271</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">257</td>
+        <td class="team-name">Alabama St.</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">14-16</td>
+        <td class="num power">0.350</td>
+        <td class="num elo">1333</td>
+        <td class="num pythag">36.3%</td>
+        <td class="num hide-mobile">-0.96</td>
+        <td class="num hide-mobile">-0.35</td>
+        <td class="num hide-mobile">236</td>
+      </tr>
+    
+      <tr data-conf="Big West">
+        <td class="rank ">258</td>
+        <td class="team-name">UC Riverside</td>
+        <td class="conf-tag">Big West</td>
+        <td class="num record">8-22</td>
+        <td class="num power">0.349</td>
+        <td class="num elo">1313</td>
+        <td class="num pythag">28.2%</td>
+        <td class="num hide-mobile">-1.08</td>
+        <td class="num hide-mobile">-0.15</td>
+        <td class="num hide-mobile">266</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">259</td>
+        <td class="team-name">Davidson</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">14-15</td>
+        <td class="num power">0.348</td>
+        <td class="num elo">1405</td>
+        <td class="num pythag">29.9%</td>
+        <td class="num hide-mobile">-0.55</td>
+        <td class="num hide-mobile">-0.27</td>
+        <td class="num hide-mobile">212</td>
+      </tr>
+    
+      <tr data-conf="Coastal Athletic">
+        <td class="rank ">260</td>
+        <td class="team-name">N.C. A&T</td>
+        <td class="conf-tag">Coastal Athletic</td>
+        <td class="num record">9-21</td>
+        <td class="num power">0.345</td>
+        <td class="num elo">1319</td>
+        <td class="num pythag">32.3%</td>
+        <td class="num hide-mobile">-1.04</td>
+        <td class="num hide-mobile">-0.06</td>
+        <td class="num hide-mobile">279</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">261</td>
+        <td class="team-name">George Washington</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">11-19</td>
+        <td class="num power">0.343</td>
+        <td class="num elo">1210</td>
+        <td class="num pythag">40.2%</td>
+        <td class="num hide-mobile">-1.67</td>
+        <td class="num hide-mobile">-0.76</td>
+        <td class="num hide-mobile">275</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">262</td>
+        <td class="team-name">Villanova</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">10-17</td>
+        <td class="num power">0.342</td>
+        <td class="num elo">1282</td>
+        <td class="num pythag">34.6%</td>
+        <td class="num hide-mobile">-1.25</td>
+        <td class="num hide-mobile">-0.33</td>
+        <td class="num hide-mobile">262</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">263</td>
+        <td class="team-name">UMass Lowell</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">11-17</td>
+        <td class="num power">0.341</td>
+        <td class="num elo">1286</td>
+        <td class="num pythag">35.0%</td>
+        <td class="num hide-mobile">-1.23</td>
+        <td class="num hide-mobile">-0.47</td>
+        <td class="num hide-mobile">260</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">264</td>
+        <td class="team-name">Marist</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">11-19</td>
+        <td class="num power">0.341</td>
+        <td class="num elo">1234</td>
+        <td class="num pythag">36.8%</td>
+        <td class="num hide-mobile">-1.53</td>
+        <td class="num hide-mobile">-0.86</td>
+        <td class="num hide-mobile">253</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">265</td>
+        <td class="team-name">NJIT</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">9-17</td>
+        <td class="num power">0.339</td>
+        <td class="num elo">1176</td>
+        <td class="num pythag">42.1%</td>
+        <td class="num hide-mobile">-1.87</td>
+        <td class="num hide-mobile">-1.17</td>
+        <td class="num hide-mobile">288</td>
+      </tr>
+    
+      <tr data-conf="Big East">
+        <td class="rank ">266</td>
+        <td class="team-name">Butler</td>
+        <td class="conf-tag">Big East</td>
+        <td class="num record">11-20</td>
+        <td class="num power">0.338</td>
+        <td class="num elo">1362</td>
+        <td class="num pythag">27.2%</td>
+        <td class="num hide-mobile">-0.79</td>
+        <td class="num hide-mobile">-0.11</td>
+        <td class="num hide-mobile">257</td>
+      </tr>
+    
+      <tr data-conf="The Summit League">
+        <td class="rank ">267</td>
+        <td class="team-name">St. Thomas (MN)</td>
+        <td class="conf-tag">The Summit League</td>
+        <td class="num record">5-21</td>
+        <td class="num power">0.336</td>
+        <td class="num elo">1226</td>
+        <td class="num pythag">27.4%</td>
+        <td class="num hide-mobile">-1.58</td>
+        <td class="num hide-mobile">0.19</td>
+        <td class="num hide-mobile">278</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">268</td>
+        <td class="team-name">Jackson St.</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">12-18</td>
+        <td class="num power">0.332</td>
+        <td class="num elo">1237</td>
+        <td class="num pythag">38.4%</td>
+        <td class="num hide-mobile">-1.52</td>
+        <td class="num hide-mobile">-1.18</td>
+        <td class="num hide-mobile">277</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">269</td>
+        <td class="team-name">Columbia</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">6-18</td>
+        <td class="num power">0.327</td>
+        <td class="num elo">1220</td>
+        <td class="num pythag">26.2%</td>
+        <td class="num hide-mobile">-1.61</td>
+        <td class="num hide-mobile">0.19</td>
+        <td class="num hide-mobile">235</td>
+      </tr>
+    
+      <tr data-conf="Ohio Valley">
+        <td class="rank ">270</td>
+        <td class="team-name">Tennessee Tech</td>
+        <td class="conf-tag">Ohio Valley</td>
+        <td class="num record">10-22</td>
+        <td class="num power">0.312</td>
+        <td class="num elo">1343</td>
+        <td class="num pythag">20.2%</td>
+        <td class="num hide-mobile">-0.90</td>
+        <td class="num hide-mobile">0.27</td>
+        <td class="num hide-mobile">238</td>
+      </tr>
+    
+      <tr data-conf="Ivy League">
+        <td class="rank ">271</td>
+        <td class="team-name">Harvard</td>
+        <td class="conf-tag">Ivy League</td>
+        <td class="num record">5-16</td>
+        <td class="num power">0.310</td>
+        <td class="num elo">1093</td>
+        <td class="num pythag">29.7%</td>
+        <td class="num hide-mobile">-2.34</td>
+        <td class="num hide-mobile">0.39</td>
+        <td class="num hide-mobile">264</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">272</td>
+        <td class="team-name">Grambling</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">11-18</td>
+        <td class="num power">0.307</td>
+        <td class="num elo">1223</td>
+        <td class="num pythag">32.8%</td>
+        <td class="num hide-mobile">-1.60</td>
+        <td class="num hide-mobile">-0.81</td>
+        <td class="num hide-mobile">269</td>
+      </tr>
+    
+      <tr data-conf="Atlantic 10">
+        <td class="rank ">273</td>
+        <td class="team-name">St. Bonaventure</td>
+        <td class="conf-tag">Atlantic 10</td>
+        <td class="num record">8-21</td>
+        <td class="num power">0.305</td>
+        <td class="num elo">1212</td>
+        <td class="num pythag">29.9%</td>
+        <td class="num hide-mobile">-1.66</td>
+        <td class="num hide-mobile">-0.44</td>
+        <td class="num hide-mobile">289</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">274</td>
+        <td class="team-name">Manhattan</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">10-18</td>
+        <td class="num power">0.304</td>
+        <td class="num elo">1126</td>
+        <td class="num pythag">38.1%</td>
+        <td class="num hide-mobile">-2.15</td>
+        <td class="num hide-mobile">-1.30</td>
+        <td class="num hide-mobile">295</td>
+      </tr>
+    
+      <tr data-conf="Patriot League">
+        <td class="rank ">275</td>
+        <td class="team-name">Lafayette</td>
+        <td class="conf-tag">Patriot League</td>
+        <td class="num record">7-19</td>
+        <td class="num power">0.301</td>
+        <td class="num elo">1345</td>
+        <td class="num pythag">20.7%</td>
+        <td class="num hide-mobile">-0.89</td>
+        <td class="num hide-mobile">0.23</td>
+        <td class="num hide-mobile">272</td>
+      </tr>
+    
+      <tr data-conf="Big South">
+        <td class="rank ">276</td>
+        <td class="team-name">Presbyterian</td>
+        <td class="conf-tag">Big South</td>
+        <td class="num record">6-27</td>
+        <td class="num power">0.300</td>
+        <td class="num elo">1230</td>
+        <td class="num pythag">24.3%</td>
+        <td class="num hide-mobile">-1.55</td>
+        <td class="num hide-mobile">0.18</td>
+        <td class="num hide-mobile">297</td>
+      </tr>
+    
+      <tr data-conf="Horizon League">
+        <td class="rank ">277</td>
+        <td class="team-name">Milwaukee</td>
+        <td class="conf-tag">Horizon League</td>
+        <td class="num record">6-23</td>
+        <td class="num power">0.296</td>
+        <td class="num elo">1245</td>
+        <td class="num pythag">20.3%</td>
+        <td class="num hide-mobile">-1.47</td>
+        <td class="num hide-mobile">0.26</td>
+        <td class="num hide-mobile">270</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">278</td>
+        <td class="team-name">Iona</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">8-17</td>
+        <td class="num power">0.292</td>
+        <td class="num elo">1192</td>
+        <td class="num pythag">32.4%</td>
+        <td class="num hide-mobile">-1.78</td>
+        <td class="num hide-mobile">-1.00</td>
+        <td class="num hide-mobile">299</td>
+      </tr>
+    
+      <tr data-conf="ASUN">
+        <td class="rank ">279</td>
+        <td class="team-name">Queens (NC)</td>
+        <td class="conf-tag">ASUN</td>
+        <td class="num record">8-23</td>
+        <td class="num power">0.291</td>
+        <td class="num elo">1319</td>
+        <td class="num pythag">16.4%</td>
+        <td class="num hide-mobile">-1.04</td>
+        <td class="num hide-mobile">0.31</td>
+        <td class="num hide-mobile">258</td>
+      </tr>
+    
+      <tr data-conf="America East">
+        <td class="rank ">280</td>
+        <td class="team-name">UAlbany</td>
+        <td class="conf-tag">America East</td>
+        <td class="num record">6-18</td>
+        <td class="num power">0.287</td>
+        <td class="num elo">1231</td>
+        <td class="num pythag">24.5%</td>
+        <td class="num hide-mobile">-1.55</td>
+        <td class="num hide-mobile">-0.51</td>
+        <td class="num hide-mobile">286</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">281</td>
+        <td class="team-name">Ohio</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">6-25</td>
+        <td class="num power">0.284</td>
+        <td class="num elo">1242</td>
+        <td class="num pythag">20.1%</td>
+        <td class="num hide-mobile">-1.49</td>
+        <td class="num hide-mobile">0.04</td>
+        <td class="num hide-mobile">294</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">282</td>
+        <td class="team-name">Wagner</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">10-18</td>
+        <td class="num power">0.270</td>
+        <td class="num elo">1131</td>
+        <td class="num pythag">29.1%</td>
+        <td class="num hide-mobile">-2.12</td>
+        <td class="num hide-mobile">-1.43</td>
+        <td class="num hide-mobile">273</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">283</td>
+        <td class="team-name">Canisius</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">9-15</td>
+        <td class="num power">0.265</td>
+        <td class="num elo">1231</td>
+        <td class="num pythag">23.6%</td>
+        <td class="num hide-mobile">-1.55</td>
+        <td class="num hide-mobile">-0.98</td>
+        <td class="num hide-mobile">280</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">284</td>
+        <td class="team-name">Central Conn. St.</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">9-12</td>
+        <td class="num power">0.254</td>
+        <td class="num elo">1048</td>
+        <td class="num pythag">32.2%</td>
+        <td class="num hide-mobile">-2.60</td>
+        <td class="num hide-mobile">-2.02</td>
+        <td class="num hide-mobile">284</td>
+      </tr>
+    
+      <tr data-conf="Patriot League">
+        <td class="rank ">285</td>
+        <td class="team-name">Lehigh</td>
+        <td class="conf-tag">Patriot League</td>
+        <td class="num record">6-21</td>
+        <td class="num power">0.245</td>
+        <td class="num elo">1191</td>
+        <td class="num pythag">20.8%</td>
+        <td class="num hide-mobile">-1.78</td>
+        <td class="num hide-mobile">-0.46</td>
+        <td class="num hide-mobile">300</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">286</td>
+        <td class="team-name">Siena</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">9-18</td>
+        <td class="num power">0.237</td>
+        <td class="num elo">1114</td>
+        <td class="num pythag">22.2%</td>
+        <td class="num hide-mobile">-2.22</td>
+        <td class="num hide-mobile">-0.59</td>
+        <td class="num hide-mobile">268</td>
+      </tr>
+    
+      <tr data-conf="Mid-American">
+        <td class="rank ">287</td>
+        <td class="team-name">Massachusetts</td>
+        <td class="conf-tag">Mid-American</td>
+        <td class="num record">6-17</td>
+        <td class="num power">0.235</td>
+        <td class="num elo">1019</td>
+        <td class="num pythag">26.4%</td>
+        <td class="num hide-mobile">-2.77</td>
+        <td class="num hide-mobile">-0.73</td>
+        <td class="num hide-mobile">298</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">288</td>
+        <td class="team-name">Mississippi Val.</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">10-17</td>
+        <td class="num power">0.229</td>
+        <td class="num elo">1186</td>
+        <td class="num pythag">20.2%</td>
+        <td class="num hide-mobile">-1.81</td>
+        <td class="num hide-mobile">-1.26</td>
+        <td class="num hide-mobile">290</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">289</td>
+        <td class="team-name">Norfolk St.</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">12-17</td>
+        <td class="num power">0.206</td>
+        <td class="num elo">1050</td>
+        <td class="num pythag">22.6%</td>
+        <td class="num hide-mobile">-2.59</td>
+        <td class="num hide-mobile">-2.35</td>
+        <td class="num hide-mobile">291</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">290</td>
+        <td class="team-name">Prairie View</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">4-23</td>
+        <td class="num power">0.190</td>
+        <td class="num elo">1025</td>
+        <td class="num pythag">18.5%</td>
+        <td class="num hide-mobile">-2.73</td>
+        <td class="num hide-mobile">-0.56</td>
+        <td class="num hide-mobile">303</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">291</td>
+        <td class="team-name">Alabama A&M</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">5-27</td>
+        <td class="num power">0.177</td>
+        <td class="num elo">891</td>
+        <td class="num pythag">23.3%</td>
+        <td class="num hide-mobile">-3.51</td>
+        <td class="num hide-mobile">-0.96</td>
+        <td class="num hide-mobile">304</td>
+      </tr>
+    
+      <tr data-conf="MAAC">
+        <td class="rank ">292</td>
+        <td class="team-name">Saint Peter's</td>
+        <td class="conf-tag">MAAC</td>
+        <td class="num record">3-25</td>
+        <td class="num power">0.153</td>
+        <td class="num elo">934</td>
+        <td class="num pythag">16.2%</td>
+        <td class="num hide-mobile">-3.26</td>
+        <td class="num hide-mobile">-1.25</td>
+        <td class="num hide-mobile">307</td>
+      </tr>
+    
+      <tr data-conf="NEC">
+        <td class="rank ">293</td>
+        <td class="team-name">Coppin St.</td>
+        <td class="conf-tag">NEC</td>
+        <td class="num record">5-21</td>
+        <td class="num power">0.114</td>
+        <td class="num elo">820</td>
+        <td class="num pythag">14.5%</td>
+        <td class="num hide-mobile">-3.91</td>
+        <td class="num hide-mobile">-1.56</td>
+        <td class="num hide-mobile">302</td>
+      </tr>
+    
+      <tr data-conf="SWAC">
+        <td class="rank ">294</td>
+        <td class="team-name">Alcorn</td>
+        <td class="conf-tag">SWAC</td>
+        <td class="num record">2-25</td>
+        <td class="num power">0.100</td>
+        <td class="num elo">748</td>
+        <td class="num pythag">14.5%</td>
+        <td class="num hide-mobile">-4.33</td>
+        <td class="num hide-mobile">-0.75</td>
+        <td class="num hide-mobile">306</td>
+      </tr>
+    
+    </tbody>
+  </table>
+
+  <div class="footer">ForgeStream Baseball &mdash; 2026-04-07 13:25</div>
+</div>
+
+<script>
+function filterConf(conf) {
+  document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('#rankings-table tbody tr').forEach(tr => {
+    tr.style.display = (conf === 'all' || tr.dataset.conf === conf) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

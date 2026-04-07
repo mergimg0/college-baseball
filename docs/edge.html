@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edge Calculator — ForgeStream Baseball</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
+  .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
+  .nav-brand:hover { text-decoration: none; color: #c7d2fe; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af; transition: all 0.15s; }
+  .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
+  .nav-link.active { background: #312e81; color: #c7d2fe; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; }
+  .header .tagline { color: #6b7280; font-size: 0.85em; margin-top: 2px; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+  .stats-row { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+  .stat-card { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 16px 20px; flex: 1; min-width: 140px; text-align: center; }
+  .stat-card .value { font-size: 1.8em; font-weight: 800; line-height: 1.1; }
+  .stat-card .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .stat-card.positive .value { color: #34d399; }
+  .stat-card.negative .value { color: #f87171; }
+  .stat-card.neutral .value { color: #a5b4fc; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
+  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
+  .section-header .date { color: #6b7280; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 48px; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #111827; font-size: 0.85em; }
+  tbody tr:hover { background: #0f172a; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+  .edge-positive { color: #34d399; font-weight: 700; }
+  .edge-negative { color: #f87171; font-weight: 700; }
+  .edge-neutral { color: #9ca3af; }
+  .ml { color: #6b7280; font-size: 0.85em; }
+  .pick { font-weight: 600; color: #e8eaed; }
+  .value-badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.75em; font-weight: 700; }
+  .value-badge.strong { background: #064e3b; color: #34d399; }
+  .value-badge.moderate { background: #451a03; color: #fbbf24; }
+  .value-badge.none { background: #1f2937; color: #6b7280; }
+  .explainer { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .explainer h3 { color: #e8eaed; margin-bottom: 8px; font-size: 0.95em; }
+  .explainer p { color: #9ca3af; font-size: 0.82em; margin-bottom: 6px; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+  @media (max-width: 640px) {
+    .stats-row { gap: 8px; }
+    .stat-card { padding: 12px; }
+    .stat-card .value { font-size: 1.3em; }
+    table { font-size: 0.78em; }
+    td, th { padding: 6px 6px; }
+  }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">ForgeStream</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Predictions</a>
+      <a href="rankings.html" class="nav-link">Rankings</a>
+      <a href="edge.html" class="nav-link active">Edge</a>
+      <a href="index.html#about" class="nav-link">About</a>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <div class="header">
+    <h1>Edge Calculator</h1>
+    <div class="tagline">Model probability vs Vegas implied odds &mdash; find value bets</div>
+    <div class="meta">Updated 2026-04-07 13:25 | 21 games with odds data</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card neutral">
+      <div class="value">21</div>
+      <div class="label">Games w/ Odds</div>
+    </div>
+    <div class="stat-card positive">
+      <div class="value">9</div>
+      <div class="label">Value Bets (&gt;5%)</div>
+    </div>
+    <div class="stat-card neutral">
+      <div class="value">6.0%</div>
+      <div class="label">Avg |Edge|</div>
+    </div>
+    <div class="stat-card positive">
+      <div class="value">86%</div>
+      <div class="label">Model Agrees w/ Vegas</div>
+    </div>
+  </div>
+
+  
+  <div class="section-header">
+    <h2>Value Picks</h2>
+    <span class="date">Edge &gt; 5% vs market</span>
+  </div>
+  <table>
+    <thead><tr><th>Game</th><th class="num">Our %</th><th class="num">Vegas %</th><th class="num">Edge</th><th>Our Pick</th><th>Value</th></tr></thead>
+    <tbody>
+    
+      <tr>
+        <td>UC Santa Barbara vs Southern California</td>
+        <td class="num">30.3%</td>
+        <td class="num">50.0%</td>
+        <td class="num edge-negative">-19.7%</td>
+        <td class="pick">Southern California</td>
+        <td><span class="value-badge strong">19.7%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Auburn vs Jacksonville St.</td>
+        <td class="num">54.2%</td>
+        <td class="num">73.3%</td>
+        <td class="num edge-negative">-19.1%</td>
+        <td class="pick">Auburn</td>
+        <td><span class="value-badge strong">19.1%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Virginia Tech vs Liberty</td>
+        <td class="num">33.3%</td>
+        <td class="num">43.5%</td>
+        <td class="num edge-negative">-10.2%</td>
+        <td class="pick">Liberty</td>
+        <td><span class="value-badge strong">10.2%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Northwestern St. vs Louisiana Tech</td>
+        <td class="num">72.2%</td>
+        <td class="num">62.3%</td>
+        <td class="num edge-positive">+10.0%</td>
+        <td class="pick">Northwestern St.</td>
+        <td><span class="value-badge moderate">10.0%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Florida St. vs Florida</td>
+        <td class="num">61.5%</td>
+        <td class="num">54.5%</td>
+        <td class="num edge-positive">+7.0%</td>
+        <td class="pick">Florida St.</td>
+        <td><span class="value-badge moderate">7.0%</span></td>
+      </tr>
+    
+      <tr>
+        <td>UMBC vs Maryland</td>
+        <td class="num">55.4%</td>
+        <td class="num">48.8%</td>
+        <td class="num edge-positive">+6.6%</td>
+        <td class="pick">UMBC</td>
+        <td><span class="value-badge moderate">6.6%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Lamar University vs Tulane</td>
+        <td class="num">51.4%</td>
+        <td class="num">45.5%</td>
+        <td class="num edge-positive">+6.0%</td>
+        <td class="pick">Lamar University</td>
+        <td><span class="value-badge moderate">6.0%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Texas St. vs Texas A&M</td>
+        <td class="num">24.3%</td>
+        <td class="num">30.3%</td>
+        <td class="num edge-negative">-6.0%</td>
+        <td class="pick">Texas A&M</td>
+        <td><span class="value-badge moderate">6.0%</span></td>
+      </tr>
+    
+      <tr>
+        <td>Illinois vs Indiana St.</td>
+        <td class="num">64.8%</td>
+        <td class="num">70.6%</td>
+        <td class="num edge-negative">-5.8%</td>
+        <td class="pick">Illinois</td>
+        <td><span class="value-badge moderate">5.8%</span></td>
+      </tr>
+    
+    </tbody>
+  </table>
+  
+
+  <div class="section-header">
+    <h2>All Games with Odds</h2>
+    <span class="date">Sorted by edge magnitude</span>
+  </div>
+  <table>
+    <thead><tr><th>Home</th><th>Away</th><th class="num">Our %</th><th class="num">Vegas %</th><th class="num">Edge</th><th class="num">ML</th><th>Book</th></tr></thead>
+    <tbody>
+    
+      <tr>
+        <td>UC Santa Barbara</td>
+        <td>Southern California</td>
+        <td class="num">30.3%</td>
+        <td class="num">50.0%</td>
+        <td class="num edge-negative">-19.7%</td>
+        <td class="num ml">100</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Auburn</td>
+        <td>Jacksonville St.</td>
+        <td class="num">54.2%</td>
+        <td class="num">73.3%</td>
+        <td class="num edge-negative">-19.1%</td>
+        <td class="num ml">-275</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Virginia Tech</td>
+        <td>Liberty</td>
+        <td class="num">33.3%</td>
+        <td class="num">43.5%</td>
+        <td class="num edge-negative">-10.2%</td>
+        <td class="num ml">130</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Northwestern St.</td>
+        <td>Louisiana Tech</td>
+        <td class="num">72.2%</td>
+        <td class="num">62.3%</td>
+        <td class="num edge-positive">+10.0%</td>
+        <td class="num ml">-165</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Florida St.</td>
+        <td>Florida</td>
+        <td class="num">61.5%</td>
+        <td class="num">54.5%</td>
+        <td class="num edge-positive">+7.0%</td>
+        <td class="num ml">-120</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>UMBC</td>
+        <td>Maryland</td>
+        <td class="num">55.4%</td>
+        <td class="num">48.8%</td>
+        <td class="num edge-positive">+6.6%</td>
+        <td class="num ml">105</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Lamar University</td>
+        <td>Tulane</td>
+        <td class="num">51.4%</td>
+        <td class="num">45.5%</td>
+        <td class="num edge-positive">+6.0%</td>
+        <td class="num ml">120</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Texas St.</td>
+        <td>Texas A&M</td>
+        <td class="num">24.3%</td>
+        <td class="num">30.3%</td>
+        <td class="num edge-negative">-6.0%</td>
+        <td class="num ml">230</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Illinois</td>
+        <td>Indiana St.</td>
+        <td class="num">64.8%</td>
+        <td class="num">70.6%</td>
+        <td class="num edge-negative">-5.8%</td>
+        <td class="num ml">-240</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Nebraska</td>
+        <td>Kansas</td>
+        <td class="num">70.5%</td>
+        <td class="num">65.5%</td>
+        <td class="num edge-positive">+5.0%</td>
+        <td class="num ml">-190</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Missouri</td>
+        <td>Missouri St.</td>
+        <td class="num">44.9%</td>
+        <td class="num">40.0%</td>
+        <td class="num edge-positive">+4.9%</td>
+        <td class="num ml">150</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>East Carolina</td>
+        <td>Duke</td>
+        <td class="num">61.6%</td>
+        <td class="num">65.5%</td>
+        <td class="num edge-negative">-3.9%</td>
+        <td class="num ml">-190</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Kentucky</td>
+        <td>Louisville</td>
+        <td class="num">65.3%</td>
+        <td class="num">61.5%</td>
+        <td class="num edge-positive">+3.7%</td>
+        <td class="num ml">-160</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>The Citadel</td>
+        <td>Charleston So.</td>
+        <td class="num">45.2%</td>
+        <td class="num">48.8%</td>
+        <td class="num edge-negative">-3.6%</td>
+        <td class="num ml">105</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>New Mexico</td>
+        <td>Texas Tech</td>
+        <td class="num">39.8%</td>
+        <td class="num">36.4%</td>
+        <td class="num edge-positive">+3.5%</td>
+        <td class="num ml">175</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Wichita St.</td>
+        <td>Kansas St.</td>
+        <td class="num">43.4%</td>
+        <td class="num">40.0%</td>
+        <td class="num edge-positive">+3.4%</td>
+        <td class="num ml">150</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Virginia</td>
+        <td>James Madison</td>
+        <td class="num">83.3%</td>
+        <td class="num">86.2%</td>
+        <td class="num edge-neutral">-2.9%</td>
+        <td class="num ml">-625</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>Longwood</td>
+        <td>VCU</td>
+        <td class="num">52.6%</td>
+        <td class="num">50.0%</td>
+        <td class="num edge-neutral">+2.6%</td>
+        <td class="num ml">100</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>South Fla.</td>
+        <td>FGCU</td>
+        <td class="num">70.5%</td>
+        <td class="num">69.7%</td>
+        <td class="num edge-neutral">+0.8%</td>
+        <td class="num ml">-230</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>North Carolina</td>
+        <td>Charlotte</td>
+        <td class="num">79.2%</td>
+        <td class="num">79.6%</td>
+        <td class="num edge-neutral">-0.4%</td>
+        <td class="num ml">-390</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+      <tr>
+        <td>NC State</td>
+        <td>UNCW</td>
+        <td class="num">68.6%</td>
+        <td class="num">68.8%</td>
+        <td class="num edge-neutral">-0.2%</td>
+        <td class="num ml">-220</td>
+        <td class="ml">bovada</td>
+      </tr>
+    
+    </tbody>
+  </table>
+
+  <div class="explainer">
+    <h3>How Edge Works</h3>
+    <p><strong>Positive edge:</strong> Our model thinks the home team is MORE likely to win than Vegas implies. If we say 70% and Vegas implies 60%, that's a +10% edge on the home side.</p>
+    <p><strong>Negative edge:</strong> Our model thinks the home team is LESS likely than Vegas implies. A -10% edge means we'd bet the away team.</p>
+    <p><strong>Value threshold:</strong> Edges &gt;5% are flagged as potential value bets. Edges &gt;10% are strong disagreements worth watching.</p>
+    <p style="color: #6b7280; margin-top: 8px; font-size: 0.75em;">This is not betting advice. Edge calculation shows where our model disagrees with the market, which can indicate model error just as easily as market inefficiency.</p>
+  </div>
+
+  <div class="footer">ForgeStream Baseball &mdash; 2026-04-07 13:25</div>
+</div>
+</body>
+</html>

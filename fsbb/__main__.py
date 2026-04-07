@@ -485,14 +485,62 @@ def render(output: str | None):
     total_gp = conn.execute("SELECT SUM(games_played) FROM teams WHERE total_ra > 0").fetchone()[0] or 1
     pythag_exp = pythagenport_exponent(total_rs, total_ra, total_gp)
 
+    # Full rankings (all teams)
+    all_rankings = [dict(r) for r in conn.execute("""
+        SELECT name, conference, wins, losses, pythag_pct, power_rating, pear_net,
+               elo, bt_rating, sos
+        FROM teams WHERE games_played >= 5 AND total_ra > 0
+        ORDER BY power_rating DESC
+    """).fetchall()]
+
+    conferences = sorted(set(r["conference"] for r in all_rankings))
+
+    # Edge calculator data
+    edge_rows = conn.execute("""
+        SELECT h.name as home, a.name as away,
+               g.our_home_win_prob, g.odds_implied_home_prob,
+               g.odds_home_ml, g.odds_away_ml, g.odds_bookmaker
+        FROM games g
+        JOIN teams h ON g.home_team_id = h.id
+        JOIN teams a ON g.away_team_id = a.id
+        WHERE g.our_home_win_prob IS NOT NULL AND g.odds_implied_home_prob IS NOT NULL
+        ORDER BY ABS(g.our_home_win_prob - g.odds_implied_home_prob) DESC
+    """).fetchall()
+
+    all_edges = []
+    value_picks = []
+    agree_count = 0
+    for e in edge_rows:
+        our_pct = e["our_home_win_prob"] * 100
+        vegas_pct = e["odds_implied_home_prob"] * 100
+        edge = our_pct - vegas_pct
+        our_pick = e["home"] if our_pct > 50 else e["away"]
+        vegas_pick = e["home"] if vegas_pct > 50 else e["away"]
+        if our_pick == vegas_pick:
+            agree_count += 1
+        entry = {
+            "home": e["home"], "away": e["away"],
+            "our_pct": our_pct, "vegas_pct": vegas_pct,
+            "edge": edge, "abs_edge": abs(edge),
+            "pick": our_pick,
+            "home_ml": e["odds_home_ml"], "bookmaker": e["odds_bookmaker"] or "",
+        }
+        all_edges.append(entry)
+        if abs(edge) > 5:
+            value_picks.append(entry)
+
     conn.close()
 
-    # Render template
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    # Render all pages
     template_dir = Path(__file__).parent / "templates"
     env = Environment(loader=FileSystemLoader(str(template_dir)))
-    template = env.get_template("predictions.html")
+    docs_dir = Path(output).parent if output else Path(__file__).parent.parent / "docs"
+    docs_dir.mkdir(parents=True, exist_ok=True)
 
-    html = template.render(
+    # 1. Predictions page
+    html = env.get_template("predictions.html").render(
         today=today.isoformat(),
         yesterday=yesterday.isoformat(),
         today_predictions=today_preds,
@@ -502,13 +550,34 @@ def render(output: str | None):
         pythag_exp=pythag_exp,
         rpg=rpg,
         total_teams=total_teams,
-        generated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        generated_at=generated_at,
     )
+    (docs_dir / "predictions.html").write_text(html)
+    (docs_dir / "index.html").write_text(html)
+    click.echo(f"Rendered predictions → {docs_dir / 'index.html'}")
 
-    out_path = Path(output) if output else Path(__file__).parent.parent / "docs" / "predictions.html"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(html)
-    click.echo(f"Rendered to {out_path}")
+    # 2. Rankings page
+    html = env.get_template("rankings.html").render(
+        rankings=all_rankings,
+        conferences=conferences,
+        total_teams=len(all_rankings),
+        generated_at=generated_at,
+    )
+    (docs_dir / "rankings.html").write_text(html)
+    click.echo(f"Rendered rankings → {docs_dir / 'rankings.html'}")
+
+    # 3. Edge calculator page
+    html = env.get_template("edge.html").render(
+        all_edges=all_edges,
+        value_picks=value_picks,
+        total_edges=len(all_edges),
+        value_bets=len(value_picks),
+        avg_edge=sum(e["abs_edge"] for e in all_edges) / max(len(all_edges), 1),
+        model_agrees=agree_count / max(len(all_edges), 1) * 100,
+        generated_at=generated_at,
+    )
+    (docs_dir / "edge.html").write_text(html)
+    click.echo(f"Rendered edge → {docs_dir / 'edge.html'}")
 
 
 @cli.command()
