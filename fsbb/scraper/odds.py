@@ -288,6 +288,17 @@ def store_odds(conn, parsed_odds: list[dict]) -> int:
                     WHERE id=?
                 """, (o["home_ml"], o["away_ml"], o.get("spread"),
                       o.get("total"), round(implied, 4), o.get("bookmaker"), game[0]))
+
+                # Also store in odds_history for CLV tracking
+                conn.execute("""
+                    INSERT OR IGNORE INTO odds_history
+                        (game_id, bookmaker, market, home_ml, away_ml,
+                         spread, total, implied_home_prob)
+                    VALUES (?, ?, 'h2h', ?, ?, ?, ?, ?)
+                """, (game[0], o.get("bookmaker", "unknown"),
+                      o["home_ml"], o["away_ml"], o.get("spread"),
+                      o.get("total"), round(implied, 4)))
+
                 stored += 1
             except _sqlite3.OperationalError:
                 pass
