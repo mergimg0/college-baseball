@@ -230,6 +230,14 @@ def import_team_games(conn: sqlite3.Connection, team_name: str, detail: dict) ->
         pear_ned = g.get("NED")
         pear_home_wp = g.get("home_win_prob")
 
+        # If no explicit home_win_prob, derive from team ELO ratings
+        if pear_home_wp is None:
+            home_elo = conn.execute("SELECT pear_elo FROM teams WHERE id=?", (home_id,)).fetchone()
+            away_elo = conn.execute("SELECT pear_elo FROM teams WHERE id=?", (away_id,)).fetchone()
+            if home_elo and away_elo and home_elo[0] and away_elo[0]:
+                elo_diff = home_elo[0] - away_elo[0]
+                pear_home_wp = 1.0 / (1.0 + 10 ** (-elo_diff / 400))
+
         try:
             conn.execute("""
                 INSERT INTO games (date, home_team_id, away_team_id, home_runs, away_runs,
