@@ -668,5 +668,47 @@ def coverage(start: str | None, end: str | None, threshold: float):
     conn.close()
 
 
+@cli.command()
+@click.option("--date", "target_date", default=None, help="Date to analyze (YYYY-MM-DD)")
+@click.option("--bankroll", default=1000.0, help="Bankroll in dollars")
+@click.option("--min-edge", default=0.05, help="Minimum edge to recommend (0.05 = 5%)")
+@click.option("--kelly", default=0.25, help="Kelly multiplier (0.25 = quarter-Kelly)")
+def bet(target_date: str | None, bankroll: float, min_edge: float, kelly: float):
+    """Show Kelly criterion bet recommendations."""
+    from fsbb.models.kelly import recommend_bets
+
+    conn = init_db()
+    d = date.fromisoformat(target_date) if target_date else date.today()
+
+    recs = recommend_bets(conn, d, bankroll, min_edge, kelly)
+    conn.close()
+
+    if not recs:
+        click.echo(f"No bets with >{min_edge*100:.0f}% edge for {d}")
+        click.echo("(Need both model predictions AND odds data for the date)")
+        return
+
+    click.echo(f"\nBet Recommendations for {d} (bankroll: ${bankroll:,.0f}, {kelly:.0%} Kelly)\n")
+    table = []
+    total_bet = 0
+    for r in recs:
+        table.append([
+            r["team"],
+            f"{r['home']} vs {r['away']}",
+            f"{r['model_prob']*100:.1f}%",
+            f"{r['market_prob']*100:.1f}%",
+            f"{r['edge']*100:+.1f}%",
+            f"{r['moneyline']:+d}" if r['moneyline'] else "—",
+            f"${r['recommended_bet']:.2f}",
+            r["confidence"],
+        ])
+        total_bet += r["recommended_bet"]
+
+    headers = ["Pick", "Game", "Model", "Market", "Edge", "ML", "Bet", "Size"]
+    click.echo(tabulate(table, headers=headers, tablefmt="simple"))
+    click.echo(f"\nTotal wagered: ${total_bet:.2f} ({total_bet/bankroll*100:.1f}% of bankroll)")
+    click.echo(f"Bets: {len(recs)}")
+
+
 if __name__ == "__main__":
     cli()
