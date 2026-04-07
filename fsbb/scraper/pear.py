@@ -180,7 +180,7 @@ def import_team_games(conn: sqlite3.Connection, team_name: str, detail: dict) ->
         home_id = team_id if is_home else opp_id
         away_id = opp_id if is_home else team_id
 
-        game_date = g.get("Date", "")
+        game_date = g.get("Date", "").split("T")[0]  # Normalize to YYYY-MM-DD
 
         # Dedup: skip if we've already imported this game
         dedup_key = (game_date, str(home_id), str(away_id))
