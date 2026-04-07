@@ -401,44 +401,21 @@ def accuracy():
 
 
 def _run_production_backtest(conn) -> dict:
-    """Backtest using the PRODUCTION predict_matchup function.
+    """Run honest walk-forward backtest for the accuracy banner.
 
-    This ensures the accuracy number on the page reflects exactly
-    what the live prediction system would produce — no model divergence.
+    Uses the chronological backtest engine (no data leakage) rather than
+    predicting with current ratings. This gives the true model accuracy.
     """
-    from fsbb.models.predict import predict_matchup
+    from fsbb.models.backtest import run_backtest
 
-    games = conn.execute("""
-        SELECT h.name as home, a.name as away, g.home_runs, g.away_runs
-        FROM games g
-        JOIN teams h ON g.home_team_id = h.id
-        JOIN teams a ON g.away_team_id = a.id
-        WHERE g.status='final' AND g.home_runs IS NOT NULL
-              AND h.games_played >= 10 AND a.games_played >= 10
-              AND h.total_ra > 0 AND a.total_ra > 0
-    """).fetchall()
-    if not games:
-        return {"games": 0}
-    correct = 0
-    brier = 0.0
-    evaluated = 0
-    for g in games:
-        pred = predict_matchup(conn, g[0], g[1])
-        if not pred:
-            continue
-        prob = pred["home_win_prob"]
-        actual = 1.0 if g[2] > g[3] else 0.0
-        if (prob > 0.5) == (actual == 1.0):
-            correct += 1
-        brier += (prob - actual) ** 2
-        evaluated += 1
-    if evaluated == 0:
+    result = run_backtest(conn)
+    if result.get("games_evaluated", 0) == 0:
         return {"games": 0}
     return {
-        "games": evaluated,
-        "our_correct": correct,
-        "our_accuracy": round(correct / evaluated, 4),
-        "our_brier": round(brier / evaluated, 4),
+        "games": result["games_evaluated"],
+        "our_correct": result.get("our_correct", 0),
+        "our_accuracy": result.get("our_accuracy", 0),
+        "our_brier": result.get("our_brier", 0),
     }
 
 
