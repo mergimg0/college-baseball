@@ -197,13 +197,48 @@ def _strip_mascot(name: str) -> str:
         "Eastern Michigan Eagles": "Eastern Mich.",
         "UC Davis Aggies": "UC Davis",
         "San Francisco Dons": "San Francisco",
+        # Multi-word mascots
+        "Duke Blue Devils": "Duke",
+        "North Carolina Tar Heels": "North Carolina",
+        "Texas Tech Red Raiders": "Texas Tech",
+        "Tulane Green Wave": "Tulane",
+        "Wake Forest Demon Deacons": "Wake Forest",
+        "Illinois Fighting Illini": "Illinois",
+        "Coastal Carolina Chanticleers": "Coastal Carolina",
+        "South Carolina Gamecocks": "South Carolina",
+        "Boston College Eagles": "Boston College",
+        "North Carolina State Wolfpack": "NC State",
+        "Virginia Commonwealth Rams": "VCU",
     }
     if name in ODDS_TO_PEAR:
         return ODDS_TO_PEAR[name]
 
+    # Multi-word mascots: strip 2 words if the result matches a known suffix
+    MULTI_WORD_MASCOTS = {
+        "Blue Devils", "Tar Heels", "Red Raiders", "Green Wave",
+        "Demon Deacons", "Fighting Illini", "Golden Bears", "Sun Devils",
+        "Wolf Pack", "Black Bears", "Red Storm", "Golden Eagles",
+        "Blue Jays", "Yellow Jackets", "Mean Green", "Golden Flashes",
+        "Red Foxes", "Blue Hose", "Black Knights",
+    }
+    parts = name.rsplit(" ", 2)
+    if len(parts) == 3:
+        candidate_mascot = f"{parts[1]} {parts[2]}"
+        if candidate_mascot in MULTI_WORD_MASCOTS:
+            result = parts[0]
+            # Normalize "St" → "St." for PEAR compatibility
+            if result.endswith(" St"):
+                result += "."
+            return result
+
     # Default: strip last word (the mascot)
     parts = name.rsplit(" ", 1)
-    return parts[0] if len(parts) > 1 else name
+    result = parts[0] if len(parts) > 1 else name
+
+    # Normalize "St" → "St." for PEAR compatibility
+    if result.endswith(" St"):
+        result += "."
+    return result
 
 
 def store_odds(conn, parsed_odds: list[dict]) -> int:
