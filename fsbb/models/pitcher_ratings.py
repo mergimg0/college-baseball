@@ -10,6 +10,7 @@ Scale: 0-100 where 50=average, 70+=elite, 30-=poor.
 
 from __future__ import annotations
 
+import re
 import sqlite3
 
 import numpy as np
@@ -88,6 +89,42 @@ def match_64a_pitchers(conn: sqlite3.Connection) -> dict:
                              (match2[0], ap_id))
                 stats["abbreviated"] += 1
                 continue
+
+        # Strategy 4: Strip suffixes (Jr., III, II, IV, Sr.)
+        cleaned = re.sub(r'\s+(Jr\.?|Sr\.?|III|II|IV)$', '', ap_lower).strip()
+        if cleaned != ap_lower:
+            match = conn.execute(
+                "SELECT id FROM pitchers WHERE team_id = ? AND LOWER(TRIM(name)) = ?",
+                (team_id, cleaned),
+            ).fetchone()
+            if match:
+                conn.execute("UPDATE analytics_pitcher SET pitcher_id = ? WHERE id = ?",
+                             (match[0], ap_id))
+                stats.setdefault("suffix_strip", 0)
+                stats["suffix_strip"] += 1
+                continue
+
+        # Strategy 5: First-initial + last-name (our DB has "J Smith", 64A has "John Smith")
+        if len(parts) >= 2:
+            first_initial = parts[0][0].lower()
+            last = parts[-1]
+            candidates = conn.execute(
+                "SELECT id, name FROM pitchers WHERE team_id = ? AND LOWER(TRIM(name)) LIKE ?",
+                (team_id, f"% {last}"),
+            ).fetchall()
+            if not candidates:
+                candidates = conn.execute(
+                    "SELECT id, name FROM pitchers WHERE team_id = ? AND LOWER(TRIM(name)) LIKE ?",
+                    (team_id, f"{first_initial}% {last}"),
+                ).fetchall()
+            if len(candidates) == 1:
+                c_name = candidates[0][1].lower().strip()
+                if c_name[0] == first_initial:
+                    conn.execute("UPDATE analytics_pitcher SET pitcher_id = ? WHERE id = ?",
+                                 (candidates[0][0], ap_id))
+                    stats.setdefault("fuzzy", 0)
+                    stats["fuzzy"] += 1
+                    continue
 
         stats["unmatched"] += 1
 
