@@ -3,59 +3,1917 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForgeStream Baseball — Nightly Predictions</title>
+<title>College Baseball Predictions — NCAA D1</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #e0e0e0; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-  h1 { color: #4fc3f7; margin-bottom: 4px; font-size: 1.6em; }
-  h2 { color: #81d4fa; margin: 24px 0 12px; font-size: 1.2em; }
-  .subtitle { color: #888; font-size: 0.9em; margin-bottom: 20px; }
-  .accuracy-box { background: #1a1e2e; border: 1px solid #2a3a5a; border-radius: 8px;
-                   padding: 16px; margin: 16px 0; display: flex; gap: 32px; flex-wrap: wrap; }
-  .stat { text-align: center; }
-  .stat .value { font-size: 1.8em; font-weight: bold; color: #4fc3f7; }
-  .stat .label { font-size: 0.8em; color: #888; }
-  .edge-positive { color: #66bb6a; }
-  .edge-negative { color: #ef5350; }
-  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-  th { background: #1a1e2e; color: #81d4fa; padding: 8px 12px; text-align: left;
-       font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; }
-  td { padding: 8px 12px; border-bottom: 1px solid #1a1e2e; font-size: 0.9em; }
-  tr:hover { background: #151828; }
-  .prob-high { color: #66bb6a; font-weight: bold; }
-  .prob-med { color: #ffd54f; }
-  .prob-low { color: #ef5350; }
-  .correct { color: #66bb6a; }
-  .incorrect { color: #ef5350; }
-  .pending { color: #888; }
-  .footer { margin-top: 32px; color: #555; font-size: 0.8em; text-align: center; }
-  .conf-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; }
-  .conf-high { background: #1b5e20; color: #66bb6a; }
-  .conf-medium { background: #4a3800; color: #ffd54f; }
-  .conf-low { background: #4a1010; color: #ef5350; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; letter-spacing: -0.5px; }
+  .header .tagline { color: #6b7280; font-size: 0.85em; margin-top: 2px; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+  .accuracy-banner { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 20px; margin: 16px 0 24px; display: flex; gap: 40px; flex-wrap: wrap; align-items: center; }
+  .accuracy-banner .stat { text-align: center; min-width: 80px; }
+  .accuracy-banner .stat .value { font-size: 2em; font-weight: 800; color: #a5b4fc; line-height: 1.1; }
+  .accuracy-banner .stat .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .accuracy-banner .stat.edge .value { color: #34d399; }
+  .accuracy-banner .stat.negative .value { color: #f87171; }
+  .accuracy-banner .divider { width: 1px; height: 48px; background: #312e81; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
+  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
+  .section-header .date { color: #6b7280; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left;
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 0; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #111827; font-size: 0.88em; }
+  tbody tr:hover { background: #0f172a; }
+  .prob { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prob-strong { color: #34d399; }
+  .prob-mid { color: #fbbf24; }
+  .prob-weak { color: #9ca3af; }
+  .pick { font-weight: 600; color: #e8eaed; }
+  .pick-away { color: #a5b4fc; }
+  .correct { color: #34d399; font-weight: 700; }
+  .incorrect { color: #f87171; font-weight: 700; }
+  .pending { color: #4b5563; }
+  .score { font-variant-numeric: tabular-nums; color: #9ca3af; }
+  .conf { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .conf-high { background: #064e3b; color: #34d399; }
+  .conf-medium { background: #451a03; color: #fbbf24; }
+  .conf-low { background: #1f2937; color: #6b7280; }
+  .rankings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .rank-card { background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 12px; transition: border-color 0.2s; }
+  .rank-card:hover { border-color: #312e81; }
+  .rank-num { font-size: 1.1em; font-weight: 800; color: #4b5563; min-width: 28px; text-align: right; }
+  .rank-num.top5 { color: #a5b4fc; }
+  .rank-num.top10 { color: #818cf8; }
+  .rank-team { flex: 1; }
+  .rank-name { font-weight: 600; color: #e8eaed; font-size: 0.9em; }
+  .rank-conf { font-size: 0.7em; color: #6b7280; }
+  .rank-stats { text-align: right; font-size: 0.8em; }
+  .rank-record { color: #9ca3af; font-weight: 600; }
+  .rank-pythag { color: #6b7280; font-size: 0.75em; }
+  .finding { background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%); border: 1px solid #312e81;
+    border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+  .finding .label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.5px; color: #818cf8; font-weight: 700; margin-bottom: 4px; }
+  .finding .text { color: #c7d2fe; font-size: 0.9em; }
+  .finding .number { font-size: 1.4em; font-weight: 800; color: #a5b4fc; }
+  .about { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 20px; margin: 32px 0; }
+  .about h3 { color: #e8eaed; margin-bottom: 12px; font-size: 1em; }
+  .about p { color: #9ca3af; font-size: 0.85em; margin-bottom: 8px; }
+  .about .qa { margin-bottom: 6px; }
+  .about .qa .q { color: #a5b4fc; font-weight: 600; font-size: 0.8em; }
+  .about .qa .a { color: #9ca3af; font-size: 0.8em; }
+  .faq-item { margin-bottom: 20px; }
+  .faq-item:last-child { margin-bottom: 0; }
+  .faq-q { color: #a5b4fc; font-weight: 700; font-size: 0.95em; margin-bottom: 6px; }
+  .faq-a { color: #9ca3af; font-size: 0.85em; line-height: 1.65; }
+  .faq-a strong { color: #c7d2fe; }
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+  @media (max-width: 640px) {
+    .accuracy-banner { gap: 20px; padding: 14px; }
+    .accuracy-banner .stat .value { font-size: 1.5em; }
+    .accuracy-banner .divider { display: none; }
+    .rankings-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.82em; }
+    td, th { padding: 6px 8px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>ForgeStream Baseball</h1>
-  <p class="subtitle">NCAA D1 Game Predictions — Pythagenport + Dynamic Bradley-Terry</p>
+  <div class="header">
+    <h1>College Baseball Predictions</h1>
+    <div class="tagline">NCAA D1 Game Predictions &mdash; Pythagenport + Bradley-Terry + Log5</div>
+    <div class="meta">Updated 2026-04-07 12:55 | Model v0.1 | 294 teams tracked</div>
+  </div>
 
   
+  <div class="accuracy-banner">
+    <div class="stat">
+      <div class="value">70.4%</div>
+      <div class="label">Accuracy</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">3849</div>
+      <div class="label">Games Tested</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="value">0.191</div>
+      <div class="label">Brier Score</div>
+    </div>
+    
+  </div>
+  
 
-  <h2>Today's Predictions — 2026-04-06</h2>
+  <div class="finding">
+    <div class="label">Original Research</div>
+    <div class="text">The college baseball Pythagenport exponent is <span class="number">2.13</span>, not the MLB-derived 1.83. First published computation of the college-specific exponent &mdash; reflecting 13.2 runs per game (vs MLB ~8.5).</div>
+  </div>
+
+  <div class="section-header">
+    <h2>Tonight's Predictions</h2>
+    <span class="date">2026-04-07</span>
+  </div>
   
-  <p style="color: #888;">No games scheduled for today.</p>
+  <table>
+    <thead><tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Series</th><th>Conf</th></tr></thead>
+    <tbody>
+    
+      
+      
+      <tr>
+        <td>Kentucky</td>
+        <td>Louisville</td>
+        <td class="prob prob-strong">65.3%</td>
+        <td class="pick">Kentucky</td>
+        <td class="score">17.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Grambling</td>
+        <td>McNeese</td>
+        <td class="prob prob-strong">24.8%</td>
+        <td class="pick-away">McNeese</td>
+        <td class="score">13.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UIC</td>
+        <td>Northwestern</td>
+        <td class="prob prob-mid">41.6%</td>
+        <td class="pick-away">Northwestern</td>
+        <td class="score">11.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Central Ark.</td>
+        <td>Ark.-Pine Bluff</td>
+        <td class="prob prob-weak">52.4%</td>
+        <td class="pick">Central Ark.</td>
+        <td class="score">12.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Texas</td>
+        <td>UIW</td>
+        <td class="prob prob-strong">93.3%</td>
+        <td class="pick">Texas</td>
+        <td class="score">16.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Sacred Heart</td>
+        <td>Stony Brook</td>
+        <td class="prob prob-weak">53.2%</td>
+        <td class="pick">Sacred Heart</td>
+        <td class="score">124.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Le Moyne</td>
+        <td>Siena</td>
+        <td class="prob prob-mid">63.9%</td>
+        <td class="pick">Le Moyne</td>
+        <td class="score">5.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Boston College</td>
+        <td>Massachusetts</td>
+        <td class="prob prob-strong">93.6%</td>
+        <td class="pick">Boston College</td>
+        <td class="score">12.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Longwood</td>
+        <td>VCU</td>
+        <td class="prob prob-weak">52.6%</td>
+        <td class="pick">Longwood</td>
+        <td class="score">13.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Mercyhurst</td>
+        <td>Niagara</td>
+        <td class="prob prob-mid">37.2%</td>
+        <td class="pick-away">Niagara</td>
+        <td class="score">4.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Harvard</td>
+        <td>Northeastern</td>
+        <td class="prob prob-strong">21.6%</td>
+        <td class="pick-away">Northeastern</td>
+        <td class="score">11.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Fordham</td>
+        <td>Manhattan</td>
+        <td class="prob prob-strong">70.3%</td>
+        <td class="pick">Fordham</td>
+        <td class="score">13.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>St. Bonaventure</td>
+        <td>Canisius</td>
+        <td class="prob prob-mid">57.9%</td>
+        <td class="pick">St. Bonaventure</td>
+        <td class="score">9.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Gardner-Webb</td>
+        <td>Elon</td>
+        <td class="prob prob-mid">56.4%</td>
+        <td class="pick">Gardner-Webb</td>
+        <td class="score">11.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Georgetown</td>
+        <td>UMES</td>
+        <td class="prob prob-strong">76.4%</td>
+        <td class="pick">Georgetown</td>
+        <td class="score">13.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Fairfield</td>
+        <td>Army West Point</td>
+        <td class="prob prob-mid">62.9%</td>
+        <td class="pick">Fairfield</td>
+        <td class="score">6.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Oakland</td>
+        <td>Toledo</td>
+        <td class="prob prob-mid">36.8%</td>
+        <td class="pick-away">Toledo</td>
+        <td class="score">12.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Central Conn. St.</td>
+        <td>St. John's (NY)</td>
+        <td class="prob prob-strong">27.8%</td>
+        <td class="pick-away">St. John's (NY)</td>
+        <td class="score">11.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Bellarmine</td>
+        <td>Murray St.</td>
+        <td class="prob prob-mid">36.1%</td>
+        <td class="pick-away">Murray St.</td>
+        <td class="score">14.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Bryant</td>
+        <td>UConn</td>
+        <td class="prob prob-weak">49.4%</td>
+        <td class="pick-away">UConn</td>
+        <td class="score">13.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Georgia</td>
+        <td>Presbyterian</td>
+        <td class="prob prob-strong">95.0%</td>
+        <td class="pick">Georgia</td>
+        <td class="score">14.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Coppin St.</td>
+        <td>Towson</td>
+        <td class="prob prob-strong">9.3%</td>
+        <td class="pick-away">Towson</td>
+        <td class="score">13.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Western Mich.</td>
+        <td>Valparaiso</td>
+        <td class="prob prob-mid">62.8%</td>
+        <td class="pick">Western Mich.</td>
+        <td class="score">12.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Michigan</td>
+        <td>Central Mich.</td>
+        <td class="prob prob-strong">75.9%</td>
+        <td class="pick">Michigan</td>
+        <td class="score">13.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Butler</td>
+        <td>Southern Ind.</td>
+        <td class="prob prob-strong">29.1%</td>
+        <td class="pick-away">Southern Ind.</td>
+        <td class="score">14.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>NIU</td>
+        <td>Eastern Ill.</td>
+        <td class="prob prob-weak">54.0%</td>
+        <td class="pick">NIU</td>
+        <td class="score">14.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>New Mexico</td>
+        <td>Texas Tech</td>
+        <td class="prob prob-mid">39.8%</td>
+        <td class="pick-away">Texas Tech</td>
+        <td class="score">19.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Seton Hall</td>
+        <td>Rutgers</td>
+        <td class="prob prob-mid">37.9%</td>
+        <td class="pick-away">Rutgers</td>
+        <td class="score">12.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Washington St.</td>
+        <td>Oregon St.</td>
+        <td class="prob prob-strong">18.2%</td>
+        <td class="pick-away">Oregon St.</td>
+        <td class="score">12.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Milwaukee</td>
+        <td>Iowa</td>
+        <td class="prob prob-strong">12.9%</td>
+        <td class="pick-away">Iowa</td>
+        <td class="score">13.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UNC Asheville</td>
+        <td>App State</td>
+        <td class="prob prob-strong">31.7%</td>
+        <td class="pick-away">App State</td>
+        <td class="score">14.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>VMI</td>
+        <td>George Washington</td>
+        <td class="prob prob-strong">90.2%</td>
+        <td class="pick">VMI</td>
+        <td class="score">15.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Youngstown St.</td>
+        <td>Pittsburgh</td>
+        <td class="prob prob-strong">10.4%</td>
+        <td class="pick-away">Pittsburgh</td>
+        <td class="score">98.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Radford</td>
+        <td>ETSU</td>
+        <td class="prob prob-strong">28.7%</td>
+        <td class="pick-away">ETSU</td>
+        <td class="score">14.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>North Ala.</td>
+        <td>UT Martin</td>
+        <td class="prob prob-weak">47.5%</td>
+        <td class="pick-away">UT Martin</td>
+        <td class="score">13.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Holy Cross</td>
+        <td>Stonehill</td>
+        <td class="prob prob-mid">61.3%</td>
+        <td class="pick">Holy Cross</td>
+        <td class="score">13.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Tarleton St.</td>
+        <td>UTSA</td>
+        <td class="prob prob-weak">49.5%</td>
+        <td class="pick-away">UTSA</td>
+        <td class="score">16.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Western Caro.</td>
+        <td>USC Upstate</td>
+        <td class="prob prob-mid">61.5%</td>
+        <td class="pick">Western Caro.</td>
+        <td class="score">14.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Penn St.</td>
+        <td>FDU</td>
+        <td class="prob prob-mid">43.0%</td>
+        <td class="pick-away">FDU</td>
+        <td class="score">14.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Ohio St.</td>
+        <td>Bowling Green</td>
+        <td class="prob prob-strong">80.6%</td>
+        <td class="pick">Ohio St.</td>
+        <td class="score">11.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>High Point</td>
+        <td>N.C. A&T</td>
+        <td class="prob prob-strong">86.1%</td>
+        <td class="pick">High Point</td>
+        <td class="score">13.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UCF</td>
+        <td>Stetson</td>
+        <td class="prob prob-strong">87.7%</td>
+        <td class="pick">UCF</td>
+        <td class="score">12.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Georgia St.</td>
+        <td>Wofford</td>
+        <td class="prob prob-strong">33.4%</td>
+        <td class="pick-away">Wofford</td>
+        <td class="score">13.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Purdue</td>
+        <td>Bradley</td>
+        <td class="prob prob-strong">80.0%</td>
+        <td class="pick">Purdue</td>
+        <td class="score">13.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Mercer</td>
+        <td>West Ga.</td>
+        <td class="prob prob-strong">81.4%</td>
+        <td class="pick">Mercer</td>
+        <td class="score">9.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-low">low</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Virginia Tech</td>
+        <td>Liberty</td>
+        <td class="prob prob-strong">33.3%</td>
+        <td class="pick-away">Liberty</td>
+        <td class="score">12.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>East Carolina</td>
+        <td>Duke</td>
+        <td class="prob prob-mid">61.6%</td>
+        <td class="pick">East Carolina</td>
+        <td class="score">14.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>NC State</td>
+        <td>UNCW</td>
+        <td class="prob prob-strong">68.6%</td>
+        <td class="pick">NC State</td>
+        <td class="score">15.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Tennessee</td>
+        <td>Northern Ky.</td>
+        <td class="prob prob-strong">86.5%</td>
+        <td class="pick">Tennessee</td>
+        <td class="score">14.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Georgia Tech</td>
+        <td>Kennesaw St.</td>
+        <td class="prob prob-strong">89.8%</td>
+        <td class="pick">Georgia Tech</td>
+        <td class="score">17.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Indiana</td>
+        <td>Ball St.</td>
+        <td class="prob prob-mid">58.3%</td>
+        <td class="pick">Indiana</td>
+        <td class="score">12.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Campbell</td>
+        <td>UNC Greensboro</td>
+        <td class="prob prob-strong">78.0%</td>
+        <td class="pick">Campbell</td>
+        <td class="score">13.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Virginia</td>
+        <td>James Madison</td>
+        <td class="prob prob-strong">83.3%</td>
+        <td class="pick">Virginia</td>
+        <td class="score">16.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UMBC</td>
+        <td>Maryland</td>
+        <td class="prob prob-mid">55.4%</td>
+        <td class="pick">UMBC</td>
+        <td class="score">15.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>The Citadel</td>
+        <td>Charleston So.</td>
+        <td class="prob prob-weak">45.2%</td>
+        <td class="pick-away">Charleston So.</td>
+        <td class="score">14.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>NJIT</td>
+        <td>Rider</td>
+        <td class="prob prob-strong">27.6%</td>
+        <td class="pick-away">Rider</td>
+        <td class="score">14.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-medium">medium</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Illinois St.</td>
+        <td>Saint Louis</td>
+        <td class="prob prob-strong">70.8%</td>
+        <td class="pick">Illinois St.</td>
+        <td class="score">11.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Miami (FL)</td>
+        <td>FIU</td>
+        <td class="prob prob-strong">93.7%</td>
+        <td class="pick">Miami (FL)</td>
+        <td class="score">16.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Queens (NC)</td>
+        <td>Davidson</td>
+        <td class="prob prob-mid">39.9%</td>
+        <td class="pick-away">Davidson</td>
+        <td class="score">10.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>William & Mary</td>
+        <td>Old Dominion</td>
+        <td class="prob prob-weak">51.3%</td>
+        <td class="pick">William & Mary</td>
+        <td class="score">12.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Ohio</td>
+        <td>Morehead St.</td>
+        <td class="prob prob-strong">27.8%</td>
+        <td class="pick-away">Morehead St.</td>
+        <td class="score">13.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>South Fla.</td>
+        <td>FGCU</td>
+        <td class="prob prob-strong">70.5%</td>
+        <td class="pick">South Fla.</td>
+        <td class="score">15.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>South Carolina</td>
+        <td>Col. of Charleston</td>
+        <td class="prob prob-strong">71.8%</td>
+        <td class="pick">South Carolina</td>
+        <td class="score">10.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>West Virginia</td>
+        <td>Marshall</td>
+        <td class="prob prob-strong">87.1%</td>
+        <td class="pick">West Virginia</td>
+        <td class="score">16.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Coastal Carolina</td>
+        <td>Wake Forest</td>
+        <td class="prob prob-mid">55.3%</td>
+        <td class="pick">Coastal Carolina</td>
+        <td class="score">15.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Arkansas</td>
+        <td>Little Rock</td>
+        <td class="prob prob-strong">76.9%</td>
+        <td class="pick">Arkansas</td>
+        <td class="score">13.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Southern Miss.</td>
+        <td>New Orleans</td>
+        <td class="prob prob-strong">80.5%</td>
+        <td class="pick">Southern Miss.</td>
+        <td class="score">12.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Lamar University</td>
+        <td>Tulane</td>
+        <td class="prob prob-weak">51.4%</td>
+        <td class="pick">Lamar University</td>
+        <td class="score">12.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Northwestern St.</td>
+        <td>Louisiana Tech</td>
+        <td class="prob prob-strong">72.2%</td>
+        <td class="pick">Northwestern St.</td>
+        <td class="score">12.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Auburn</td>
+        <td>Jacksonville St.</td>
+        <td class="prob prob-weak">54.2%</td>
+        <td class="pick">Auburn</td>
+        <td class="score">14.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Mississippi St.</td>
+        <td>UAB</td>
+        <td class="prob prob-strong">84.8%</td>
+        <td class="pick">Mississippi St.</td>
+        <td class="score">17.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Florida St.</td>
+        <td>Florida</td>
+        <td class="prob prob-mid">61.5%</td>
+        <td class="pick">Florida St.</td>
+        <td class="score">15.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Texas St.</td>
+        <td>Texas A&M</td>
+        <td class="prob prob-strong">24.3%</td>
+        <td class="pick-away">Texas A&M</td>
+        <td class="score">17.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Illinois</td>
+        <td>Indiana St.</td>
+        <td class="prob prob-mid">64.8%</td>
+        <td class="pick">Illinois</td>
+        <td class="score">14.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Missouri</td>
+        <td>Missouri St.</td>
+        <td class="prob prob-mid">44.9%</td>
+        <td class="pick-away">Missouri St.</td>
+        <td class="score">16.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Abilene Christian</td>
+        <td>TCU</td>
+        <td class="prob prob-strong">31.1%</td>
+        <td class="pick-away">TCU</td>
+        <td class="score">15.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>ULM</td>
+        <td>Mississippi Val.</td>
+        <td class="prob prob-strong">90.9%</td>
+        <td class="pick">ULM</td>
+        <td class="score">13.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Alabama</td>
+        <td>Samford</td>
+        <td class="prob prob-strong">87.5%</td>
+        <td class="pick">Alabama</td>
+        <td class="score">13.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Sam Houston</td>
+        <td>Houston</td>
+        <td class="prob prob-weak">50.0%</td>
+        <td class="pick-away">Houston</td>
+        <td class="score">11.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Tennessee Tech</td>
+        <td>Austin Peay</td>
+        <td class="prob prob-strong">32.1%</td>
+        <td class="pick-away">Austin Peay</td>
+        <td class="score">12.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Middle Tenn.</td>
+        <td>Lipscomb</td>
+        <td class="prob prob-strong">71.9%</td>
+        <td class="pick">Middle Tenn.</td>
+        <td class="score">14.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Nebraska</td>
+        <td>Kansas</td>
+        <td class="prob prob-strong">70.5%</td>
+        <td class="pick">Nebraska</td>
+        <td class="score">15.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>North Carolina</td>
+        <td>Charlotte</td>
+        <td class="prob prob-strong">79.2%</td>
+        <td class="pick">North Carolina</td>
+        <td class="score">16.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UT Arlington</td>
+        <td>Baylor</td>
+        <td class="prob prob-strong">34.8%</td>
+        <td class="pick-away">Baylor</td>
+        <td class="score">11.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Oklahoma St.</td>
+        <td>Oral Roberts</td>
+        <td class="prob prob-strong">75.8%</td>
+        <td class="pick">Oklahoma St.</td>
+        <td class="score">12.5</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Southern Ill.</td>
+        <td>Southeast Mo. St.</td>
+        <td class="prob prob-strong">21.4%</td>
+        <td class="pick-away">Southeast Mo. St.</td>
+        <td class="score">13.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Western Ky.</td>
+        <td>Belmont</td>
+        <td class="prob prob-strong">80.1%</td>
+        <td class="pick">Western Ky.</td>
+        <td class="score">11.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Vanderbilt</td>
+        <td>Eastern Ky.</td>
+        <td class="prob prob-strong">89.4%</td>
+        <td class="pick">Vanderbilt</td>
+        <td class="score">14.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Wichita St.</td>
+        <td>Kansas St.</td>
+        <td class="prob prob-mid">43.4%</td>
+        <td class="pick-away">Kansas St.</td>
+        <td class="score">19.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Arkansas St.</td>
+        <td>Memphis</td>
+        <td class="prob prob-strong">76.8%</td>
+        <td class="pick">Arkansas St.</td>
+        <td class="score">13.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>LSU</td>
+        <td>Bethune-Cookman</td>
+        <td class="prob prob-strong">73.9%</td>
+        <td class="pick">LSU</td>
+        <td class="score">16.7</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Ole Miss</td>
+        <td>Alcorn</td>
+        <td class="prob prob-strong">95.0%</td>
+        <td class="pick">Ole Miss</td>
+        <td class="score">11.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UC Santa Barbara</td>
+        <td>Southern California</td>
+        <td class="prob prob-strong">30.3%</td>
+        <td class="pick-away">Southern California</td>
+        <td class="score">12.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Rice</td>
+        <td>A&M-Corpus Christi</td>
+        <td class="prob prob-strong">69.8%</td>
+        <td class="pick">Rice</td>
+        <td class="score">11.0</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>CSUN</td>
+        <td>Pepperdine</td>
+        <td class="prob prob-strong">71.9%</td>
+        <td class="pick">CSUN</td>
+        <td class="score">11.2</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Cal Poly</td>
+        <td>San Jose St.</td>
+        <td class="prob prob-strong">73.5%</td>
+        <td class="pick">Cal Poly</td>
+        <td class="score">13.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Utah Valley</td>
+        <td>BYU</td>
+        <td class="prob prob-mid">40.5%</td>
+        <td class="pick-away">BYU</td>
+        <td class="score">14.4</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>UC Irvine</td>
+        <td>San Diego</td>
+        <td class="prob prob-weak">54.8%</td>
+        <td class="pick">UC Irvine</td>
+        <td class="score">9.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Grand Canyon</td>
+        <td>Arizona St.</td>
+        <td class="prob prob-strong">11.5%</td>
+        <td class="pick-away">Arizona St.</td>
+        <td class="score">13.6</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>LMU (CA)</td>
+        <td>Long Beach St.</td>
+        <td class="prob prob-weak">45.7%</td>
+        <td class="pick-away">Long Beach St.</td>
+        <td class="score">9.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>San Diego St.</td>
+        <td>UC Riverside</td>
+        <td class="prob prob-strong">77.6%</td>
+        <td class="pick">San Diego St.</td>
+        <td class="score">11.3</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Sacramento St.</td>
+        <td>Fresno St.</td>
+        <td class="prob prob-strong">66.7%</td>
+        <td class="pick">Sacramento St.</td>
+        <td class="score">12.9</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Cal St. Fullerton</td>
+        <td>UCLA</td>
+        <td class="prob prob-strong">5.9%</td>
+        <td class="pick-away">UCLA</td>
+        <td class="score">14.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Washington</td>
+        <td>Gonzaga</td>
+        <td class="prob prob-mid">57.1%</td>
+        <td class="pick">Washington</td>
+        <td class="score">12.8</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+      
+      
+      <tr>
+        <td>Nevada</td>
+        <td>UC Davis</td>
+        <td class="prob prob-strong">70.0%</td>
+        <td class="pick">Nevada</td>
+        <td class="score">13.1</td>
+        <td><span class="conf" style="background:#1f2937;color:#6b7280">Mid</span></td>
+        <td><span class="conf conf-high">high</span></td>
+      </tr>
+    
+    </tbody>
+  </table>
   
 
-  <h2>Yesterday's Results — 2026-04-05</h2>
+  <div class="section-header">
+    <h2>Yesterday's Results</h2>
+    <span class="date">2026-04-06</span>
+  </div>
   
-  <p style="color: #888;">No results from yesterday.</p>
+  <table>
+    <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Score</th><th></th></tr></thead>
+    <tbody>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Lafayette</td>
+        <td>Bucknell</td>
+        <td>Bucknell (73.0%)</td>
+        <td class="score">7&ndash;13</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Holy Cross</td>
+        <td>Army West Point</td>
+        <td>Army West Point (56.0%)</td>
+        <td class="score">10&ndash;2</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Eastern Mich.</td>
+        <td>Michigan</td>
+        <td>Michigan (77.0%)</td>
+        <td class="score">4&ndash;15</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Southern Ind.</td>
+        <td>Bellarmine</td>
+        <td>Southern Ind. (73.0%)</td>
+        <td class="score">9&ndash;8</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>San Francisco</td>
+        <td>California</td>
+        <td>California (58.0%)</td>
+        <td class="score">0&ndash;8</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Washington St.</td>
+        <td>Oregon St.</td>
+        <td>Oregon St. (82.0%)</td>
+        <td class="score">0&ndash;18</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>DBU</td>
+        <td>Oklahoma</td>
+        <td>Oklahoma (66.0%)</td>
+        <td class="score">3&ndash;9</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>UC Davis</td>
+        <td>Saint Mary's (CA)</td>
+        <td>Saint Mary's (CA) (62.0%)</td>
+        <td class="score">4&ndash;1</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Sacramento St.</td>
+        <td>Nevada</td>
+        <td>Nevada (51.0%)</td>
+        <td class="score">11&ndash;2</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Santa Clara</td>
+        <td>Clemson</td>
+        <td>Clemson (68.0%)</td>
+        <td class="score">4&ndash;6</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="incorrect">&#10007;</td>
+        <td>Washington</td>
+        <td>Gonzaga</td>
+        <td>Washington (57.0%)</td>
+        <td class="score">2&ndash;9</td>
+        <td class="incorrect">Wrong</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>Long Beach St.</td>
+        <td>California Baptist</td>
+        <td>California Baptist (85.0%)</td>
+        <td class="score">5&ndash;10</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+      
+      <tr>
+        <td class="correct">&#10003;</td>
+        <td>CSU Bakersfield</td>
+        <td>Pacific</td>
+        <td>CSU Bakersfield (64.0%)</td>
+        <td class="score">8&ndash;1</td>
+        <td class="correct">Correct</td>
+      </tr>
+    
+    </tbody>
+  </table>
   
+
+  <div class="section-header">
+    <h2>Power Rankings</h2>
+    <span class="date">Top 25</span>
+  </div>
+  <div class="rankings-grid">
+    
+    <div class="rank-card">
+      <div class="rank-num top5">1</div>
+      <div class="rank-team">
+        <div class="rank-name">UCLA</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">29-2</div>
+        <div class="rank-pythag">90.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">2</div>
+      <div class="rank-team">
+        <div class="rank-name">Texas</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">26-5</div>
+        <div class="rank-pythag">88.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">3</div>
+      <div class="rank-team">
+        <div class="rank-name">Mississippi St.</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-7</div>
+        <div class="rank-pythag">90.4%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">4</div>
+      <div class="rank-team">
+        <div class="rank-name">Georgia</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-6</div>
+        <div class="rank-pythag">85.4%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top5">5</div>
+      <div class="rank-team">
+        <div class="rank-name">Georgia Tech</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">26-5</div>
+        <div class="rank-pythag">88.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">6</div>
+      <div class="rank-team">
+        <div class="rank-name">Texas A&M</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-6</div>
+        <div class="rank-pythag">86.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">7</div>
+      <div class="rank-team">
+        <div class="rank-name">North Carolina</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-5</div>
+        <div class="rank-pythag">85.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">8</div>
+      <div class="rank-team">
+        <div class="rank-name">Florida St.</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-7</div>
+        <div class="rank-pythag">79.6%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">9</div>
+      <div class="rank-team">
+        <div class="rank-name">Alabama</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">25-8</div>
+        <div class="rank-pythag">77.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num top10">10</div>
+      <div class="rank-team">
+        <div class="rank-name">Southern California</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-6</div>
+        <div class="rank-pythag">84.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">11</div>
+      <div class="rank-team">
+        <div class="rank-name">West Virginia</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-7</div>
+        <div class="rank-pythag">82.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">12</div>
+      <div class="rank-team">
+        <div class="rank-name">Auburn</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">22-9</div>
+        <div class="rank-pythag">76.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">13</div>
+      <div class="rank-team">
+        <div class="rank-name">Florida</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-9</div>
+        <div class="rank-pythag">75.0%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">14</div>
+      <div class="rank-team">
+        <div class="rank-name">Miami (FL)</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-8</div>
+        <div class="rank-pythag">82.3%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">15</div>
+      <div class="rank-team">
+        <div class="rank-name">Oklahoma</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-10</div>
+        <div class="rank-pythag">75.7%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">16</div>
+      <div class="rank-team">
+        <div class="rank-name">Arizona St.</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">23-9</div>
+        <div class="rank-pythag">75.9%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">17</div>
+      <div class="rank-team">
+        <div class="rank-name">UCF</div>
+        <div class="rank-conf">Big 12</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">20-9</div>
+        <div class="rank-pythag">71.8%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">18</div>
+      <div class="rank-team">
+        <div class="rank-name">Oregon St.</div>
+        <div class="rank-conf">Independent</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-6</div>
+        <div class="rank-pythag">70.8%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">19</div>
+      <div class="rank-team">
+        <div class="rank-name">Oregon</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-8</div>
+        <div class="rank-pythag">83.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">20</div>
+      <div class="rank-team">
+        <div class="rank-name">Pittsburgh</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">21-9</div>
+        <div class="rank-pythag">83.2%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">21</div>
+      <div class="rank-team">
+        <div class="rank-name">Virginia</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">24-9</div>
+        <div class="rank-pythag">74.5%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">22</div>
+      <div class="rank-team">
+        <div class="rank-name">Nebraska</div>
+        <div class="rank-conf">Big Ten</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">26-6</div>
+        <div class="rank-pythag">73.1%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">23</div>
+      <div class="rank-team">
+        <div class="rank-name">Ole Miss</div>
+        <div class="rank-conf">SEC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">22-11</div>
+        <div class="rank-pythag">70.6%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">24</div>
+      <div class="rank-team">
+        <div class="rank-name">Jacksonville St.</div>
+        <div class="rank-conf">Conference USA</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">27-6</div>
+        <div class="rank-pythag">79.8%</div>
+      </div>
+    </div>
+    
+    <div class="rank-card">
+      <div class="rank-num ">25</div>
+      <div class="rank-team">
+        <div class="rank-name">Wake Forest</div>
+        <div class="rank-conf">ACC</div>
+      </div>
+      <div class="rank-stats">
+        <div class="rank-record">23-10</div>
+        <div class="rank-pythag">73.8%</div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="about" id="about">
+    <h3>How It Works</h3>
+    <p>College Baseball Predictions uses a three-layer prediction model to generate calibrated win probabilities for every NCAA D1 baseball game.</p>
+    <p><strong>Layer 1:</strong> Pythagenport Expected Win% with variable exponent calibrated for college baseball (2.13, not MLB's 1.83).</p>
+    <p><strong>Layer 2:</strong> Dynamic Bradley-Terry ratings via MM algorithm with temporal decay.</p>
+    <p><strong>Layer 3:</strong> Log5 matchup probability with home-field adjustment (~53% baseline).</p>
+    <p style="margin-top: 12px; color: #6b7280; font-size: 0.75em;">No neural networks. The accuracy comes from correct modeling of college baseball's unique run environment, not from complexity.</p>
+  </div>
+
+  <div class="about" id="faq" style="margin-top: 16px;">
+    <h3>Frequently Asked Questions</h3>
+
+    <div class="faq-item">
+      <div class="faq-q">1. Where does the data actually come from?</div>
+      <div class="faq-a">Three sources, all structured JSON APIs &mdash; no screen scraping or fragile HTML parsing.
+        <strong>PEAR Ratings</strong> (pearatings.com) gives us the baseline: team ratings, power rankings, ELO, strength of schedule, and full season stats for all 294 D1 teams.
+        <strong>NCAA Scoreboard</strong> gives us every game score, every day, across the entire D1 season.
+        <strong>The Odds API</strong> gives us live Vegas lines &mdash; moneyline, run line, and over/unders from 40+ sportsbooks.
+        No team websites are scraped. Everything comes through clean REST APIs that return JSON.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">2. How is the data collected? What tools?</div>
+      <div class="faq-a">All three sources are proper APIs that return structured JSON &mdash; we just make HTTP requests and parse the response. No Selenium, no browser automation, no BeautifulSoup. It's Python's built-in HTTP library making GET requests. This keeps the system simple and reliable: no headless browsers to crash, no HTML layouts to break. If the API returns data, we have data.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">3. Is the scraping logic the same for each source?</div>
+      <div class="faq-a">Same core pattern everywhere: build a URL, make an HTTP request, parse the JSON. The differences are minor. PEAR needs us to call once per team when we want detailed stats (about 3 minutes for all 294 teams at a polite rate). NCAA is one call per day. The Odds API is a single call that returns everything at once. All three have built-in rate limiting so we're good API citizens.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">4. How often does the data refresh?</div>
+      <div class="faq-a">Once a day. An automated pipeline runs every afternoon: pull the latest PEAR ratings, import yesterday's and today's NCAA scores, recompute all our ratings (Pythagorean, Bradley-Terry, strength of schedule), generate tonight's predictions, render this page, and push it live. The whole pipeline takes under 5 minutes. For odds, those are fetched on-demand since lines move throughout the day.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">5. How deep does the data go &mdash; team level? Player level? Play by play?</div>
+      <div class="faq-a">Right now, team level. We track runs scored, runs allowed, win/loss records, conference, and a full suite of ratings for every D1 team. We also have every individual game result with final scores. What we don't have yet: player stats, starting pitcher data, or play-by-play. That's the single biggest unlock on our roadmap &mdash; starting pitcher identification is worth an estimated 2&ndash;3% accuracy improvement and is something the existing rating systems (including PEAR) can't do.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">6. What happens when team names don't match across sources?</div>
+      <div class="faq-a">This is a real problem &mdash; NCAA might say "Mississippi St." while PEAR says "Mississippi State" and The Odds API says "Mississippi State Bulldogs." We handle it with a two-layer system. First, we try an exact name match. If that fails, we try common substitutions (State/St., Southern/So., etc.). When a fuzzy match works, we permanently cache it so future lookups are instant. There are currently 44 known aliases in the system. It's not perfect &mdash; some games get skipped when we can't match a team &mdash; but it handles the vast majority automatically.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">7. What's the tech stack?</div>
+      <div class="faq-a">Python, all the way through. The CLI uses Click, the math uses NumPy (Bradley-Terry fitting, matrix operations), the page rendering uses Jinja2 templates, and the database is SQLite. No machine learning frameworks &mdash; our prediction model is a hand-tuned blend of Pythagorean expectation and Bradley-Terry ratings. The accuracy comes from domain-specific modeling of college baseball's run environment, not from throwing data at a neural network.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">8. Where does this run? Cloud? Local?</div>
+      <div class="faq-a">Currently runs locally with a daily cron job, and this page is deployed as static HTML on GitHub Pages. No cloud infrastructure, no servers to maintain, no monthly hosting bill. The daily pipeline runs on a Mac, generates an HTML file, and pushes it to GitHub. For our current scale (one page, updated once daily), this is the right architecture. If we add real-time features or an API for others to query, we'd move to cloud hosting &mdash; but we're not there yet.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">9. Where is the data stored?</div>
+      <div class="faq-a">SQLite database, about 730 KB. It holds 294 teams with full ratings, nearly 5,000 game results with scores (going back to February 14th, the start of the 2026 season), predictions, and accuracy tracking. Raw API responses are also cached as JSON files so we have a backup. SQLite is fast, zero-configuration, and perfect for this scale &mdash; the entire season's data fits in a file smaller than a single photo.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">10. Can you get Vegas odds?</div>
+      <div class="faq-a">Yes, and it's already built. The Odds API provides moneyline, run lines (spreads), and over/unders for college baseball from 40+ sportsbooks including DraftKings, FanDuel, and BetMGM. Free tier gives us 500 API credits per month, which is more than enough for daily polling. The next step is building a betting edge calculator that compares our win probabilities against the implied odds to find value &mdash; games where our model disagrees with the market.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">11. Can you backtest? Do you have historical performance?</div>
+      <div class="faq-a">Yes &mdash; and we take it seriously. Our backtest engine replays the entire season chronologically: for each game, it computes a prediction using <em>only</em> the data that was available before that game happened. No peeking at future results. It then compares our prediction against the actual outcome and against PEAR's ratings. We track accuracy (% of games called correctly), Brier score (how well-calibrated our probabilities are), and we break it down into calibration bins so we can see if "our 70%" really wins 70% of the time. The system is designed so you can never accidentally cheat &mdash; accumulators update after each prediction, not before.</div>
+    </div>
+  </div>
 
   <div class="footer">
-    <p>ForgeStream Baseball v0.1 — Pythagenport + Dynamic Bradley-Terry + Logistic</p>
-    <p>Generated 2026-04-06T10:11:04 | Not financial advice</p>
   </div>
 </div>
 </body>

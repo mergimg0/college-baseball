@@ -1,0 +1,103 @@
+name: Daily Predictions Update
+
+on:
+  schedule:
+    # Run at 10:00 UTC (5am ET / 6am ET DST) — before day's games
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Scrape scores and schedule
+        run: |
+          uv run python -c "
+          from datetime import date, timedelta
+          from fsbb.db import init_db
+          from fsbb.scraper.ncaa import scrape_date
+          import json, ssl, urllib.request, sqlite3
+          try:
+              import certifi
+              ctx = ssl.create_default_context(cafile=certifi.where())
+          except ImportError:
+              ctx = ssl.create_default_context()
+          conn = init_db()
+          today = date.today()
+          r = scrape_date(conn, today - timedelta(days=1))
+          print(f'Yesterday: {r}')
+          url = f'https://ncaa-api.henrygd.me/scoreboard/baseball/d1/{today.year}/{today.month:02d}/{today.day:02d}'
+          req = urllib.request.Request(url, headers={'User-Agent': 'ForgeStream/1.0'})
+          resp = urllib.request.urlopen(req, timeout=20, context=ctx)
+          data = json.loads(resp.read().decode())
+          from fsbb.scraper.ncaa import _resolve_team
+          imported = 0
+          for entry in data.get('games', []):
+              g = entry.get('game', {})
+              home_name = g.get('home', {}).get('names', {}).get('short', '')
+              away_name = g.get('away', {}).get('names', {}).get('short', '')
+              if not home_name or not away_name: continue
+              home_id = _resolve_team(conn, home_name)
+              away_id = _resolve_team(conn, away_name)
+              if not home_id or not away_id: continue
+              state = g.get('gameState', 'pre')
+              status = 'final' if state in ('final', 'FIN') else 'scheduled'
+              h_runs = int(g.get('home',{}).get('score',0) or 0) if status == 'final' else None
+              a_runs = int(g.get('away',{}).get('score',0) or 0) if status == 'final' else None
+              winner_id = None
+              if h_runs and a_runs: winner_id = home_id if h_runs > a_runs else away_id
+              try:
+                  conn.execute('INSERT INTO games (date,home_team_id,away_team_id,home_runs,away_runs,status,actual_winner_id,source) VALUES (?,?,?,?,?,?,?,\"ncaa\") ON CONFLICT(date,home_team_id,away_team_id) DO UPDATE SET status=excluded.status', (today.isoformat(), home_id, away_id, h_runs, a_runs, status, winner_id))
+                  imported += 1
+              except: pass
+          conn.commit()
+          print(f'Today: {imported} games imported')
+          conn.close()
+          "
+
+      - name: Scrape box scores (last 3 days)
+        run: uv run fsbb pitchers --days 3
+
+      - name: Compute ratings
+        run: uv run fsbb rate
+
+      - name: Fetch odds
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: uv run fsbb odds || echo "Odds fetch skipped (no API key)"
+
+      - name: Generate predictions
+        run: uv run fsbb predict
+
+      - name: Render HTML
+        run: uv run fsbb render
+
+      - name: Copy to docs for Pages
+        run: cp docs/predictions.html docs/index.html
+
+      - name: Commit and push
+        env:
+          COMMIT_DATE: ${{ github.event.schedule && 'scheduled' || 'manual' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html docs/predictions.html data/model_v1.json
+          git diff --staged --quiet || git commit -m "daily: predictions update ($COMMIT_DATE)"
+          git push

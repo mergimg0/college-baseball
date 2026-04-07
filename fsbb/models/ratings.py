@@ -340,16 +340,21 @@ def compute_all_ratings(conn: sqlite3.Connection) -> dict:
     pythag_weight = np.maximum(0.9 - team_bt_weight, 0.5)
     power = pythag_weight * pythag + team_bt_weight * bt_norm + 0.1 * sos_strength
 
+    # Derive ELO from BT ratings: ELO = 1500 + bt_rating * (400 / ln(10))
+    # This maps BT log-scale to the standard ELO scale where 400 points ≈ 10:1 odds
+    bt_to_elo_scale = 400.0 / math.log(10)  # ≈ 173.72
+    elo = 1500.0 + ratings * bt_to_elo_scale
+
     # Write computed ratings back to database (keep PEAR RS/RA intact)
     for i in range(n_teams):
         db_id = teams[i]["id"]
         conn.execute("""
             UPDATE teams SET
-                pythag_exp=?, pythag_pct=?, bt_rating=?, sos=?, power_rating=?
+                pythag_exp=?, pythag_pct=?, bt_rating=?, sos=?, power_rating=?, elo=?
             WHERE id=?
         """, (
             float(pythag_exp[i]), float(pythag[i]),
-            float(ratings[i]), float(sos[i]), float(power[i]),
+            float(ratings[i]), float(sos[i]), float(power[i]), float(elo[i]),
             db_id,
         ))
 

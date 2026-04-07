@@ -278,7 +278,7 @@ def backtest(start: str | None, end: str | None, min_games: int, detail: bool):
 @cli.command()
 def odds():
     """Fetch and display current college baseball betting odds."""
-    from fsbb.scraper.odds import fetch_odds, parse_odds, display_odds
+    from fsbb.scraper.odds import fetch_odds, parse_odds, display_odds, store_odds
 
     click.echo("Fetching college baseball odds (The Odds API)...")
     raw = fetch_odds()
@@ -290,6 +290,12 @@ def odds():
     parsed = parse_odds(raw)
     click.echo(f"\n{len(set(f'{p['home_team']} vs {p['away_team']}' for p in parsed))} games with odds:")
     display_odds(parsed)
+
+    # Store odds to database
+    conn = init_db()
+    stored = store_odds(conn, parsed)
+    conn.close()
+    click.echo(f"\n  {stored} games matched and stored to database")
 
 
 @cli.command()
