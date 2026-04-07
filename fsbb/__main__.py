@@ -669,6 +669,51 @@ def coverage(start: str | None, end: str | None, threshold: float):
 
 
 @cli.command()
+@click.argument("game_id", type=int)
+def wp(game_id: int):
+    """Show inning-by-inning win probability for a game."""
+    from fsbb.models.advanced import compute_win_probability_by_inning
+
+    conn = init_db()
+
+    # Get game info
+    game = conn.execute("""
+        SELECT h.name, a.name, g.home_runs, g.away_runs
+        FROM games g JOIN teams h ON g.home_team_id=h.id JOIN teams a ON g.away_team_id=a.id
+        WHERE g.id=?
+    """, (game_id,)).fetchone()
+
+    if not game:
+        click.echo(f"Game {game_id} not found")
+        conn.close()
+        return
+
+    wp_curve = compute_win_probability_by_inning(conn, game_id)
+    conn.close()
+
+    if not wp_curve:
+        click.echo(f"No play-by-play data for game {game_id}")
+        return
+
+    click.echo(f"\n{game[0]} vs {game[1]} — Final: {game[2]}-{game[3]}")
+    click.echo(f"{'='*60}\n")
+
+    # Show inning-level summary (last play per half-inning)
+    prev_inning = 0
+    for wp in wp_curve:
+        if wp["inning"] != prev_inning:
+            bar_len = int(wp["home_wp"] * 40)
+            bar = "#" * bar_len + "." * (40 - bar_len)
+            label = f"Inn {wp['inning']:2d}"
+            click.echo(f"  {label} [{bar}] {wp['home_wp']*100:5.1f}% {game[0]:>15s}  ({wp['score']})")
+            prev_inning = wp["inning"]
+
+    final_wp = wp_curve[-1]["home_wp"]
+    click.echo(f"\n  Final WP: {final_wp*100:.1f}% {game[0]}")
+    click.echo(f"  Events: {len(wp_curve)}")
+
+
+@cli.command()
 @click.option("--date", "target_date", default=None, help="Date to analyze (YYYY-MM-DD)")
 @click.option("--bankroll", default=1000.0, help="Bankroll in dollars")
 @click.option("--min-edge", default=0.05, help="Minimum edge to recommend (0.05 = 5%)")
