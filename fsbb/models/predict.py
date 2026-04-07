@@ -145,13 +145,28 @@ def predict_date(
 ) -> list[dict]:
     """Predict all games on a given date.
 
+    Uses V1 model when available (29-feature logistic regression with PEAR metrics),
+    falls back to V0 (Pythag+BT blend with pitcher adjustment) for teams without features.
     Writes predictions to the predictions table and updates games table.
     Returns list of prediction dicts.
     """
+    import json
+    from pathlib import Path
+
     if target_date is None:
         target_date = date.today()
 
     date_str = target_date.isoformat()
+
+    # Load V1 model if available
+    model_v1 = None
+    model_path = Path(__file__).parent.parent.parent / "data" / "model_v1.json"
+    if model_path.exists():
+        try:
+            with open(model_path) as f:
+                model_v1 = json.load(f)
+        except (json.JSONDecodeError, KeyError):
+            model_v1 = None
 
     # Get all scheduled/upcoming games for this date
     games = conn.execute("""
@@ -166,10 +181,31 @@ def predict_date(
 
     predictions = []
     for g in games:
-        pred = predict_matchup(conn, g["home_team"], g["away_team"], model_version, game_id=g["id"])
+        pred = None
+
+        # Try V1 model first
+        if model_v1:
+            try:
+                from fsbb.models.advanced import predict_v1
+                pred = predict_v1(conn, g["home_team"], g["away_team"], model_v1)
+            except Exception:
+                pred = None
+
+        # Fall back to V0 with pitcher adjustment
+        if not pred:
+            pred = predict_matchup(conn, g["home_team"], g["away_team"], model_version, game_id=g["id"])
         if not pred:
             continue
 
+        # Ensure required fields exist (V1 model may not return all fields)
+        pred.setdefault("predicted_total_runs", 0.0)
+        pred.setdefault("pitcher_adjustment", 0.0)
+        pred.setdefault("home_bt_rating", 0.0)
+        pred.setdefault("away_bt_rating", 0.0)
+        pred.setdefault("home_pythag", 0.5)
+        pred.setdefault("away_pythag", 0.5)
+        pred.setdefault("home_record", "")
+        pred.setdefault("away_record", "")
         pred["game_id"] = g["id"]
         pred["status"] = g["status"]
         pred["actual_home_runs"] = g["home_runs"]
