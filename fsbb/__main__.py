@@ -579,6 +579,17 @@ def render(output: str | None):
     (docs_dir / "edge.html").write_text(html)
     click.echo(f"Rendered edge → {docs_dir / 'edge.html'}")
 
+    # 4. Backtest/accuracy page
+    from fsbb.models.backtest import run_backtest
+    bt = run_backtest(conn_bt := init_db())
+    conn_bt.close()
+    html = env.get_template("backtest.html").render(
+        backtest=bt,
+        generated_at=generated_at,
+    )
+    (docs_dir / "backtest.html").write_text(html)
+    click.echo(f"Rendered backtest → {docs_dir / 'backtest.html'}")
+
 
 @cli.command()
 @click.option("--start", default=None, help="Start date YYYY-MM-DD")

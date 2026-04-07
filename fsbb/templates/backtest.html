@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Accuracy — College Baseball Predictions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
+  .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
+  .nav-brand:hover { text-decoration: none; color: #c7d2fe; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af; transition: all 0.15s; }
+  .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
+  .nav-link.active { background: #312e81; color: #c7d2fe; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .header { border-bottom: 1px solid #1a2035; padding-bottom: 16px; margin-bottom: 20px; }
+  .header h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; letter-spacing: -0.5px; }
+  .header .tagline { color: #6b7280; font-size: 0.85em; margin-top: 2px; }
+  .header .meta { color: #4b5563; font-size: 0.75em; margin-top: 8px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0; }
+  .stat-card { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 20px; text-align: center; }
+  .stat-card .value { font-size: 2em; font-weight: 800; color: #a5b4fc; line-height: 1.1; }
+  .stat-card .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .stat-card.positive .value { color: #34d399; }
+  .stat-card.negative .value { color: #f87171; }
+
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
+  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
+
+  .calibration-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin: 16px 0; }
+  .cal-bin { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 12px 8px; text-align: center; }
+  .cal-bin .predicted { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cal-bin .actual { font-size: 1.4em; font-weight: 700; margin: 4px 0; }
+  .cal-bin .count { font-size: 0.65em; color: #4b5563; }
+  .cal-bin .bar { height: 4px; border-radius: 2px; margin-top: 6px; background: #1f2937; overflow: hidden; }
+  .cal-bin .bar-fill { height: 100%; border-radius: 2px; }
+  .cal-good .actual { color: #34d399; }
+  .cal-good .bar-fill { background: #34d399; }
+  .cal-ok .actual { color: #fbbf24; }
+  .cal-ok .bar-fill { background: #fbbf24; }
+  .cal-bad .actual { color: #f87171; }
+  .cal-bad .bar-fill { background: #f87171; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left;
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid #111827; font-size: 0.85em; }
+  tr:hover { background: #111827; }
+
+  .methodology { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 20px; margin: 24px 0; }
+  .methodology h3 { color: #e8eaed; font-size: 0.95em; margin-bottom: 8px; }
+  .methodology p { color: #9ca3af; font-size: 0.8em; line-height: 1.6; margin-bottom: 8px; }
+  .methodology .caveat { color: #fbbf24; font-size: 0.75em; border-left: 3px solid #fbbf24; padding-left: 12px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">CBP</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Predictions</a>
+      <a href="rankings.html" class="nav-link">Rankings</a>
+      <a href="edge.html" class="nav-link">Edge</a>
+      <a href="backtest.html" class="nav-link active">Accuracy</a>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <div class="header">
+    <h1>Model Accuracy</h1>
+    <div class="tagline">Walk-forward backtest &mdash; predictions made with only past data</div>
+    <div class="meta">Updated {{ generated_at }} | {{ backtest.games }} games evaluated</div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="value">{{ "%.1f"|format(backtest.our_accuracy * 100) }}%</div>
+      <div class="label">Our Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">{{ "%.4f"|format(backtest.our_brier) }}</div>
+      <div class="label">Brier Score</div>
+    </div>
+    {% if backtest.pear_accuracy is not none %}
+    <div class="stat-card">
+      <div class="value">{{ "%.1f"|format(backtest.pear_accuracy * 100) }}%</div>
+      <div class="label">PEAR Accuracy</div>
+    </div>
+    <div class="stat-card {{ 'positive' if backtest.edge_accuracy > 0 else 'negative' }}">
+      <div class="value">{{ "%+.1f"|format(backtest.edge_accuracy * 100) }}%</div>
+      <div class="label">Edge vs PEAR</div>
+    </div>
+    {% endif %}
+    <div class="stat-card">
+      <div class="value">{{ backtest.games }}</div>
+      <div class="label">Games Tested</div>
+    </div>
+  </div>
+
+  <!-- Calibration -->
+  {% if backtest.calibration %}
+  <div class="section-header"><h2>Calibration</h2></div>
+  <p style="color:#6b7280;font-size:0.8em;margin-bottom:12px;">When we say "70% chance," does that team actually win 70% of the time?</p>
+  <div class="calibration-grid">
+    {% for c in backtest.calibration %}
+    {% set diff = (c.actual - c.predicted)|abs %}
+    <div class="cal-bin {{ 'cal-good' if diff < 0.05 else ('cal-ok' if diff < 0.10 else 'cal-bad') }}">
+      <div class="predicted">{{ c.bin }}</div>
+      <div class="actual">{{ "%.0f"|format(c.actual * 100) }}%</div>
+      <div class="count">n={{ c.count }}</div>
+      <div class="bar"><div class="bar-fill" style="width:{{ (c.actual * 100)|int }}%"></div></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- PEAR Comparison Detail -->
+  {% if backtest.pear_accuracy is not none %}
+  <div class="section-header"><h2>PEAR Comparison</h2></div>
+  <table>
+    <thead><tr><th>Metric</th><th>Our Model</th><th>PEAR (ELO)</th><th>Edge</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Accuracy</td>
+        <td>{{ "%.1f"|format(backtest.our_accuracy * 100) }}%</td>
+        <td>{{ "%.1f"|format(backtest.pear_accuracy * 100) }}%</td>
+        <td style="color:{{ '#34d399' if backtest.edge_accuracy > 0 else '#f87171' }}">{{ "%+.1f"|format(backtest.edge_accuracy * 100) }}%</td>
+      </tr>
+      <tr>
+        <td>Brier Score</td>
+        <td>{{ "%.4f"|format(backtest.our_brier) }}</td>
+        <td>{{ "%.4f"|format(backtest.pear_brier) }}</td>
+        <td style="color:{{ '#34d399' if backtest.edge_brier > 0 else '#f87171' }}">{{ "%+.4f"|format(backtest.edge_brier) }}</td>
+      </tr>
+      <tr>
+        <td>Games Evaluated</td>
+        <td colspan="3">{{ backtest.games_evaluated }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="color:#6b7280;font-size:0.75em;margin-top:8px;">PEAR probabilities derived from ELO ratings: P(home) = 1/(1 + 10^(-(ELO_home - ELO_away)/400)). Uses current ELO (not point-in-time snapshots).</p>
+  {% endif %}
+
+  <!-- Methodology -->
+  <div class="methodology">
+    <h3>How This Backtest Works</h3>
+    <p>We replay every game of the 2026 season chronologically. For each game, we compute a prediction using <strong>only data available before that game</strong>. Accumulators (runs scored/allowed, win-loss records) update after each prediction, never before. Bradley-Terry ratings refit every 100 games.</p>
+    <p>This is a "walk-forward" backtest &mdash; the gold standard for time-series prediction validation. No peeking at future results.</p>
+    <div class="caveat">Note: The PEAR comparison uses current ELO ratings (not point-in-time snapshots), so PEAR's accuracy may be slightly inflated. Our model's accuracy is computed honestly via walk-forward.</div>
+  </div>
+</div>
+</body>
+</html>
