@@ -473,9 +473,22 @@ def _find_game_in_db(conn: sqlite3.Connection, date_str: str, home: str, away: s
         "SELECT id FROM games WHERE date=? AND home_team_id=? AND away_team_id=?",
         (date_str, home_id, away_id)
     ).fetchone()
-    if not row:
-        logger.warning(
-            "Game match failed (no game record): date=%s home=%r(id=%d) away=%r(id=%d)",
-            date_str, home, home_id, away, away_id,
+    if row:
+        return row[0]
+
+    # Try swapped home/away — PEAR and NCAA sometimes disagree on who's home
+    row = conn.execute(
+        "SELECT id FROM games WHERE date=? AND home_team_id=? AND away_team_id=?",
+        (date_str, away_id, home_id)
+    ).fetchone()
+    if row:
+        logger.info(
+            "Game matched via home/away swap: date=%s %r vs %r", date_str, home, away,
         )
-    return row[0] if row else None
+        return row[0]
+
+    logger.warning(
+        "Game match failed (no game record): date=%s home=%r(id=%d) away=%r(id=%d)",
+        date_str, home, home_id, away, away_id,
+    )
+    return None
