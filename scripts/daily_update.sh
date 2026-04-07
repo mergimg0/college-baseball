@@ -1,24 +1,30 @@
 #!/bin/bash
-# ForgeStream Baseball — Daily Update Pipeline
-# Runs: scrape → box scores → series positions → odds → rate → render → deploy
+# College Baseball Predictions — Daily Update Pipeline
+# Runs: scrape → box scores → PBP → features → odds → rate → render → push
 #
-# Usage: ./scripts/daily_update.sh
-# Cron:  0 16 * * * cd /path/to/college-baseball && ./scripts/daily_update.sh >> logs/daily.log 2>&1
+# Usage:   ./scripts/daily_update.sh
+# Cron:    0 11 * * * /Users/mghome/projects/college-baseball/scripts/daily_update.sh
+# Logs:    logs/daily-YYYY-MM-DD.log (auto-created)
 
-set -e
+set -euo pipefail
 
 PROJ_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-DEPLOY_DIR="/tmp/fsbb-deploy"
 cd "$PROJ_DIR"
 
+# Logging
+mkdir -p logs
+LOG="logs/daily-$(date '+%Y-%m-%d').log"
+exec > >(tee -a "$LOG") 2>&1
+
+echo "========================================"
 echo "$(date '+%Y-%m-%d %H:%M:%S') — Starting daily update"
+echo "========================================"
 
-# Step 1: Scrape latest PEAR ratings + team details (stores game-level PEAR data)
-echo "  [1/9] Refreshing PEAR ratings..."
-python3 -m fsbb scrape 2>&1 | tail -2
+# Load env (for ODDS_API_KEY)
+[ -f .env ] && export $(grep -v '^#' .env | xargs)
 
-# Step 2: Scrape yesterday's + today's NCAA scores
-echo "  [2/9] Importing NCAA scores..."
+# Step 1: Scrape yesterday's + today's NCAA scores
+echo "[1/8] Importing NCAA scores..."
 python3 -c "
 from fsbb.db import init_db
 from fsbb.scraper.ncaa import scrape_date
@@ -26,32 +32,32 @@ from datetime import date, timedelta
 conn = init_db()
 for d in [date.today() - timedelta(days=1), date.today()]:
     result = scrape_date(conn, d)
-    print(f'    {d}: {result[\"imported\"]} games imported')
+    print(f'  {d}: {result[\"imported\"]} imported, {result[\"skipped\"]} skipped')
 conn.close()
 "
 
-# Step 3: Scrape yesterday's box scores (pitcher data) — ~15-25 games, ~8 seconds
-echo "  [3/11] Scraping pitcher box scores..."
-python3 -m fsbb pitchers --days 1 2>&1 | tail -3
+# Step 2: Scrape box scores (last 2 days)
+echo "[2/8] Scraping pitcher box scores..."
+python3 -m fsbb pitchers --days 2 2>&1 | tail -4
 
-# Step 3.5: Scrape yesterday's play-by-play data
-echo "  [3.5/11] Scraping play-by-play..."
-python3 -m fsbb scrape-pbp --start "$(date -v-1d '+%Y-%m-%d')" --end "$(date -v-1d '+%Y-%m-%d')" 2>&1 | tail -1
+# Step 3: Scrape play-by-play (yesterday)
+echo "[3/8] Scraping play-by-play..."
+YESTERDAY=$(python3 -c "from datetime import date, timedelta; print((date.today()-timedelta(days=1)).isoformat())")
+python3 -m fsbb scrape_pbp --start "$YESTERDAY" --end "$YESTERDAY" 2>&1 | tail -2
 
-# Step 4: Compute series positions
-echo "  [4/9] Computing series positions..."
+# Step 4: Compute series positions + game features
+echo "[4/8] Computing game features..."
 python3 -c "
 from fsbb.db import init_db
 from datetime import datetime
-import sqlite3
-
 conn = init_db()
+
+# Series positions
 games = conn.execute('''
     SELECT id, date, home_team_id, away_team_id
-    FROM games WHERE status=\"final\" AND series_position IS NULL
+    FROM games WHERE status='final' AND series_position IS NULL
     ORDER BY home_team_id, away_team_id, date
 ''').fetchall()
-
 updated = 0
 i = 0
 while i < len(games):
@@ -73,29 +79,19 @@ while i < len(games):
             conn.execute('UPDATE games SET series_position=? WHERE id=?', (pos, sg[0]))
             updated += 1
     i = j
-conn.commit()
-print(f'    Tagged {updated} new games with series position')
-conn.close()
-"
 
-# Step 5: Compute day_of_week and rest days for new games
-echo "  [5/9] Computing game features..."
-python3 -c "
-from fsbb.db import init_db
-from datetime import datetime
-conn = init_db()
 # Day of week
 for g in conn.execute('SELECT id, date FROM games WHERE day_of_week IS NULL').fetchall():
     d = datetime.fromisoformat(g[1]).date()
     conn.execute('UPDATE games SET day_of_week=? WHERE id=?', (d.weekday(), g[0]))
 conn.commit()
-print('    Game features updated')
+print(f'  {updated} series positions, features updated')
 conn.close()
 "
 
-# Step 6: Fetch today's odds (if API key set)
-echo "  [6/9] Fetching odds..."
-if [ -n "$ODDS_API_KEY" ]; then
+# Step 5: Fetch odds (if API key available)
+echo "[5/8] Fetching odds..."
+if [ -n "${ODDS_API_KEY:-}" ]; then
     python3 -c "
 from fsbb.db import init_db
 from fsbb.scraper.odds import fetch_odds, parse_odds, store_odds
@@ -104,21 +100,18 @@ raw = fetch_odds()
 if raw:
     parsed = parse_odds(raw)
     n = store_odds(conn, parsed)
-    print(f'    Stored odds for {n} games')
+    print(f'  Stored odds for {n} games')
 else:
-    print('    No odds available')
+    print('  No odds available')
 conn.close()
-"
+" || echo "  Odds fetch failed (non-fatal)"
 else
-    echo "    Skipped (ODDS_API_KEY not set)"
+    echo "  Skipped (ODDS_API_KEY not set)"
 fi
 
-# Step 7: Recompute ratings
-echo "  [7/11] Computing ratings..."
+# Step 6: Compute ratings + PBP stats + pitcher ratings
+echo "[6/8] Computing ratings..."
 python3 -m fsbb rate 2>&1 | tail -3
-
-# Step 8: Compute PBP stats + pitcher ratings
-echo "  [8/11] Computing PBP stats + pitcher ratings..."
 python3 -c "
 from fsbb.db import init_db
 from fsbb.models.pbp_stats import compute_team_pbp_stats, compute_bullpen_stats
@@ -127,24 +120,27 @@ conn = init_db()
 t = compute_team_pbp_stats(conn)
 b = compute_bullpen_stats(conn)
 p = compute_pitcher_ratings(conn)
-print(f'    {t} team stats, {b} bullpen stats, {p} pitchers rated')
+print(f'  {t} team stats, {b} bullpen stats, {p} pitchers rated')
 conn.close()
 "
 
-# Step 9: Render prediction page
-echo "  [9/11] Rendering prediction page..."
-python3 -m fsbb render -o docs/index.html
+# Step 7: Generate predictions + render all pages
+echo "[7/8] Generating predictions + rendering..."
+python3 -m fsbb predict 2>&1 | tail -2
+python3 -m fsbb render 2>&1
 
-# Step 10: Deploy to GitHub Pages
-echo "  [10/11] Deploying..."
-if [ -d "$DEPLOY_DIR/.git" ]; then
-    cp docs/index.html "$DEPLOY_DIR/index.html"
-    cd "$DEPLOY_DIR"
-    git add index.html
-    git commit -m "Daily update $(date '+%Y-%m-%d')" 2>/dev/null && git push origin main 2>&1 || echo "    No changes to deploy"
+# Step 8: Push to GitHub (triggers Pages auto-deploy)
+echo "[8/8] Pushing to GitHub..."
+cd "$PROJ_DIR"
+git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html
+if git diff --staged --quiet; then
+    echo "  No changes to deploy"
 else
-    echo "    Deploy dir not found. Run initial deployment first."
+    git commit -m "daily: predictions update $(date '+%Y-%m-%d')"
+    git push origin main
+    echo "  Pushed — Pages will auto-deploy"
 fi
 
-cd "$PROJ_DIR"
+echo "========================================"
 echo "$(date '+%Y-%m-%d %H:%M:%S') — Daily update complete"
+echo "========================================"

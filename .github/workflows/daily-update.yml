@@ -1,10 +1,12 @@
 name: Daily Predictions Update
 
+# Local cron handles daily updates (scripts/daily_update.sh -> git push -> Pages auto-deploy).
+# This workflow is for MANUAL triggers only -- useful if local machine is down.
+# NOTE: Requires data/fsbb.db which is gitignored. CI starts with an empty DB,
+# so results will be limited to what can be scraped fresh in a single run.
+
 on:
-  schedule:
-    # Run at 10:00 UTC (5am ET / 6am ET DST) — before day's games
-    - cron: '0 10 * * *'
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch: # Manual trigger only
 
 permissions:
   contents: write
@@ -89,15 +91,12 @@ jobs:
       - name: Render HTML
         run: uv run fsbb render
 
-      - name: Copy to docs for Pages
-        run: cp docs/predictions.html docs/index.html
-
       - name: Commit and push
         env:
           COMMIT_DATE: ${{ github.event.schedule && 'scheduled' || 'manual' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html docs/predictions.html data/model_v1.json
+          git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html data/model_v1.json
           git diff --staged --quiet || git commit -m "daily: predictions update ($COMMIT_DATE)"
           git push

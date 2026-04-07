@@ -1,0 +1,12 @@
+services:
+  daily-update:
+    build: .
+    volumes:
+      - ./data/fsbb.db:/app/data/fsbb.db
+      - ./docs:/app/docs
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    entrypoint: ["bash"]
+    command: ["scripts/daily_update.sh"]
+    # For cron-style scheduling, use: docker compose run daily-update
+    # Or add to host crontab: 0 11 * * * cd /path && docker compose run --rm daily-update
