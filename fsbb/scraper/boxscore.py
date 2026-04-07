@@ -8,11 +8,14 @@ Each game gives: starting pitcher identity, IP, ERA, K, BB for all pitchers.
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 import ssl
 import time
 import urllib.request
 from datetime import date, timedelta
+
+logger = logging.getLogger(__name__)
 
 try:
     import certifi
@@ -214,8 +217,12 @@ def scrape_season_boxscores(
         total_games += result["games"]
         days_scraped += 1
 
-        if progress and days_scraped % 7 == 0:
-            print(f"  {current}: {total_games} games, {total_pitchers} pitcher entries")
+        if progress:
+            day_g = result["games"]
+            if day_g == 0:
+                print(f"  {current}: ⚠ 0 games matched (0 pitchers)")
+            elif days_scraped % 7 == 0:
+                print(f"  {current}: {total_games} games, {total_pitchers} pitcher entries")
 
         if max_days > 0 and days_scraped >= max_days:
             break
@@ -440,7 +447,10 @@ def _resolve_team_id(conn: sqlite3.Connection, name: str) -> int | None:
     alias = conn.execute(
         "SELECT team_id FROM team_aliases WHERE alias=?", (name,)
     ).fetchone()
-    return alias[0] if alias else None
+    if alias:
+        return alias[0]
+    logger.warning("Team resolution failed: %r (no exact match or alias)", name)
+    return None
 
 
 def _find_game_in_db(conn: sqlite3.Connection, date_str: str, home: str, away: str) -> int | None:
@@ -448,10 +458,24 @@ def _find_game_in_db(conn: sqlite3.Connection, date_str: str, home: str, away: s
     home_id = _resolve_team_id(conn, home)
     away_id = _resolve_team_id(conn, away)
     if not home_id or not away_id:
+        missing = []
+        if not home_id:
+            missing.append(f"home={home!r}")
+        if not away_id:
+            missing.append(f"away={away!r}")
+        logger.warning(
+            "Game match failed (team not found): date=%s %s",
+            date_str, ", ".join(missing),
+        )
         return None
 
     row = conn.execute(
         "SELECT id FROM games WHERE date=? AND home_team_id=? AND away_team_id=?",
         (date_str, home_id, away_id)
     ).fetchone()
+    if not row:
+        logger.warning(
+            "Game match failed (no game record): date=%s home=%r(id=%d) away=%r(id=%d)",
+            date_str, home, home_id, away, away_id,
+        )
     return row[0] if row else None
