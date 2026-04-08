@@ -156,7 +156,7 @@
       <tr>
         <td>{{ p.home_team }}</td>
         <td>{{ p.away_team }}</td>
-        <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (p.home_win_prob * 100) | round(1) }}%</td>
+        <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (p.home_win_prob * 100) | round(1) }}%{% if p.get('ci_lower') %}<span style="font-size:0.7em;color:#6b7280;font-weight:400"> ({{ (p.ci_lower * 100) | round(0) }}&ndash;{{ (p.ci_upper * 100) | round(0) }})</span>{% endif %}</td>
         <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
         <td class="score">{{ p.predicted_total_runs }}</td>
         <td>{% if p.series_position == 1 %}<span class="conf conf-high">G1 Ace</span>{% elif p.series_position == 2 %}<span class="conf conf-medium">G2</span>{% elif p.series_position == 3 %}<span class="conf conf-low">G3</span>{% else %}<span class="conf" style="background:#1f2937;color:#6b7280">Mid</span>{% endif %}</td>

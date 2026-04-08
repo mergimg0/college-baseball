@@ -170,6 +170,60 @@ def schema_version(conn: sqlite3.Connection) -> int:
         return 0
 
 
+def resolve_team(conn: sqlite3.Connection, name: str) -> int | None:
+    """Canonical team name resolution. Use this everywhere.
+
+    Tries in order:
+      1. Exact match on teams.name
+      2. Alias lookup on team_aliases.alias
+      3. Fuzzy variants (State↔St., Southern↔So., etc.)
+      4. Auto-cache successful fuzzy matches as aliases
+    Returns team_id or None.
+    """
+    if not name or not name.strip():
+        return None
+    name = name.strip()
+
+    # 1. Exact match
+    row = conn.execute("SELECT id FROM teams WHERE name=?", (name,)).fetchone()
+    if row:
+        return row[0]
+
+    # 2. Alias lookup
+    alias = conn.execute(
+        "SELECT team_id FROM team_aliases WHERE alias=?", (name,)
+    ).fetchone()
+    if alias:
+        return alias[0]
+
+    # 3. Fuzzy variants
+    variants = [
+        name.replace("State", "St."),
+        name.replace("St.", "State"),
+        name.replace(" St", " St.") if name.endswith(" St") else None,
+        name.replace("Southern", "So."),
+        name.replace("Northern", "No."),
+        name.replace("University", "").strip(),
+    ]
+    for v in variants:
+        if v is None:
+            continue
+        row = conn.execute("SELECT id FROM teams WHERE name=?", (v.strip(),)).fetchone()
+        if row:
+            # Cache for future lookups
+            try:
+                conn.execute(
+                    "INSERT OR IGNORE INTO team_aliases (alias, team_id) VALUES (?, ?)",
+                    (name, row[0]),
+                )
+                conn.commit()
+            except Exception:
+                pass
+            return row[0]
+
+    return None
+
+
 def reset_db(db_path: Path | None = None) -> sqlite3.Connection:
     """Drop all tables and reinitialize. USE WITH CAUTION."""
     path = db_path or DB_PATH

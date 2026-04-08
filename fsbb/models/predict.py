@@ -105,6 +105,17 @@ def predict_matchup(
     # Clamp to reasonable range
     home_win_prob = max(0.05, min(0.95, home_win_prob))
 
+    # Bayesian confidence interval
+    ci_lower, ci_upper = None, None
+    try:
+        from fsbb.models.bayesian import predict_with_ci
+        ci_result = predict_with_ci(conn, home["name"], away["name"])
+        if ci_result:
+            ci_lower = ci_result["ci_lower"]
+            ci_upper = ci_result["ci_upper"]
+    except Exception:
+        pass
+
     # Predicted total runs (simple: average of both teams' RPG)
     home_rpg = home["total_rs"] / max(home["games_played"], 1)
     away_rpg = away["total_rs"] / max(away["games_played"], 1)
@@ -125,6 +136,8 @@ def predict_matchup(
         "away_team": away["name"],
         "home_win_prob": round(home_win_prob, 4),
         "away_win_prob": round(1 - home_win_prob, 4),
+        "ci_lower": round(ci_lower, 4) if ci_lower is not None else None,
+        "ci_upper": round(ci_upper, 4) if ci_upper is not None else None,
         "predicted_total_runs": round(predicted_total, 1),
         "home_bt_rating": round(home["bt_rating"] or 0.0, 4),
         "away_bt_rating": round(away["bt_rating"] or 0.0, 4),
@@ -429,10 +442,42 @@ def _get_team(conn: sqlite3.Connection, name: str) -> dict | None:
 
 
 def _estimate_hfa(conn: sqlite3.Connection) -> float:
-    """Estimate home field advantage from completed games.
+    """Estimate home field advantage from BT model (quality-adjusted).
 
-    Returns log-odds HFA. Default ~0.15 (translates to ~54% home win rate).
+    Prefers the BT-estimated HFA (which separates home advantage from team
+    quality) over raw home win rate (which inflates HFA because stronger
+    teams play more home games).
+
+    Returns log-odds HFA. BT typically gives ~0.19 (~55%), raw gives ~0.40 (~60%).
     """
+    # Prefer BT-derived HFA (computed by fsbb rate → compute_all_ratings)
+    # Re-derive from current BT model
+    try:
+        from fsbb.models.ratings import fit_dynamic_bt
+        rows = conn.execute("""
+            SELECT date, home_team_id, away_team_id, home_runs, away_runs
+            FROM games WHERE status='final' AND home_runs IS NOT NULL
+        """).fetchall()
+        if len(rows) >= 200:
+            teams = conn.execute("SELECT id FROM teams ORDER BY id").fetchall()
+            team_id_map = {t[0]: idx for idx, t in enumerate(teams)}
+            bt_games = []
+            for r in rows:
+                h_id, a_id = r[1], r[2]
+                if h_id in team_id_map and a_id in team_id_map:
+                    bt_games.append({
+                        "home_idx": team_id_map[h_id],
+                        "away_idx": team_id_map[a_id],
+                        "home_won": r[3] > r[4],
+                        "date": r[0],
+                    })
+            if len(bt_games) >= 200:
+                _, hfa_log = fit_dynamic_bt(bt_games, len(teams), team_id_map, max_iter=50)
+                return hfa_log
+    except Exception:
+        pass
+
+    # Fallback: raw home win rate (less accurate but always available)
     row = conn.execute("""
         SELECT COUNT(*) as total,
                SUM(CASE WHEN home_runs > away_runs THEN 1 ELSE 0 END) as home_wins
@@ -442,9 +487,7 @@ def _estimate_hfa(conn: sqlite3.Connection) -> float:
 
     if row and row["total"] >= 50:
         home_pct = row["home_wins"] / row["total"]
-        # Convert to log-odds
-        home_pct = max(0.45, min(0.65, home_pct))  # Clamp
+        home_pct = max(0.45, min(0.65, home_pct))
         return math.log(home_pct / (1 - home_pct))
 
-    # Default: ~54% home win rate (typical college baseball)
     return 0.16

@@ -190,7 +190,8 @@ def matchup(home: str, away: str):
 
 @cli.command()
 @click.option("--date", "target_date", default=None, help="Date to predict (YYYY-MM-DD)")
-def predict(target_date: str | None):
+@click.option("--simulate", is_flag=True, help="Run Monte Carlo simulation for spread/total distributions")
+def predict(target_date: str | None, simulate: bool):
     """Generate predictions for a date's games."""
     from fsbb.models.predict import predict_date
 
@@ -210,7 +211,7 @@ def predict(target_date: str | None):
         winner = p["home_team"] if p["home_win_prob"] > 0.5 else p["away_team"]
         conf = max(p["home_win_prob"], p["away_win_prob"])
         status = "✓" if p.get("correct") is True else ("✗" if p.get("correct") is False else "—")
-        table.append([
+        row = [
             p["home_team"],
             p["away_team"],
             f"{p['home_win_prob']*100:.1f}%",
@@ -219,10 +220,32 @@ def predict(target_date: str | None):
             f"{p['predicted_total_runs']:.1f}",
             p["confidence"],
             status,
-        ])
+        ]
+        table.append(row)
 
     headers = ["Home", "Away", "Home %", "Pick", "Conf", "Total", "Trust", "Result"]
     click.echo(tabulate(table, headers=headers, tablefmt="simple"))
+
+    if simulate:
+        from fsbb.models.simulator import simulate_game, compute_over_under
+        click.echo(f"\n{'='*60}")
+        click.echo(f"  Monte Carlo Simulation (10,000 sims per game)")
+        click.echo(f"{'='*60}\n")
+        sim_table = []
+        for p in predictions:
+            total = p.get("predicted_total_runs") or 12.0  # college avg ~12 RPG
+            home_rpg = total / 2 + 0.5
+            away_rpg = total / 2 - 0.5
+            sim = simulate_game(home_rpg, away_rpg, p["home_win_prob"])
+            sim_table.append([
+                f"{p['home_team'][:15]} v {p['away_team'][:15]}",
+                f"{sim['home_win_pct']*100:.1f}%",
+                f"{sim['avg_total_runs']:.1f}",
+                f"{sim['spread_median']:+.1f}",
+                f"{sim['total_dist']['p10']}-{sim['total_dist']['p90']}",
+            ])
+        sim_headers = ["Game", "Sim Win%", "Sim Total", "Spread", "Total 80% CI"]
+        click.echo(tabulate(sim_table, headers=sim_headers, tablefmt="simple"))
 
 
 @cli.command()
@@ -296,6 +319,29 @@ def odds():
     stored = store_odds(conn, parsed)
     conn.close()
     click.echo(f"\n  {stored} games matched and stored to database")
+
+
+@cli.command(name="scrape-ncaa")
+@click.option("--start", default=None, help="Start date (YYYY-MM-DD, default: Feb 14)")
+@click.option("--end", default=None, help="End date (YYYY-MM-DD, default: yesterday)")
+@click.option("--season", default=None, type=int, help="Scrape an entire historical season (e.g., 2025)")
+def scrape_ncaa(start: str | None, end: str | None, season: int | None):
+    """Scrape NCAA scoreboard for game scores."""
+    from fsbb.scraper.ncaa import scrape_season
+
+    conn = init_db()
+    if season:
+        s = date(season, 2, 14)
+        e = date(season, 6, 30)
+        click.echo(f"Scraping {season} season ({s} to {e})...")
+    else:
+        s = date.fromisoformat(start) if start else date(date.today().year, 2, 14)
+        e = date.fromisoformat(end) if end else date.today() - timedelta(days=1)
+        click.echo(f"Scraping {s} to {e}...")
+
+    result = scrape_season(conn, start=s, end=e)
+    conn.close()
+    click.echo(f"Done: {result['games_imported']} games imported, {result['games_skipped']} skipped ({result['days_scraped']} days)")
 
 
 @cli.command()
@@ -753,6 +799,77 @@ def bet(target_date: str | None, bankroll: float, min_edge: float, kelly: float)
     click.echo(tabulate(table, headers=headers, tablefmt="simple"))
     click.echo(f"\nTotal wagered: ${total_bet:.2f} ({total_bet/bankroll*100:.1f}% of bankroll)")
     click.echo(f"Bets: {len(recs)}")
+
+
+@cli.command()
+@click.option("--from-v1", is_flag=True, help="Initialize from V1 model weights (warm start)")
+def learn(from_v1: bool):
+    """Update online learner from completed game results."""
+    from fsbb.models.online_learner import OnlineLogisticRegressor
+    from fsbb.models.advanced import get_team_feature_vector, compute_matchup_features
+    import numpy as np
+
+    conn = init_db()
+    model_dir = Path(__file__).parent.parent / "data"
+    learner_path = model_dir / "online_learner.json"
+
+    # Load or create learner
+    if learner_path.exists() and not from_v1:
+        learner = OnlineLogisticRegressor.load(learner_path)
+        click.echo(f"Loaded learner ({learner.n_updates} prior updates)")
+    elif from_v1:
+        v1_path = model_dir / "model_v1.json"
+        if not v1_path.exists():
+            click.echo("No model_v1.json found. Run train_model() first.")
+            conn.close()
+            return
+        learner = OnlineLogisticRegressor.from_v1_model(v1_path)
+        click.echo(f"Initialized from V1 model ({len(learner.weights)} features)")
+    else:
+        learner = OnlineLogisticRegressor(n_features=29)
+        click.echo("Created new learner (29 features)")
+
+    # Get completed games that haven't been used for learning
+    # Use games after the V1 training cutoff (approximate: last 500 games)
+    games = conn.execute("""
+        SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs, g.series_position
+        FROM games g
+        WHERE g.status='final' AND g.home_runs IS NOT NULL
+        ORDER BY g.date DESC LIMIT 500
+    """).fetchall()
+
+    updated = 0
+    for g in games:
+        home_vec = get_team_feature_vector(conn, g[0])
+        away_vec = get_team_feature_vector(conn, g[1])
+        if home_vec is None or away_vec is None:
+            continue
+        home_vec = np.nan_to_num(home_vec, nan=0.0)
+        away_vec = np.nan_to_num(away_vec, nan=0.0)
+        features = compute_matchup_features(home_vec, away_vec, series_position=g[4])
+        outcome = 1.0 if g[2] > g[3] else 0.0
+
+        # Normalize using V1 training stats if available
+        v1_path = model_dir / "model_v1.json"
+        if v1_path.exists():
+            import json as _json
+            with open(v1_path) as f:
+                v1 = _json.load(f)
+            X_mean = np.array(v1["X_mean"])
+            X_std = np.array(v1["X_std"])
+            features = (features - X_mean) / X_std
+
+        learner.update(features, outcome)
+        updated += 1
+
+    learner.save(learner_path)
+    conn.close()
+
+    brier = learner.rolling_brier(50)
+    click.echo(f"Updated on {updated} games (total updates: {learner.n_updates})")
+    if brier is not None:
+        click.echo(f"Rolling Brier (last 50): {brier:.4f}")
+    click.echo(f"Saved to {learner_path}")
 
 
 if __name__ == "__main__":
