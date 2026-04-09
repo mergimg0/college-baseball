@@ -21,6 +21,8 @@ from fsbb.models.ratings import (
     pythagorean_wpct,
 )
 
+_V1_MODEL_CACHE: dict | None = None
+
 
 def run_backtest(
     conn: sqlite3.Connection,
@@ -50,7 +52,8 @@ def run_backtest(
     # Load all completed games ordered by date
     query = """
         SELECT g.id, g.date, g.home_team_id, g.away_team_id,
-               g.home_runs, g.away_runs, g.pear_home_win_prob
+               g.home_runs, g.away_runs, g.pear_home_win_prob,
+               g.series_position
         FROM games g
         WHERE g.status = 'final' AND g.home_runs IS NOT NULL
     """
@@ -84,6 +87,8 @@ def run_backtest(
     game_history: list[dict] = []  # games seen so far (for BT fitting)
     cached_bt_diff: dict[tuple[int, int], float] = {}
     cached_hfa: float = 0.16
+    cal_a: float = 1.0
+    cal_b: float = 0.0
 
     # Results
     results = []
@@ -128,6 +133,75 @@ def run_backtest(
                 log_odds += 0.16
                 our_prob = 1.0 / (1.0 + math.exp(-log_odds))
             our_prob = max(0.05, min(0.95, our_prob))
+
+            # Pitcher quality adjustment (mirrors predict.py:88-103)
+            try:
+                from fsbb.scraper.boxscore import get_starter_quality
+                hq = get_starter_quality(conn, game["id"], h_id)
+                aq = get_starter_quality(conn, game["id"], a_id)
+                if hq is not None and aq is not None:
+                    p_diff = (hq - aq) / 125.0
+                    lo = math.log(max(our_prob, 1e-10) / max(1 - our_prob, 1e-10))
+                    lo += p_diff
+                    our_prob = 1.0 / (1.0 + math.exp(-lo))
+                    our_prob = max(0.05, min(0.95, our_prob))
+            except Exception:
+                pass
+
+            # Walk-forward Platt calibration: fit from prior games, apply to current
+            if total_evaluated >= 200 and total_evaluated % 200 == 0:
+                # Re-fit calibration from accumulated predictions
+                if results:
+                    best_a, best_b, best_brier = 1.0, 0.0, float("inf")
+                    for a_c in [0.7, 0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1]:
+                        for b_c in [-0.2, -0.1, -0.05, 0.0, 0.05, 0.1, 0.2]:
+                            b = 0.0
+                            for r in results:
+                                p = max(0.01, min(0.99, r["our_prob"]))
+                                lo = math.log(p / (1 - p))
+                                z = a_c * lo + b_c
+                                pc = 1.0 / (1.0 + math.exp(-max(-30, min(30, z))))
+                                act = 1.0 if r["actual_home_won"] else 0.0
+                                b += (pc - act) ** 2
+                            b /= len(results)
+                            if b < best_brier:
+                                best_a, best_b, best_brier = a_c, b_c, b
+                    cal_a, cal_b = best_a, best_b
+
+            if cal_a != 1.0 or cal_b != 0.0:
+                our_prob = max(0.01, min(0.99, our_prob))
+                lo = math.log(our_prob / (1 - our_prob))
+                z = cal_a * lo + cal_b
+                our_prob = 1.0 / (1.0 + math.exp(-max(-30, min(30, z))))
+                our_prob = max(0.05, min(0.95, our_prob))
+
+            # V1 blend: after March 15, blend with V1 model (29 PEAR features)
+            # V1 uses season-level PEAR features (some leakage), so blend 50/50 with V0
+            global _V1_MODEL_CACHE
+            if game["date"] >= "2026-03-15":
+                try:
+                    from fsbb.models.advanced import predict_v1
+                    if _V1_MODEL_CACHE is None:
+                        import json as _json
+                        from pathlib import Path
+                        mp = Path(__file__).parent.parent.parent / "data" / "model_v1.json"
+                        if mp.exists():
+                            with open(mp) as f:
+                                _V1_MODEL_CACHE = _json.load(f)
+                        else:
+                            _V1_MODEL_CACHE = {}
+                    if _V1_MODEL_CACHE:
+                        v1_pred = predict_v1(
+                            conn, team_names[h_idx], team_names[a_idx],
+                            _V1_MODEL_CACHE,
+                            series_position=game["series_position"],
+                        )
+                        if v1_pred:
+                            v1_prob = v1_pred["home_win_prob"]
+                            our_prob = 0.5 * our_prob + 0.5 * v1_prob
+                            our_prob = max(0.05, min(0.95, our_prob))
+                except Exception:
+                    pass
 
             # Actual outcome
             actual_home_won = game["home_runs"] > game["away_runs"]

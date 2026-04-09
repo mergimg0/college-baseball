@@ -1,0 +1,46 @@
+{
+  "seasons": {
+    "2023": {
+      "games_evaluated": 5234,
+      "our_accuracy": 0.6548,
+      "our_brier": 0.2163,
+      "our_correct": 3427,
+      "exponent": 2.1415
+    },
+    "2024": {
+      "games_evaluated": 5905,
+      "our_accuracy": 0.6391,
+      "our_brier": 0.2212,
+      "our_correct": 3774,
+      "exponent": 2.1511
+    },
+    "2025": {
+      "games_evaluated": 5669,
+      "our_accuracy": 0.6453,
+      "our_brier": 0.2203,
+      "our_correct": 3658,
+      "exponent": 2.1484
+    },
+    "2026": {
+      "games_evaluated": 2571,
+      "our_accuracy": 0.6573,
+      "our_brier": 0.214,
+      "our_correct": 1690,
+      "exponent": 2.1325,
+      "pear_accuracy": 0.6981,
+      "edge": -0.0408
+    }
+  },
+  "aggregate": {
+    "total_games": 19379,
+    "total_correct": 12549,
+    "accuracy": 0.6476,
+    "brier": 0.2187,
+    "exponents": {
+      "2023": 2.1415,
+      "2024": 2.1511,
+      "2025": 2.1484,
+      "2026": 2.1325
+    }
+  }
+}

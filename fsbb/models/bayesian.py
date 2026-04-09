@@ -68,12 +68,18 @@ class BayesianPredictor:
         )
 
 
-def compute_team_posteriors(conn: sqlite3.Connection) -> dict[int, BayesianPredictor]:
-    """Build Bayesian posteriors for all teams from game history.
+_POSTERIORS_CACHE: tuple[int, dict] | None = None
 
-    Processes games chronologically, updating both teams' posteriors
-    after each game. Returns dict mapping team_id -> BayesianPredictor.
-    """
+
+def compute_team_posteriors(conn: sqlite3.Connection) -> dict[int, BayesianPredictor]:
+    """Build Bayesian posteriors for all teams. Cached until game count changes."""
+    global _POSTERIORS_CACHE
+    game_count = conn.execute(
+        "SELECT COUNT(*) FROM games WHERE status='final'"
+    ).fetchone()[0]
+    if _POSTERIORS_CACHE and _POSTERIORS_CACHE[0] == game_count:
+        return _POSTERIORS_CACHE[1]
+
     games = conn.execute("""
         SELECT home_team_id, away_team_id, home_runs, away_runs
         FROM games
@@ -97,6 +103,7 @@ def compute_team_posteriors(conn: sqlite3.Connection) -> dict[int, BayesianPredi
         posteriors[home_id].update(outcome, obs_var=0.5)
         posteriors[away_id].update(-outcome, obs_var=0.5)
 
+    _POSTERIORS_CACHE = (game_count, posteriors)
     return posteriors
 
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Win Probability | ForgeStream Baseball</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'SF Mono', 'Fira Code', monospace; background: #0d1117; color: #c9d1d9; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        nav { display: flex; gap: 20px; padding: 15px 0; border-bottom: 1px solid #21262d; margin-bottom: 20px; }
+        nav a { color: #58a6ff; text-decoration: none; font-size: 14px; }
+        nav a:hover { text-decoration: underline; }
+        nav a.active { color: #f0f6fc; font-weight: bold; }
+        h1 { font-size: 20px; color: #f0f6fc; margin-bottom: 5px; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+        .game-card { background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .game-teams { font-size: 16px; color: #f0f6fc; }
+        .game-score { font-size: 14px; color: #8b949e; }
+        .wp-chart { width: 100%; }
+        .wp-row { display: flex; align-items: center; margin: 2px 0; font-size: 12px; }
+        .wp-label { width: 50px; color: #8b949e; text-align: right; padding-right: 8px; }
+        .wp-bar-container { flex: 1; height: 18px; background: #21262d; border-radius: 3px; position: relative; overflow: hidden; }
+        .wp-bar { height: 100%; border-radius: 3px; transition: width 0.3s; }
+        .wp-bar.home { background: linear-gradient(90deg, #1f6feb, #58a6ff); }
+        .wp-bar.away { background: linear-gradient(90deg, #da3633, #f85149); }
+        .wp-pct { width: 50px; text-align: left; padding-left: 8px; font-size: 11px; }
+        .wp-score-label { font-size: 10px; color: #8b949e; position: absolute; right: 4px; top: 2px; }
+        .swing { background: #161b22; border-left: 3px solid #f0883e; padding: 8px 12px; margin-top: 10px; font-size: 12px; }
+        .swing-label { color: #f0883e; font-weight: bold; }
+        .no-games { color: #8b949e; text-align: center; padding: 40px; }
+        footer { text-align: center; color: #484f58; font-size: 11px; padding: 30px 0; border-top: 1px solid #21262d; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">Predictions</a>
+            <a href="rankings.html">Rankings</a>
+            <a href="edge.html">Edge</a>
+            <a href="backtest.html">Accuracy</a>
+            <a href="wp.html" class="active">Win Prob</a>
+        </nav>
+
+        <h1>Win Probability Curves</h1>
+        <p class="subtitle">Yesterday's games with play-by-play data ({{ yesterday }}) &mdash; Generated {{ generated_at }}</p>
+
+        {% if games %}
+        {% for game in games %}
+        <div class="game-card">
+            <div class="game-header">
+                <span class="game-teams">{{ game.home }} vs {{ game.away }}</span>
+                <span class="game-score">Final: {{ game.home_runs }}-{{ game.away_runs }}</span>
+            </div>
+            <div class="wp-chart">
+                {% for wp in game.wp_curve %}
+                <div class="wp-row">
+                    <span class="wp-label">{{ wp.inning }}{% if loop.index == 1 %}st{% elif loop.index == 2 %}nd{% elif loop.index == 3 %}rd{% else %}th{% endif %}</span>
+                    <div class="wp-bar-container">
+                        {% if wp.home_wp >= 0.5 %}
+                        <div class="wp-bar home" style="width: {{ (wp.home_wp * 100)|round(1) }}%"></div>
+                        {% else %}
+                        <div class="wp-bar away" style="width: {{ ((1 - wp.home_wp) * 100)|round(1) }}%"></div>
+                        {% endif %}
+                        <span class="wp-score-label">{{ wp.score }}</span>
+                    </div>
+                    <span class="wp-pct">{{ (wp.home_wp * 100)|round(1) }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% if game.swing %}
+            <div class="swing">
+                <span class="swing-label">Biggest swing:</span>
+                Inn {{ game.swing.inning }} &mdash; {{ game.swing.event }} ({{ game.swing.delta|round(1) }}% shift)
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-games">No games with play-by-play data for {{ yesterday }}.</div>
+        {% endif %}
+    </div>
+    <footer>ForgeStream Baseball &mdash; Updated {{ generated_at }}</footer>
+</body>
+</html>

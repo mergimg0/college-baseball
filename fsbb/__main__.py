@@ -94,6 +94,13 @@ def rate():
     conn = init_db()
     click.echo("Computing ratings...")
     result = compute_all_ratings(conn)
+
+    # Fit Platt calibration from completed games
+    from fsbb.models.predict import fit_calibration
+    click.echo("Fitting calibration...")
+    cal = fit_calibration(conn)
+    click.echo(f"  Platt scaling: a={cal['a']:.2f}, b={cal['b']:.2f}")
+
     conn.close()
 
     click.echo(f"\nRating summary:")
@@ -296,6 +303,24 @@ def backtest(start: str | None, end: str | None, min_games: int, detail: bool):
             mark = "✓" if r["our_correct"] else "✗"
             click.echo(f"    {mark} {r['date'][:10]} {r['home']:18s} vs {r['away']:18s} "
                        f"prob={r['our_prob']:.0%} score={r['score']}")
+
+
+@cli.command(name="backtest-multi")
+@click.option("--seasons", default=None, help="Comma-separated seasons (e.g., 2023,2024,2025,2026)")
+def backtest_multi(seasons: str | None):
+    """Run walk-forward backtest across multiple seasons."""
+    from fsbb.models.multi_season import run_multi_season_backtest
+
+    conn = init_db()
+    s_list = [int(s) for s in seasons.split(",")] if seasons else None
+    result = run_multi_season_backtest(conn, seasons=s_list, progress=True)
+    conn.close()
+
+    if result.get("aggregate"):
+        agg = result["aggregate"]
+        click.echo(f"\nAggregate: {agg['accuracy']:.1%} on {agg['total_games']} games (Brier: {agg['brier']:.4f})")
+        if agg.get("exponents"):
+            click.echo(f"Exponents: {agg['exponents']}")
 
 
 @cli.command()
@@ -613,6 +638,50 @@ def render(output: str | None):
     (docs_dir / "backtest.html").write_text(html)
     click.echo(f"Rendered backtest → {docs_dir / 'backtest.html'}")
 
+    # 5. Win probability page
+    from fsbb.models.advanced import compute_win_probability_by_inning
+    conn_wp = init_db()
+    yesterday_wp = []
+    for gm in conn_wp.execute("""
+        SELECT g.id, h.name, a.name, g.home_runs, g.away_runs
+        FROM games g JOIN teams h ON g.home_team_id=h.id JOIN teams a ON g.away_team_id=a.id
+        WHERE g.date=? AND g.status='final'
+        AND EXISTS (SELECT 1 FROM play_events pe WHERE pe.game_id=g.id)
+        LIMIT 10
+    """, (yesterday.isoformat(),)).fetchall():
+        wp_curve = compute_win_probability_by_inning(conn_wp, gm[0])
+        if not wp_curve:
+            continue
+        # Summarize to one entry per inning (last play)
+        inning_summary = []
+        for wp in wp_curve:
+            if not inning_summary or wp["inning"] != inning_summary[-1]["inning"]:
+                inning_summary.append(wp)
+            else:
+                inning_summary[-1] = wp
+        # Find biggest swing
+        swing = None
+        max_delta = 0
+        for i in range(1, len(wp_curve)):
+            delta = abs(wp_curve[i]["home_wp"] - wp_curve[i-1]["home_wp"]) * 100
+            if delta > max_delta:
+                max_delta = delta
+                swing = {"inning": wp_curve[i]["inning"], "event": wp_curve[i]["event"], "delta": delta}
+        yesterday_wp.append({
+            "home": gm[1], "away": gm[2],
+            "home_runs": gm[3], "away_runs": gm[4],
+            "wp_curve": inning_summary,
+            "swing": swing,
+        })
+    conn_wp.close()
+    html = env.get_template("wp.html").render(
+        yesterday=yesterday.isoformat(),
+        games=yesterday_wp,
+        generated_at=generated_at,
+    )
+    (docs_dir / "wp.html").write_text(html)
+    click.echo(f"Rendered wp → {docs_dir / 'wp.html'} ({len(yesterday_wp)} games)")
+
 
 @cli.command()
 @click.option("--start", default=None, help="Start date YYYY-MM-DD")
@@ -835,7 +904,7 @@ def learn(from_v1: bool):
         SELECT g.home_team_id, g.away_team_id, g.home_runs, g.away_runs, g.series_position
         FROM games g
         WHERE g.status='final' AND g.home_runs IS NOT NULL
-        ORDER BY g.date DESC LIMIT 500
+        ORDER BY g.date ASC
     """).fetchall()
 
     updated = 0

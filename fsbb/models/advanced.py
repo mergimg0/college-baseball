@@ -360,6 +360,7 @@ def predict_v1(
     home_team: str,
     away_team: str,
     model: dict,
+    series_position: int | None = None,
 ) -> dict | None:
     """Predict a matchup using the trained V1 model.
 
@@ -398,7 +399,7 @@ def predict_v1(
     home_vec = np.nan_to_num(home_vec, nan=0.0)
     away_vec = np.nan_to_num(away_vec, nan=0.0)
 
-    features = compute_matchup_features(home_vec, away_vec)
+    features = compute_matchup_features(home_vec, away_vec, series_position=series_position)
 
     # Normalize using training stats
     X_mean = np.array(model["X_mean"])

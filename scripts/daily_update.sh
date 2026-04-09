@@ -132,7 +132,7 @@ python3 -m fsbb render 2>&1
 # Step 8: Push to GitHub (triggers Pages auto-deploy)
 echo "[8/8] Pushing to GitHub..."
 cd "$PROJ_DIR"
-git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html
+git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html docs/backtest.html docs/wp.html
 if git diff --staged --quiet; then
     echo "  No changes to deploy"
 else

@@ -31,6 +31,7 @@ class OnlineLogisticRegressor:
         self.velocity = np.zeros(n_features)
         self.n_updates = 0
         self.recent_losses: list[float] = []
+        self.recent_briers: list[float] = []
 
     def predict_proba(self, x: np.ndarray) -> float:
         """Predict P(y=1|x)."""
@@ -39,9 +40,10 @@ class OnlineLogisticRegressor:
         return 1.0 / (1.0 + math.exp(-z))
 
     def update(self, x: np.ndarray, y: float) -> float:
-        """SGD update on single observation. Returns loss."""
+        """SGD update on single observation. Returns cross-entropy loss."""
         prob = self.predict_proba(x)
         loss = -(y * math.log(max(prob, 1e-10)) + (1 - y) * math.log(max(1 - prob, 1e-10)))
+        brier = (prob - y) ** 2
 
         # Gradient of cross-entropy + L2 regularization
         grad = (prob - y) * x + self.l2_reg * self.weights
@@ -54,14 +56,23 @@ class OnlineLogisticRegressor:
         self.recent_losses.append(loss)
         if len(self.recent_losses) > 100:
             self.recent_losses.pop(0)
+        self.recent_briers.append(brier)
+        if len(self.recent_briers) > 100:
+            self.recent_briers.pop(0)
 
         return loss
 
-    def rolling_brier(self, window: int = 50) -> float | None:
-        """Rolling Brier score over recent predictions."""
+    def rolling_loss(self, window: int = 50) -> float | None:
+        """Rolling cross-entropy loss over recent updates."""
         if len(self.recent_losses) < window:
             return None
         return sum(self.recent_losses[-window:]) / window
+
+    def rolling_brier(self, window: int = 50) -> float | None:
+        """Rolling Brier score (p-y)² over recent updates."""
+        if len(self.recent_briers) < window:
+            return None
+        return sum(self.recent_briers[-window:]) / window
 
     def cosine_lr(self, step: int, total_steps: int, lr_min: float = 0.001) -> float:
         """Cosine annealing learning rate schedule."""

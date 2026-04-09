@@ -102,6 +102,10 @@ def predict_matchup(
             log_odds += pitcher_adj
             home_win_prob = 1.0 / (1.0 + math.exp(-log_odds))
 
+    # Platt calibration (shrinks overconfident probabilities toward center)
+    if _CALIBRATION["a"] != 1.0 or _CALIBRATION["b"] != 0.0:
+        home_win_prob = calibrate_probability(home_win_prob, _CALIBRATION["a"], _CALIBRATION["b"])
+
     # Clamp to reasonable range
     home_win_prob = max(0.05, min(0.95, home_win_prob))
 
@@ -184,7 +188,7 @@ def predict_date(
     # Get all scheduled/upcoming games for this date
     games = conn.execute("""
         SELECT g.id, g.date, h.name as home_team, a.name as away_team,
-               g.home_runs, g.away_runs, g.status
+               g.home_runs, g.away_runs, g.status, g.series_position
         FROM games g
         JOIN teams h ON g.home_team_id = h.id
         JOIN teams a ON g.away_team_id = a.id
@@ -200,7 +204,8 @@ def predict_date(
         if model_v1:
             try:
                 from fsbb.models.advanced import predict_v1
-                pred = predict_v1(conn, g["home_team"], g["away_team"], model_v1)
+                pred = predict_v1(conn, g["home_team"], g["away_team"], model_v1,
+                                  series_position=g["series_position"])
             except Exception:
                 pred = None
 
@@ -241,7 +246,7 @@ def predict_date(
                     home_win_prob=excluded.home_win_prob,
                     predicted_total_runs=excluded.predicted_total_runs,
                     created_at=datetime('now')
-            """, (g["id"], model_version, pred["home_win_prob"], pred["predicted_total_runs"]))
+            """, (g["id"], pred.get("model_version", model_version), pred["home_win_prob"], pred["predicted_total_runs"]))
 
             # Update games table
             predicted_winner_id = conn.execute(
@@ -441,17 +446,18 @@ def _get_team(conn: sqlite3.Connection, name: str) -> dict | None:
     return None
 
 
+_HFA_CACHE: tuple[int, float] | None = None
+
+
 def _estimate_hfa(conn: sqlite3.Connection) -> float:
-    """Estimate home field advantage from BT model (quality-adjusted).
+    """BT-derived HFA, cached until game count changes."""
+    global _HFA_CACHE
+    game_count = conn.execute(
+        "SELECT COUNT(*) FROM games WHERE status='final'"
+    ).fetchone()[0]
+    if _HFA_CACHE and _HFA_CACHE[0] == game_count:
+        return _HFA_CACHE[1]
 
-    Prefers the BT-estimated HFA (which separates home advantage from team
-    quality) over raw home win rate (which inflates HFA because stronger
-    teams play more home games).
-
-    Returns log-odds HFA. BT typically gives ~0.19 (~55%), raw gives ~0.40 (~60%).
-    """
-    # Prefer BT-derived HFA (computed by fsbb rate → compute_all_ratings)
-    # Re-derive from current BT model
     try:
         from fsbb.models.ratings import fit_dynamic_bt
         rows = conn.execute("""
@@ -473,11 +479,11 @@ def _estimate_hfa(conn: sqlite3.Connection) -> float:
                     })
             if len(bt_games) >= 200:
                 _, hfa_log = fit_dynamic_bt(bt_games, len(teams), team_id_map, max_iter=50)
+                _HFA_CACHE = (game_count, hfa_log)
                 return hfa_log
     except Exception:
         pass
 
-    # Fallback: raw home win rate (less accurate but always available)
     row = conn.execute("""
         SELECT COUNT(*) as total,
                SUM(CASE WHEN home_runs > away_runs THEN 1 ELSE 0 END) as home_wins
@@ -488,6 +494,9 @@ def _estimate_hfa(conn: sqlite3.Connection) -> float:
     if row and row["total"] >= 50:
         home_pct = row["home_wins"] / row["total"]
         home_pct = max(0.45, min(0.65, home_pct))
-        return math.log(home_pct / (1 - home_pct))
+        hfa = math.log(home_pct / (1 - home_pct))
+        _HFA_CACHE = (game_count, hfa)
+        return hfa
 
+    _HFA_CACHE = (game_count, 0.16)
     return 0.16
