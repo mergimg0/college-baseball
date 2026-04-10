@@ -312,6 +312,10 @@ def import_play_by_play(
     home_score = 0
     away_score = 0
 
+    # Look up game date once for denormalized game_date column
+    game_date_row = conn.execute("SELECT date FROM games WHERE id=?", (game_db_id,)).fetchone()
+    game_date = game_date_row[0] if game_date_row else None
+
     # Map NCAA team IDs to our team IDs
     ncaa_to_db: dict[int, int] = {}
     for t in pbp_data.get("teams", []):
@@ -361,8 +365,8 @@ def import_play_by_play(
                             hit_direction, pitch_count, pitch_sequence,
                             runs_scored, rbi, is_error, is_sacrifice,
                             stolen_base, caught_stealing, wild_pitch,
-                            home_score_after, away_score_after
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            home_score_after, away_score_after, game_date
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         ON CONFLICT(game_id, inning, is_top, sequence_in_inning) DO NOTHING
                     """, (
                         game_db_id, inning, is_top, batting_team_id, seq,
@@ -372,7 +376,7 @@ def import_play_by_play(
                         parsed["runs_scored"], parsed["rbi"], parsed["is_error"],
                         parsed["is_sacrifice"], parsed["stolen_base"],
                         parsed["caught_stealing"], parsed["wild_pitch"],
-                        home_score, away_score,
+                        home_score, away_score, game_date,
                     ))
                     count += 1
                 except sqlite3.IntegrityError:

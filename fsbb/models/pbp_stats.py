@@ -48,9 +48,11 @@ def compute_team_pbp_stats(conn: sqlite3.Connection) -> int:
         sac_flies = counts.get("sac_fly", 0)
         stolen = counts.get("stolen_base", 0)
         caught = counts.get("caught_stealing", 0)
+        fielder_choices = counts.get("fielder_choice", 0)
+        double_plays = counts.get("double_play", 0)
 
         hits = singles + doubles + triples + homers
-        outs = groundouts + flyouts + lineouts + popouts + foulouts + strikeouts
+        outs = groundouts + flyouts + lineouts + popouts + foulouts + strikeouts + fielder_choices + double_plays
         at_bats = hits + outs + errors
         plate_apps = at_bats + walks + hbp + sac_bunts + sac_flies
         total_bases = singles + 2 * doubles + 3 * triples + 4 * homers

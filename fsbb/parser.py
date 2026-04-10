@@ -45,6 +45,18 @@ _PATTERNS = {
     "caught_steal":  re.compile(r"caught stealing|out at.+?caught stealing", re.I),
     "wild_pitch":    re.compile(r"advanced.+?on a wild pitch|wild pitch", re.I),
 
+    # Fielder's choice — batter reaches, runner out
+    "fielder_choice": re.compile(r"^(.+?)\s+reached on\s+(?:a )?fielder'?s?\s+choice", re.I),
+
+    # Double play (ground into, fly into, line into)
+    "double_play":    re.compile(r"^(.+?)\s+(?:grounded|hit|lined|flied|flew)\s+into\s+(?:a\s+)?double\s+play", re.I),
+
+    # Defensive indifference
+    "def_indiff":     re.compile(r"^(.+?)\s+advanced.*?defensive indifference", re.I),
+
+    # Batter interference / catcher interference
+    "interference":   re.compile(r"interference", re.I),
+
     # Substitutions
     "pitcher_sub":   re.compile(r"^(.+?)\s+to p for\s+(.+?)\.?\s*$", re.I),
     "pinch_hit":     re.compile(r"pinch hit", re.I),
@@ -160,6 +172,20 @@ def parse_play_text(text: str) -> dict[str, Any]:
         result["batter_name"] = sb.group(1).strip()
         return result
 
+    # Fielder's choice
+    fc = _PATTERNS["fielder_choice"].search(text)
+    if fc:
+        result["event_type"] = "fielder_choice"
+        result["batter_name"] = fc.group(1).strip()
+        return result
+
+    # Double play
+    dp = _PATTERNS["double_play"].search(text)
+    if dp:
+        result["event_type"] = "double_play"
+        result["batter_name"] = dp.group(1).strip()
+        return result
+
     # Standard at-bat outcomes (order matters)
     # Standard at-bat outcomes (error already handled above)
     for event_type in ["homer", "triple", "double", "single",
@@ -174,5 +200,52 @@ def parse_play_text(text: str) -> dict[str, Any]:
                 if m.lastindex and m.lastindex >= 2:
                     result["hit_direction"] = m.group(2).strip()
             break
+
+    # Secondary detection from keywords for variant phrasings
+    if result["event_type"] == "other":
+        text_lower = text.lower()
+        if "fielder's choice" in text_lower or "fielder choice" in text_lower:
+            result["event_type"] = "fielder_choice"
+        elif "double play" in text_lower:
+            result["event_type"] = "double_play"
+        elif "grounded out" in text_lower:
+            result["event_type"] = "groundout"
+        elif "flied out" in text_lower:
+            result["event_type"] = "flyout"
+        elif "lined out" in text_lower:
+            result["event_type"] = "lineout"
+        elif "popped up" in text_lower or "popped out" in text_lower:
+            result["event_type"] = "popout"
+        elif "struck out" in text_lower:
+            result["event_type"] = "strikeout"
+        elif "walked" in text_lower:
+            result["event_type"] = "walk"
+        elif "fouled out" in text_lower:
+            result["event_type"] = "foulout"
+        elif "singled" in text_lower:
+            result["event_type"] = "single"
+        elif "doubled" in text_lower:
+            result["event_type"] = "double"
+        elif "tripled" in text_lower:
+            result["event_type"] = "triple"
+        elif "homered" in text_lower:
+            result["event_type"] = "homer"
+        elif re.match(r"^.+?\s+out at first\b", text, re.I):
+            result["event_type"] = "groundout"
+        # Extract batter name from start of text for keyword matches
+        if result["event_type"] != "other" and result["batter_name"] is None:
+            m = re.match(r"^(.+?)(?:\s+(?:grounded|flied|lined|popped|struck|walked|reached|fouled|singled|doubled|tripled|homered|out\s+at|infield))", text, re.I)
+            if m:
+                result["batter_name"] = m.group(1).strip()
+
+    # Administrative / non-play events → no_play
+    if result["event_type"] == "other":
+        text_lower = text.lower()
+        if (text_lower.startswith("batting starts") or text_lower.startswith("batting ends")
+                or text_lower.startswith("mound visit") or text_lower.startswith("review")
+                or "pinch hit" in text_lower or "pinch ran" in text_lower
+                or "replaces" in text_lower or "substitution" in text_lower
+                or re.match(r"^.+?\s+to\s+(?:1b|2b|3b|ss|rf|lf|cf|dh|c|p)\s*(?:for\s|\.?\s*$)", text, re.I)):
+            result["event_type"] = "no_play"
 
     return result
