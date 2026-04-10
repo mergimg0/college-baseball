@@ -101,6 +101,12 @@ def rate():
     cal = fit_calibration(conn)
     click.echo(f"  Platt scaling: a={cal['a']:.2f}, b={cal['b']:.2f}")
 
+    # Recompute pitcher quality ratings
+    from fsbb.models.pitcher_ratings import compute_pitcher_ratings
+    click.echo("Computing pitcher ratings...")
+    n_rated = compute_pitcher_ratings(conn)
+    click.echo(f"  {n_rated} pitchers rated")
+
     conn.close()
 
     click.echo(f"\nRating summary:")

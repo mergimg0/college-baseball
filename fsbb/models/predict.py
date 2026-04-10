@@ -42,6 +42,10 @@ def predict_matchup(
     if not home or not away:
         return None
 
+    # Load calibration + HFA from disk if not yet loaded in this process
+    if _CALIBRATION["a"] == 1.0 and _CALIBRATION["b"] == 0.0:
+        _load_calibration()
+
     # Blended prediction: combine Pythagorean-based and BT-based estimates
     home_pythag = home["pythag_pct"] or 0.5
     away_pythag = away["pythag_pct"] or 0.5
@@ -340,6 +344,7 @@ def compute_accuracy(conn: sqlite3.Connection, model_version: str = "v0.1") -> d
 
 # Global calibration parameters (fitted from backtest data)
 _CALIBRATION: dict[str, float] = {"a": 1.0, "b": 0.0}
+_DISK_LOADED: bool = False
 
 
 def fit_calibration(conn: sqlite3.Connection) -> dict[str, float]:
@@ -350,7 +355,10 @@ def fit_calibration(conn: sqlite3.Connection) -> dict[str, float]:
 
     Returns {"a": float, "b": float} and updates global _CALIBRATION.
     """
-    global _CALIBRATION
+    global _CALIBRATION, _DISK_LOADED
+    # Reset to identity so predict_matchup returns uncalibrated probabilities
+    _CALIBRATION = {"a": 1.0, "b": 0.0}
+    _DISK_LOADED = True  # prevent predict_matchup from reloading old params
 
     games = conn.execute("""
         SELECT h.name, a.name, g.home_runs, g.away_runs
@@ -397,7 +405,44 @@ def fit_calibration(conn: sqlite3.Connection) -> dict[str, float]:
                 best_a, best_b = a_candidate, b_candidate
 
     _CALIBRATION = {"a": best_a, "b": best_b}
+    # Also compute and persist HFA (with game count for cache validity)
+    hfa = _estimate_hfa(conn)
+    _CALIBRATION["hfa"] = hfa
+    if _HFA_CACHE:
+        _CALIBRATION["hfa_game_count"] = _HFA_CACHE[0]
+    _save_calibration(_CALIBRATION)
     return _CALIBRATION
+
+
+def _save_calibration(cal: dict[str, float]) -> None:
+    """Persist calibration params + HFA to disk."""
+    import json
+    from pathlib import Path
+    path = Path(__file__).parent.parent.parent / "data" / "calibration.json"
+    with open(path, "w") as f:
+        json.dump(cal, f)
+
+
+def _load_calibration() -> None:
+    """Load calibration params + HFA from disk if available."""
+    import json
+    from pathlib import Path
+    global _CALIBRATION, _HFA_CACHE, _DISK_LOADED
+    if _DISK_LOADED:
+        return
+    _DISK_LOADED = True
+    path = Path(__file__).parent.parent.parent / "data" / "calibration.json"
+    if path.exists():
+        try:
+            with open(path) as f:
+                cal = json.load(f)
+            if "a" in cal and "b" in cal:
+                _CALIBRATION = {"a": cal["a"], "b": cal["b"]}
+            if "hfa" in cal:
+                hfa_gc = cal.get("hfa_game_count", 0)
+                _HFA_CACHE = (hfa_gc, cal["hfa"])
+        except (json.JSONDecodeError, KeyError):
+            pass
 
 
 def calibrate_probability(raw_prob: float, a: float = 1.0, b: float = 0.0) -> float:
