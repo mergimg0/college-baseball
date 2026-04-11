@@ -526,6 +526,8 @@ def _estimate_hfa(conn: sqlite3.Connection) -> float:
                         "home_idx": team_id_map[h_id],
                         "away_idx": team_id_map[a_id],
                         "home_won": r[3] > r[4],
+                        "home_runs": r[3],
+                        "away_runs": r[4],
                         "date": r[0],
                     })
             if len(bt_games) >= 200:

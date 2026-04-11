@@ -169,7 +169,9 @@ def train_v2(
 
         game_history.append({
             "home_idx": h_idx, "away_idx": a_idx,
-            "home_won": h_runs > a_runs, "date": game["date"],
+            "home_won": h_runs > a_runs,
+            "home_runs": h_runs, "away_runs": a_runs,
+            "date": game["date"],
         })
 
         if len(game_history) >= 100 and len(game_history) % 100 == 0:

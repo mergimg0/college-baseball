@@ -258,6 +258,8 @@ def run_backtest(
             "home_idx": h_idx,
             "away_idx": a_idx,
             "home_won": h_runs > a_runs,
+            "home_runs": h_runs,
+            "away_runs": a_runs,
             "date": game["date"],
         })
 

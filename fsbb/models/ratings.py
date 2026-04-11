@@ -115,7 +115,14 @@ def fit_dynamic_bt(
         weights.append(w)
         home_idxs.append(g["home_idx"])
         away_idxs.append(g["away_idx"])
-        home_wins.append(1.0 if g["home_won"] else 0.0)
+        # Margin-of-victory: sigmoid-scaled run differential when available
+        # 1-run win → 0.57, 3-run → 0.71, 5+ blowout → 0.82
+        if "home_runs" in g and "away_runs" in g and g["home_runs"] is not None:
+            margin = g["home_runs"] - g["away_runs"]
+            outcome = 1.0 / (1.0 + math.exp(-0.3 * max(-5, min(5, margin))))
+        else:
+            outcome = 1.0 if g["home_won"] else 0.0
+        home_wins.append(outcome)
 
     weights = np.array(weights)
     home_idxs = np.array(home_idxs, dtype=int)
@@ -289,6 +296,8 @@ def compute_all_ratings(conn: sqlite3.Connection) -> dict:
             "home_idx": h_idx,
             "away_idx": a_idx,
             "home_won": home_won,
+            "home_runs": h_runs,
+            "away_runs": a_runs,
             "date": r["date"],
         })
 
