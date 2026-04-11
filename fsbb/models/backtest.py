@@ -53,7 +53,7 @@ def run_backtest(
     query = """
         SELECT g.id, g.date, g.home_team_id, g.away_team_id,
                g.home_runs, g.away_runs, g.pear_home_win_prob,
-               g.series_position
+               g.series_position, g.neutral_site
         FROM games g
         WHERE g.status = 'final' AND g.home_runs IS NOT NULL
     """
@@ -121,14 +121,15 @@ def run_backtest(
 
             # BT component — uses cached ratings (refit every 100 games)
             bt_diff = cached_bt_diff.get((h_idx, a_idx), 0.0)
-            hfa = cached_hfa
+            is_neutral = game["neutral_site"] == 1
+            hfa = 0.0 if is_neutral else cached_hfa
 
             # Blend Pythag + BT (matching production model logic)
             bt_logit = bt_diff + hfa
             bt_prob = 1.0 / (1.0 + math.exp(-max(-10, min(10, bt_logit))))
             bt_weight = 0.5 if cached_bt_diff else 0.0
             our_prob = (1 - bt_weight) * pythag_prob + bt_weight * bt_prob
-            if bt_weight == 0:
+            if bt_weight == 0 and not is_neutral:
                 log_odds = math.log(max(our_prob, 1e-10) / max(1 - our_prob, 1e-10))
                 log_odds += 0.16
                 our_prob = 1.0 / (1.0 + math.exp(-log_odds))

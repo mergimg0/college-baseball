@@ -60,7 +60,13 @@ def predict_matchup(
 
     # BT-based win probability
     bt_diff = (home["bt_rating"] or 0.0) - (away["bt_rating"] or 0.0)
-    hfa = _estimate_hfa(conn)
+    # Check neutral site — zero out HFA for postseason/neutral games
+    is_neutral = False
+    if game_id:
+        ns_row = conn.execute("SELECT neutral_site FROM games WHERE id=?", (game_id,)).fetchone()
+        if ns_row and ns_row[0]:
+            is_neutral = True
+    hfa = 0.0 if is_neutral else _estimate_hfa(conn)
     bt_logit = bt_diff + hfa
     bt_prob = 1.0 / (1.0 + math.exp(-max(-10, min(10, bt_logit))))
 
@@ -82,7 +88,7 @@ def predict_matchup(
     # Single HFA source: apply log-odds adjustment when NOT using BT
     # (BT already incorporates HFA via _estimate_hfa in bt_logit)
     # For pure Pythag path (bt_weight=0), apply HFA as log-odds shift
-    if bt_weight == 0:
+    if bt_weight == 0 and not is_neutral:
         # Convert to log-odds, add HFA, convert back
         eps = 1e-10
         log_odds = math.log(max(home_win_prob, eps) / max(1 - home_win_prob, eps))
