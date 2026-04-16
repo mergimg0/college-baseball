@@ -284,6 +284,31 @@ def get_starter_quality(conn: sqlite3.Connection, game_id: int, team_id: int) ->
     return max(0, min(100, 100 - era * 11))
 
 
+def get_starter_quality_walkforward(
+    conn: sqlite3.Connection, game_id: int, team_id: int, game_date: str,
+) -> float | None:
+    """Starter quality using only data from BEFORE this game (no temporal leakage)."""
+    starter = conn.execute("""
+        SELECT gp.pitcher_id FROM game_pitchers gp
+        WHERE gp.game_id = ? AND gp.team_id = ? AND gp.is_starter = 1
+    """, (game_id, team_id)).fetchone()
+    if not starter or not starter[0]:
+        return None
+
+    stats = conn.execute("""
+        SELECT SUM(gp.ip), SUM(gp.earned_runs)
+        FROM game_pitchers gp
+        JOIN games g ON gp.game_id = g.id
+        WHERE gp.pitcher_id = ? AND g.date < ? AND gp.ip > 0
+    """, (starter[0], game_date)).fetchone()
+
+    if not stats or not stats[0] or stats[0] < 5:
+        return None
+
+    era = (stats[1] / stats[0]) * 9.0
+    return max(0, min(100, 100 - era * 11))
+
+
 def fetch_play_by_play(game_id: str | int) -> dict | None:
     """Fetch play-by-play for a single NCAA game."""
     url = f"{BASE_URL}/game/{game_id}/play-by-play"

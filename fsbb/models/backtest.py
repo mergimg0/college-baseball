@@ -135,7 +135,7 @@ def run_backtest(
                 our_prob = 1.0 / (1.0 + math.exp(-log_odds))
             our_prob = max(0.05, min(0.95, our_prob))
 
-            # Pitcher quality adjustment (mirrors predict.py:88-103)
+            # Pitcher quality adjustment (uses composite quality_rating)
             try:
                 from fsbb.scraper.boxscore import get_starter_quality
                 hq = get_starter_quality(conn, game["id"], h_id)
