@@ -660,12 +660,16 @@ def render(output: str | None):
 
     # System stats for the home page
     conn2 = init_db()
+    total_final = conn2.execute("SELECT COUNT(*) FROM games WHERE status='final'").fetchone()[0]
+    total_pbp = conn2.execute("SELECT COUNT(*) FROM play_events").fetchone()[0]
+    total_rated = conn2.execute("SELECT COUNT(*) FROM pitchers WHERE quality_rating IS NOT NULL").fetchone()[0]
+    total_appearances = conn2.execute("SELECT COUNT(*) FROM game_pitchers").fetchone()[0]
     sys_stats = {
-        "total_games": f"{conn2.execute('SELECT COUNT(*) FROM games WHERE status=\"final\"').fetchone()[0]:,}",
-        "pbp_events": f"{conn2.execute('SELECT COUNT(*) FROM play_events').fetchone()[0] / 1_000_000:.2f}M",
-        "rated_pitchers": f"{conn2.execute('SELECT COUNT(*) FROM pitchers WHERE quality_rating IS NOT NULL').fetchone()[0]:,}",
+        "total_games": f"{total_final:,}",
+        "pbp_events": f"{total_pbp / 1_000_000:.2f}M",
+        "rated_pitchers": f"{total_rated:,}",
         "seasons": 4,
-        "pitcher_appearances": f"{conn2.execute('SELECT COUNT(*) FROM game_pitchers').fetchone()[0]:,}",
+        "pitcher_appearances": f"{total_appearances:,}",
     }
     conn2.close()
 
