@@ -120,10 +120,20 @@ def import_team_rankings(conn: sqlite3.Connection) -> int:
 
 
 def import_team_pitching(conn: sqlite3.Connection) -> int:
-    """Import 64analytics_team_pitching_2026.csv."""
+    """Import 64analytics_team_pitching_2026.csv.
+
+    CSV has raw counting stats — we compute advanced metrics:
+      WHIP = (H + BB) / IP
+      K/9  = (SO / IP) * 9
+      BB/9 = (BB / IP) * 9
+      FIP  = ((13*HR + 3*BB - 2*K) / IP) + FIP_constant
+      P-BABIP = (H - HR) / (BF - SO - HR)  (approx)
+    """
     path = DATA_DIR / "64analytics_team_pitching_2026.csv"
     if not path.exists():
         return 0
+
+    FIP_CONSTANT = 3.10  # NCAA D1 approximate
 
     count = 0
     with open(path) as f:
@@ -133,21 +143,53 @@ def import_team_pitching(conn: sqlite3.Connection) -> int:
             if not team_id:
                 continue
 
+            era = _safe_float(row.get("ERA"))
+            ip = _safe_float(row.get("IP"))
+            h = _safe_float(row.get("P-H"))
+            bb = _safe_float(row.get("P-BB"))
+            so = _safe_float(row.get("P-SO"))
+            hr = _safe_float(row.get("P-HR"))
+            bf = _safe_float(row.get("P-BF"))
+            # Compute advanced metrics from raw stats
+            whip = None
+            k9 = None
+            bb9 = None
+            fip = None
+            p_babip = None
+
+            if ip and ip > 0:
+                if h is not None and bb is not None:
+                    whip = (h + bb) / ip
+                if so is not None:
+                    k9 = (so / ip) * 9.0
+                if bb is not None:
+                    bb9 = (bb / ip) * 9.0
+                if hr is not None and bb is not None and so is not None:
+                    fip = ((13 * hr + 3 * bb - 2 * so) / ip) + FIP_CONSTANT
+
+            if h is not None and hr is not None and bf is not None and so is not None:
+                denom = bf - so - hr
+                if denom > 0:
+                    p_babip = (h - hr) / denom
+
+            # wRAE rank (proprietary metric, value not in CSV)
+            wrae_rank = _safe_int(row.get("64 Rank - wRA35"))
+
             conn.execute("""
                 UPDATE analytics_team SET
                     team_era=?, team_fip=COALESCE(?, team_fip),
-                    team_xfip=?, team_whip=COALESCE(?, team_whip),
-                    team_p_babip=?, team_p_lob_pct=?,
+                    team_whip=COALESCE(?, team_whip),
+                    team_p_babip=?,
                     team_k9=?, team_bb9=?,
                     team_wrae=?,
                     updated_at=datetime('now')
                 WHERE team_id=?
             """, (
-                _safe_float(row.get("ERA")), _safe_float(row.get("FIP")),
-                _safe_float(row.get("xFIP")), _safe_float(row.get("WHIP")),
-                _safe_float(row.get("P-BABIP")), _safe_float(row.get("LOB%")),
-                _safe_float(row.get("K/9")), _safe_float(row.get("BB/9")),
-                _safe_float(row.get("wRAE")),
+                era, fip,
+                whip,
+                p_babip,
+                k9, bb9,
+                wrae_rank,  # store rank since value isn't available
                 team_id,
             ))
             count += 1
@@ -157,7 +199,16 @@ def import_team_pitching(conn: sqlite3.Connection) -> int:
 
 
 def import_team_hitting(conn: sqlite3.Connection) -> int:
-    """Import 64analytics_team_hitting_2026.csv."""
+    """Import 64analytics_team_hitting_2026.csv.
+
+    CSV has raw counting stats — we compute advanced metrics:
+      OPS   = OBP + SLG
+      ISO   = SLG - AVG
+      BABIP = (H - HR) / (AB - SO - HR + SF)
+      BB%   = BB / PA
+      K%    = SO / PA
+      wOBA  = (0.69*BB + 0.72*HBP + 0.89*1B + 1.27*2B + 1.62*3B + 2.10*HR) / PA
+    """
     path = DATA_DIR / "64analytics_team_hitting_2026.csv"
     if not path.exists():
         return 0
@@ -170,23 +221,62 @@ def import_team_hitting(conn: sqlite3.Connection) -> int:
             if not team_id:
                 continue
 
+            avg = _safe_float(row.get("AVG"))
+            obp = _safe_float(row.get("OBP"))
+            slg = _safe_float(row.get("SLG"))
+            ab = _safe_float(row.get("AB"))
+            h = _safe_float(row.get("H"))
+            hr = _safe_float(row.get("HR"))
+            bb = _safe_float(row.get("BB"))
+            hbp = _safe_float(row.get("HBP"))
+            sf = _safe_float(row.get("SF"))
+            so = _safe_float(row.get("SO"))
+            pa = _safe_float(row.get("PA"))
+            doubles = _safe_float(row.get("2B"))
+            triples = _safe_float(row.get("3B"))
+
+            # Compute advanced metrics
+            ops = (obp + slg) if obp is not None and slg is not None else None
+            iso = (slg - avg) if slg is not None and avg is not None else None
+
+            babip = None
+            if h is not None and hr is not None and ab is not None and so is not None:
+                denom = ab - so - hr + (sf or 0)
+                if denom > 0:
+                    babip = (h - hr) / denom
+
+            bb_pct = None
+            k_pct = None
+            if pa and pa > 0:
+                if bb is not None:
+                    bb_pct = bb / pa
+                if so is not None:
+                    k_pct = so / pa
+
+            # wOBA using NCAA D1 linear weights (approximation)
+            woba = None
+            if pa and pa > 0 and h is not None and hr is not None:
+                singles = h - (doubles or 0) - (triples or 0) - hr
+                woba = (0.69 * (bb or 0) + 0.72 * (hbp or 0) +
+                        0.89 * singles + 1.27 * (doubles or 0) +
+                        1.62 * (triples or 0) + 2.10 * hr) / pa
+
+            wrce_rank = _safe_int(row.get("64 Rank - wRC35"))
+
             conn.execute("""
                 UPDATE analytics_team SET
                     team_avg=?, team_obp=?, team_slg=?,
-                    team_ops=COALESCE(?, team_ops),
-                    team_woba=COALESCE(?, team_woba),
+                    team_ops=?, team_woba=?,
                     team_babip_hit=?, team_iso=?,
                     team_bb_pct=?, team_k_pct=?,
                     team_wrce=?,
                     updated_at=datetime('now')
                 WHERE team_id=?
             """, (
-                _safe_float(row.get("AVG")), _safe_float(row.get("OBP")),
-                _safe_float(row.get("SLG")), _safe_float(row.get("OPS")),
-                _safe_float(row.get("wOBA")), _safe_float(row.get("BABIP")),
-                _safe_float(row.get("ISO")),
-                _safe_float(row.get("BB%")), _safe_float(row.get("K%")),
-                _safe_float(row.get("wRCE")),
+                avg, obp, slg, ops, woba,
+                babip, iso,
+                bb_pct, k_pct,
+                wrce_rank,
                 team_id,
             ))
             count += 1
@@ -255,7 +345,16 @@ def import_pitcher_stats(conn: sqlite3.Connection) -> int:
 
 
 def import_hitter_stats(conn: sqlite3.Connection) -> int:
-    """Import 64analytics_player_hitting_2026.csv — 5,144 individual hitters."""
+    """Import 64analytics_player_hitting_2026.csv — 5,144 individual hitters.
+
+    CSV has raw counting stats — we compute advanced metrics:
+      OPS   = OBP + SLG
+      ISO   = SLG - AVG
+      BABIP = (H - HR) / (AB - SO - HR + SF)
+      BB%   = BB / PA
+      K%    = SO / PA
+      wOBA  = (0.69*BB + 0.72*HBP + 0.89*1B + 1.27*2B + 1.62*3B + 2.10*HR) / PA
+    """
     path = DATA_DIR / "64analytics_player_hitting_2026.csv"
     if not path.exists():
         return 0
@@ -269,6 +368,50 @@ def import_hitter_stats(conn: sqlite3.Connection) -> int:
                 continue
 
             team_id = _resolve_school(conn, school)
+
+            avg = _safe_float(row.get("AVG"))
+            obp = _safe_float(row.get("OBP"))
+            slg = _safe_float(row.get("SLG"))
+            g = _safe_int(row.get("G"))
+            ab = _safe_int(row.get("AB"))
+            h = _safe_int(row.get("H"))
+            doubles = _safe_int(row.get("2B"))
+            triples = _safe_int(row.get("3B"))
+            hr = _safe_int(row.get("HR"))
+            rbi = _safe_int(row.get("RBI"))
+            bb = _safe_int(row.get("BB"))
+            hbp = _safe_int(row.get("HBP"))
+            sf = _safe_int(row.get("SF"))
+            so = _safe_int(row.get("SO"))
+            sb = _safe_int(row.get("SB"))
+            pa = _safe_int(row.get("PA"))
+
+            # Compute advanced metrics
+            ops = (obp + slg) if obp is not None and slg is not None else None
+            iso = (slg - avg) if slg is not None and avg is not None else None
+
+            babip = None
+            if h is not None and hr is not None and ab is not None and so is not None:
+                denom = ab - so - hr + (sf or 0)
+                if denom > 0:
+                    babip = (h - hr) / denom
+
+            bb_pct = None
+            k_pct = None
+            if pa and pa > 0:
+                if bb is not None:
+                    bb_pct = bb / pa
+                if so is not None:
+                    k_pct = so / pa
+
+            woba = None
+            if pa and pa > 0 and h is not None and hr is not None:
+                singles = h - (doubles or 0) - (triples or 0) - hr
+                woba = (0.69 * (bb or 0) + 0.72 * (hbp or 0) +
+                        0.89 * singles + 1.27 * (doubles or 0) +
+                        1.62 * (triples or 0) + 2.10 * hr) / pa
+
+            wrce_rank = _safe_int(row.get("64 Rk - wRCE"))
 
             conn.execute("""
                 INSERT INTO analytics_hitter (name, school, rank_wrce, classification,
@@ -286,19 +429,13 @@ def import_hitter_stats(conn: sqlite3.Connection) -> int:
                     hr=excluded.hr, rbi=excluded.rbi, bb=excluded.bb,
                     so=excluded.so, sb=excluded.sb
             """, (
-                name, school, _safe_int(row.get("64 Rk - wRCE")),
+                name, school, wrce_rank,
                 row.get("Classification", "").strip(),
-                _safe_float(row.get("AVG")), _safe_float(row.get("OBP")),
-                _safe_float(row.get("SLG")), _safe_float(row.get("OPS")),
-                _safe_float(row.get("wOBA")), _safe_float(row.get("BABIP")),
-                _safe_float(row.get("ISO")),
-                _safe_float(row.get("BB%")), _safe_float(row.get("K%")),
-                _safe_float(row.get("wRCE")),
+                avg, obp, slg, ops, woba, babip, iso,
+                bb_pct, k_pct,
+                wrce_rank,  # store rank since value isn't in CSV
                 team_id,
-                _safe_int(row.get("G")), _safe_int(row.get("AB")),
-                _safe_int(row.get("H")), _safe_int(row.get("HR")),
-                _safe_int(row.get("RBI")), _safe_int(row.get("BB")),
-                _safe_int(row.get("SO")), _safe_int(row.get("SB")),
+                g, ab, h, hr, rbi, bb, so, sb,
             ))
             count += 1
 

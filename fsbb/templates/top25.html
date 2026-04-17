@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 25 Comparison | ForgeStream Baseball</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'SF Mono', 'Fira Code', monospace; background: #0d1117; color: #c9d1d9; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        nav { display: flex; gap: 20px; padding: 15px 0; border-bottom: 1px solid #21262d; margin-bottom: 20px; flex-wrap: wrap; }
+        nav a { color: #58a6ff; text-decoration: none; font-size: 14px; }
+        nav a:hover { text-decoration: underline; }
+        nav a.active { color: #f0f6fc; font-weight: bold; }
+        h1 { font-size: 20px; color: #f0f6fc; margin-bottom: 5px; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; }
+        th { background: #161b22; color: #8b949e; padding: 8px 6px; text-align: left; border-bottom: 2px solid #21262d; position: sticky; top: 0; white-space: nowrap; }
+        td { padding: 6px; border-bottom: 1px solid #21262d; }
+        tr:hover { background: #161b22; }
+        .rank { color: #f0f6fc; font-weight: bold; width: 30px; }
+        .team { color: #f0f6fc; font-weight: bold; min-width: 120px; }
+        .conf { color: #8b949e; }
+        .record { color: #c9d1d9; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .good { color: #3fb950; }
+        .bad { color: #f85149; }
+        .neutral { color: #8b949e; }
+        .section-header { background: #0d1117; color: #58a6ff; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .divergence { background: #1c1917; }
+        .divergence td { border-bottom: 1px solid #3b3020; }
+        .legend { background: #161b22; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; color: #8b949e; }
+        .legend span { margin-right: 20px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 6px; padding: 12px; }
+        .stat-card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; }
+        .stat-card .value { font-size: 20px; color: #f0f6fc; font-weight: bold; }
+        .stat-card .detail { font-size: 11px; color: #8b949e; margin-top: 4px; }
+        footer { text-align: center; color: #484f58; font-size: 11px; padding: 30px 0; border-top: 1px solid #21262d; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">Predictions</a>
+            <a href="rankings.html">Rankings</a>
+            <a href="edge.html">Edge</a>
+            <a href="backtest.html">Accuracy</a>
+            <a href="wp.html">Win Prob</a>
+            <a href="top25.html" class="active">Top 25</a>
+        </nav>
+
+        <h1>Top 25: FSBB vs PEAR vs 64 Analytics</h1>
+        <p class="subtitle">Three ranking systems compared side-by-side &mdash; Generated {{ generated_at }}</p>
+
+        <div class="legend">
+            <span><strong>FSBB</strong> = ForgeStream (Pythag+BT+Pitcher blend)</span>
+            <span><strong>PEAR NET</strong> = PEAR Ratings network ranking</span>
+            <span><strong>64A</strong> = 64 Analytics overall team rank</span>
+            <span class="good">Green</span> = agrees within 5 ranks &nbsp;
+            <span class="bad">Red</span> = disagrees by 10+ ranks
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="section-header" colspan="4">Team</th>
+                    <th class="section-header" colspan="3">Rankings</th>
+                    <th class="section-header" colspan="3">Offense</th>
+                    <th class="section-header" colspan="3">Pitching</th>
+                    <th class="section-header" colspan="2">Clutch</th>
+                </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Team</th>
+                    <th>Conf</th>
+                    <th>Record</th>
+                    <th>PEAR</th>
+                    <th>64A</th>
+                    <th>Diff</th>
+                    <th>wOBA</th>
+                    <th>OPS</th>
+                    <th>SLG</th>
+                    <th>ERA</th>
+                    <th>FIP</th>
+                    <th>BP ERA</th>
+                    <th>KS Eff</th>
+                    <th>KS Ratio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teams %}
+                <tr {% if t.max_divergence >= 10 %}class="divergence"{% endif %}>
+                    <td class="rank">{{ t.fsbb_rank }}</td>
+                    <td class="team">{{ t.name }}</td>
+                    <td class="conf">{{ t.conference }}</td>
+                    <td class="record">{{ t.wins }}-{{ t.losses }}</td>
+                    <td class="num {% if t.pear_diff|abs <= 5 %}good{% elif t.pear_diff|abs >= 10 %}bad{% else %}neutral{% endif %}">
+                        {{ t.pear_net }}{% if t.pear_diff != 0 %} <small>({{ "%+d"|format(t.pear_diff) }})</small>{% endif %}
+                    </td>
+                    <td class="num {% if t.a64_diff|abs <= 5 %}good{% elif t.a64_diff|abs >= 10 %}bad{% else %}neutral{% endif %}">
+                        {{ t.a64_rank or '—' }}{% if t.a64_diff %} <small>({{ "%+d"|format(t.a64_diff) }})</small>{% endif %}
+                    </td>
+                    <td class="num {% if t.max_divergence >= 10 %}bad{% elif t.max_divergence <= 3 %}good{% endif %}">
+                        {{ t.max_divergence }}
+                    </td>
+                    <td class="num">{{ "%.3f"|format(t.woba) if t.woba else '—' }}</td>
+                    <td class="num">{{ "%.3f"|format(t.ops) if t.ops else '—' }}</td>
+                    <td class="num">{{ "%.3f"|format(t.slg) if t.slg else '—' }}</td>
+                    <td class="num">{{ "%.2f"|format(t.era) if t.era else '—' }}</td>
+                    <td class="num">{{ "%.2f"|format(t.fip) if t.fip else '—' }}</td>
+                    <td class="num">{{ "%.2f"|format(t.bp_era) if t.bp_era else '—' }}</td>
+                    <td class="num">{{ "%.2f"|format(t.ks_eff) if t.ks_eff else '—' }}</td>
+                    <td class="num">{{ "%.1f"|format(t.ks_ratio) if t.ks_ratio else '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h1 style="margin-top: 30px;">Key Divergences</h1>
+        <p class="subtitle">Where FSBB, PEAR, and 64 Analytics disagree most</p>
+        {% for t in teams %}
+        {% if t.max_divergence >= 8 %}
+        <div class="stat-card" style="margin-bottom: 10px;">
+            <span class="team">{{ t.name }}</span> &mdash;
+            FSBB #{{ t.fsbb_rank }}, PEAR #{{ t.pear_net }}, 64A #{{ t.a64_rank or '?' }}
+            (max divergence: {{ t.max_divergence }} ranks)
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <footer>ForgeStream Baseball &mdash; Updated {{ generated_at }}</footer>
+</body>
+</html>

@@ -342,7 +342,8 @@ def odds():
         return
 
     parsed = parse_odds(raw)
-    click.echo(f"\n{len(set(f'{p['home_team']} vs {p['away_team']}' for p in parsed))} games with odds:")
+    game_count = len(set(p["home_team"] + " vs " + p["away_team"] for p in parsed))
+    click.echo(f"\n{game_count} games with odds:")
     display_odds(parsed)
 
     # Store odds to database

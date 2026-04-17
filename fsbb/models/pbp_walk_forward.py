@@ -123,7 +123,7 @@ def compute_pbp_features_to_date(
 
     starter_avg_ip = starter[0] if starter and starter[0] else None
 
-    return {
+    result = {
         "k_rate": round(k_rate, 4),
         "bb_rate": round(bb_rate, 4),
         "batting_avg": round(avg, 4),
