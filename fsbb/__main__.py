@@ -504,16 +504,79 @@ def render(output: str | None):
     from jinja2 import Environment, FileSystemLoader
 
     conn = init_db()
-
-    # Get today's predictions
     today = date.today()
-    today_preds = predict_date(conn, today)
 
-    # Get yesterday's results
-    yesterday = today - timedelta(days=1)
-    yesterday_preds = predict_date(conn, yesterday)
+    # Build Top 25 lookup for marquee sorting
+    top25_rows = conn.execute("""
+        SELECT name FROM teams WHERE games_played >= 10 AND total_ra > 0
+        ORDER BY power_rating DESC LIMIT 25
+    """).fetchall()
+    rankings_top25 = {row["name"]: i + 1 for i, row in enumerate(top25_rows)}
 
-    # Get accuracy (production model backtest — same function as live predictions)
+    def marquee_score(pred):
+        """Higher score = more prominent placement."""
+        home_rank = rankings_top25.get(pred["home_team"], 999)
+        away_rank = rankings_top25.get(pred["away_team"], 999)
+        best_rank = min(home_rank, away_rank)
+        if best_rank <= 25:
+            return 1000 - best_rank
+        else:
+            return max(pred["home_win_prob"], 1 - pred["home_win_prob"]) * 100
+
+    # Generate predictions for 8 days: yesterday through today+6
+    days = []
+    for offset in range(-1, 7):
+        d = today + timedelta(days=offset)
+        preds = predict_date(conn, d)
+
+        # Enrich with conference data and odds
+        for pred in preds:
+            home_conf = conn.execute(
+                "SELECT conference FROM teams WHERE name=?", (pred["home_team"],)
+            ).fetchone()
+            away_conf = conn.execute(
+                "SELECT conference FROM teams WHERE name=?", (pred["away_team"],)
+            ).fetchone()
+            pred["home_conference"] = home_conf["conference"] if home_conf else ""
+            pred["away_conference"] = away_conf["conference"] if away_conf else ""
+
+            # Add odds edge data if available
+            if pred.get("game_id"):
+                odds_row = conn.execute("""
+                    SELECT odds_implied_home_prob, odds_home_ml, odds_away_ml, odds_bookmaker
+                    FROM games WHERE id = ?
+                """, (pred["game_id"],)).fetchone()
+                if odds_row and odds_row["odds_implied_home_prob"]:
+                    pred["has_odds"] = True
+                    pred["vegas_prob"] = odds_row["odds_implied_home_prob"]
+                    pred["edge"] = pred["home_win_prob"] - odds_row["odds_implied_home_prob"]
+                    pred["home_ml"] = odds_row["odds_home_ml"]
+                    pred["away_ml"] = odds_row["odds_away_ml"]
+                    pred["bookmaker"] = odds_row["odds_bookmaker"] or ""
+                else:
+                    pred["has_odds"] = False
+            else:
+                pred["has_odds"] = False
+
+        # Sort by marquee score
+        preds.sort(key=marquee_score, reverse=True)
+
+        # Compute daily accuracy for days with results
+        correct = sum(1 for p in preds if p.get("correct") is True)
+        total_final = sum(1 for p in preds if p.get("correct") is not None)
+
+        days.append({
+            "date": d.isoformat(),
+            "date_label": d.strftime("%a %m/%d"),
+            "predictions": preds,
+            "is_today": offset == 0,
+            "is_yesterday": offset == -1,
+            "games_correct": correct,
+            "games_total": total_final,
+            "accuracy": round(correct / total_final, 3) if total_final > 0 else None,
+        })
+
+    # Get accuracy (production model backtest)
     acc = _run_production_backtest(conn)
 
     # Get rankings
@@ -586,6 +649,7 @@ def render(output: str | None):
     conn.close()
 
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    generated_at_iso = datetime.now().isoformat()
 
     # Render all pages
     template_dir = Path(__file__).parent / "templates"
@@ -593,22 +657,33 @@ def render(output: str | None):
     docs_dir = Path(output).parent if output else Path(__file__).parent.parent / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
 
+    # System stats for the home page
+    conn2 = init_db()
+    sys_stats = {
+        "total_games": f"{conn2.execute('SELECT COUNT(*) FROM games WHERE status=\"final\"').fetchone()[0]:,}",
+        "pbp_events": f"{conn2.execute('SELECT COUNT(*) FROM play_events').fetchone()[0] / 1_000_000:.2f}M",
+        "rated_pitchers": f"{conn2.execute('SELECT COUNT(*) FROM pitchers WHERE quality_rating IS NOT NULL').fetchone()[0]:,}",
+        "seasons": 4,
+        "pitcher_appearances": f"{conn2.execute('SELECT COUNT(*) FROM game_pitchers').fetchone()[0]:,}",
+    }
+    conn2.close()
+
     # 1. Predictions page
     html = env.get_template("predictions.html").render(
-        today=today.isoformat(),
-        yesterday=yesterday.isoformat(),
-        today_predictions=today_preds,
-        yesterday_predictions=yesterday_preds,
+        days=days,
         accuracy=acc,
         rankings=rankings,
+        conferences=conferences,
         pythag_exp=pythag_exp,
         rpg=rpg,
         total_teams=total_teams,
         generated_at=generated_at,
+        generated_at_iso=generated_at_iso,
+        sys_stats=sys_stats,
     )
     (docs_dir / "predictions.html").write_text(html)
     (docs_dir / "index.html").write_text(html)
-    click.echo(f"Rendered predictions → {docs_dir / 'index.html'}")
+    click.echo(f"Rendered predictions -> {docs_dir / 'index.html'}")
 
     # 2. Rankings page
     html = env.get_template("rankings.html").render(
@@ -647,6 +722,7 @@ def render(output: str | None):
     # 5. Win probability page
     from fsbb.models.advanced import compute_win_probability_by_inning
     conn_wp = init_db()
+    yesterday = today - timedelta(days=1)
     yesterday_wp = []
     for gm in conn_wp.execute("""
         SELECT g.id, h.name, a.name, g.home_runs, g.away_runs
@@ -687,6 +763,45 @@ def render(output: str | None):
     )
     (docs_dir / "wp.html").write_text(html)
     click.echo(f"Rendered wp → {docs_dir / 'wp.html'} ({len(yesterday_wp)} games)")
+
+    # 6. Top-25 comparison page
+    conn_t25 = init_db()
+    top25_rows = conn_t25.execute("""
+        SELECT t.name, t.conference, t.wins, t.losses, t.power_rating,
+               t.pear_net, t.pear_elo, t.pear_sos,
+               tf.wOBA, tf.OPS, tf.SLG, tf.ERA, tf.FIP,
+               tf.KillshotOffEff, tf.KSHOT_Ratio,
+               at.rank_overall as a64_rank,
+               ps.bullpen_era
+        FROM teams t
+        LEFT JOIN team_features tf ON tf.team_id = t.id
+        LEFT JOIN analytics_team at ON at.team_id = t.id
+        LEFT JOIN team_pbp_stats ps ON ps.team_id = t.id
+        WHERE t.games_played >= 10 AND t.total_ra > 0
+        ORDER BY t.power_rating DESC LIMIT 25
+    """).fetchall()
+    top25 = []
+    for i, r in enumerate(top25_rows):
+        fsbb_rank = i + 1
+        pear_net = r["pear_net"] or 999
+        a64_rank = r["a64_rank"] or 999
+        pear_diff = pear_net - fsbb_rank
+        a64_diff = (a64_rank - fsbb_rank) if r["a64_rank"] else None
+        max_div = max(abs(pear_diff), abs(a64_diff) if a64_diff is not None else 0)
+        top25.append({
+            "fsbb_rank": fsbb_rank, "name": r["name"], "conference": r["conference"],
+            "wins": r["wins"], "losses": r["losses"],
+            "pear_net": pear_net, "pear_diff": pear_diff,
+            "a64_rank": r["a64_rank"], "a64_diff": a64_diff,
+            "max_divergence": max_div,
+            "woba": r["wOBA"], "ops": r["OPS"], "slg": r["SLG"],
+            "era": r["ERA"], "fip": r["FIP"], "bp_era": r["bullpen_era"],
+            "ks_eff": r["KillshotOffEff"], "ks_ratio": r["KSHOT_Ratio"],
+        })
+    conn_t25.close()
+    html = env.get_template("top25.html").render(teams=top25, generated_at=generated_at)
+    (docs_dir / "top25.html").write_text(html)
+    click.echo(f"Rendered top25 → {docs_dir / 'top25.html'}")
 
 
 @cli.command()
@@ -874,6 +989,94 @@ def bet(target_date: str | None, bankroll: float, min_edge: float, kelly: float)
     click.echo(tabulate(table, headers=headers, tablefmt="simple"))
     click.echo(f"\nTotal wagered: ${total_bet:.2f} ({total_bet/bankroll*100:.1f}% of bankroll)")
     click.echo(f"Bets: {len(recs)}")
+
+
+@cli.command(name="scrape-espn")
+@click.option("--days", default=3, help="Days to scrape (0=full season)")
+@click.option("--start", default=None, help="Start date YYYY-MM-DD")
+@click.option("--end", default=None, help="End date YYYY-MM-DD")
+@click.option("--season", default=None, type=int, help="Scrape full historical season")
+def scrape_espn(days: int, start: str | None, end: str | None, season: int | None):
+    """Scrape ESPN box scores (batting, pitching, fielding)."""
+    from fsbb.scraper.espn import scrape_date, scrape_season
+
+    conn = init_db()
+
+    if season:
+        s = date(season, 2, 14)
+        e = date(season, 6, 30)
+        click.echo(f"Scraping ESPN {season} season ({s} to {e})...")
+        result = scrape_season(conn, start=s, end=e, progress=True)
+    elif start or end:
+        s = date.fromisoformat(start) if start else date(date.today().year, 2, 14)
+        e = date.fromisoformat(end) if end else date.today() - timedelta(days=1)
+        click.echo(f"Scraping ESPN {s} to {e}...")
+        result = scrape_season(conn, start=s, end=e, progress=True)
+    elif days == 0:
+        click.echo("Scraping ESPN full season...")
+        result = scrape_season(conn, progress=True)
+    else:
+        click.echo(f"Scraping ESPN last {days} days...")
+        total = {"games": 0, "batters": 0, "pitchers": 0, "fielding": 0, "skipped": 0}
+        for i in range(days):
+            d = date.today() - timedelta(days=i + 1)
+            r = scrape_date(conn, d)
+            for k in total:
+                total[k] += r[k]
+            click.echo(f"  {d}: {r['games']} games, {r['batters']} batters, {r['fielding']} fielding")
+        result = total
+
+    click.echo(f"\nESPN scrape complete:")
+    click.echo(f"  Games:    {result['games']}")
+    click.echo(f"  Batters:  {result['batters']}")
+    click.echo(f"  Pitchers: {result['pitchers']}")
+    click.echo(f"  Fielding: {result['fielding']}")
+    click.echo(f"  Skipped:  {result['skipped']}")
+
+    # Show DB totals
+    try:
+        n = conn.execute("SELECT COUNT(*) FROM espn_game_batting").fetchone()[0]
+        click.echo(f"  DB total ESPN batting entries: {n}")
+        n = conn.execute("SELECT COUNT(*) FROM espn_game_pitching").fetchone()[0]
+        click.echo(f"  DB total ESPN pitching entries: {n}")
+        n = conn.execute("SELECT COUNT(*) FROM espn_game_fielding").fetchone()[0]
+        click.echo(f"  DB total ESPN fielding entries: {n}")
+    except Exception:
+        pass
+
+    conn.close()
+
+
+@cli.command(name="import-d1bb")
+@click.option("--season", default=2026, help="Season year")
+def import_d1bb(season: int):
+    """Import D1 Baseball CSVs (WAR, DRS, Synergy plate discipline).
+
+    First run the console scripts on d1baseball.com/synergy/ to generate CSVs,
+    then place them in data/d1baseball/ and run this command.
+    """
+    from fsbb.scraper.d1baseball import import_all, DATA_DIR
+
+    conn = init_db()
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    result = import_all(conn, season)
+    conn.close()
+
+    click.echo(f"\nD1 Baseball import ({season}):")
+    click.echo(f"  WAR entries:     {result['war']}")
+    click.echo(f"  DRS entries:     {result['drs']}")
+    click.echo(f"  Synergy entries: {result['synergy']}")
+
+    if result["war"] == 0 and result["drs"] == 0 and result["synergy"] == 0:
+        click.echo(f"\nNo CSV files found in {DATA_DIR}/")
+        click.echo("Run the console scripts first:")
+        click.echo("  1. Open https://d1baseball.com/synergy/ in Chrome")
+        click.echo("  2. Paste scripts/scrape_d1baseball_war.js in DevTools console")
+        click.echo("  3. Paste scripts/scrape_d1baseball_drs.js in DevTools console")
+        click.echo("  4. Paste scripts/scrape_d1baseball_synergy.js in DevTools console")
+        click.echo(f"  5. Move downloaded CSVs to {DATA_DIR}/")
+        click.echo("  6. Re-run: fsbb import-d1bb")
 
 
 @cli.command()

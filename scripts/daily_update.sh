@@ -3,7 +3,7 @@
 # Runs: scrape → box scores → PBP → features → odds → rate → render → push
 #
 # Usage:   ./scripts/daily_update.sh
-# Cron:    0 11 * * * /Users/mghome/projects/college-baseball/scripts/daily_update.sh
+# Cron:    0 3,9,15,21 * * * /Users/mghome/projects/college-baseball/scripts/daily_update.sh
 # Logs:    logs/daily-YYYY-MM-DD.log (auto-created)
 
 set -euo pipefail
@@ -23,16 +23,26 @@ echo "========================================"
 # Load env (for ODDS_API_KEY)
 [ -f .env ] && export $(grep -v '^#' .env | xargs)
 
-# Step 1: Scrape yesterday's + today's NCAA scores
-echo "[1/8] Importing NCAA scores..."
+# Step 1: Scrape results (yesterday+today) and schedules (today+7 days)
+echo "[1/8] Importing NCAA scores and schedules..."
 python3 -c "
 from fsbb.db import init_db
 from fsbb.scraper.ncaa import scrape_date
 from datetime import date, timedelta
 conn = init_db()
-for d in [date.today() - timedelta(days=1), date.today()]:
-    result = scrape_date(conn, d)
-    print(f'  {d}: {result[\"imported\"]} imported, {result[\"skipped\"]} skipped')
+today = date.today()
+
+# Results: yesterday and today (final games only)
+for d in [today - timedelta(days=1), today]:
+    result = scrape_date(conn, d, include_scheduled=False)
+    print(f'  Results {d}: {result[\"imported\"]} imported, {result[\"skipped\"]} skipped')
+
+# Schedules: today through today+7 (includes scheduled games)
+for offset in range(0, 8):
+    d = today + timedelta(days=offset)
+    result = scrape_date(conn, d, include_scheduled=True)
+    print(f'  Schedule {d}: {result[\"imported\"]} imported, {result[\"skipped\"]} skipped')
+
 conn.close()
 "
 
@@ -124,9 +134,20 @@ print(f'  {t} team stats, {b} bullpen stats, {p} pitchers rated')
 conn.close()
 "
 
-# Step 7: Generate predictions + render all pages
+# Step 7: Generate predictions (yesterday through today+6) + render all pages
 echo "[7/8] Generating predictions + rendering..."
-python3 -m fsbb predict 2>&1 | tail -2
+python3 -c "
+from fsbb.db import init_db
+from fsbb.models.predict import predict_date
+from datetime import date, timedelta
+conn = init_db()
+today = date.today()
+for offset in range(-1, 7):
+    d = today + timedelta(days=offset)
+    preds = predict_date(conn, d)
+    print(f'  {d}: {len(preds)} predictions')
+conn.close()
+"
 python3 -m fsbb render 2>&1
 
 # Step 8: Push to GitHub (triggers Pages auto-deploy)

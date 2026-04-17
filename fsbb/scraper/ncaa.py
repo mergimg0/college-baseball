@@ -79,8 +79,13 @@ def _resolve_team(conn: sqlite3.Connection, name: str) -> int | None:
     return None
 
 
-def scrape_date(conn: sqlite3.Connection, d: date) -> dict:
+def scrape_date(conn: sqlite3.Connection, d: date, include_scheduled: bool = False) -> dict:
     """Scrape and import all D1 games for a single date.
+
+    Args:
+        conn: Database connection
+        d: Date to scrape
+        include_scheduled: If True, also import games that haven't started yet
 
     Returns: {"date": str, "found": int, "imported": int, "skipped": int}
     """
@@ -93,8 +98,10 @@ def scrape_date(conn: sqlite3.Connection, d: date) -> dict:
         g = entry.get("game", {})
         state = g.get("gameState", "")
 
-        # Only import completed games
-        if state not in ("final", "FIN"):
+        is_final = state in ("final", "FIN")
+
+        # Skip non-final games unless include_scheduled is True
+        if not is_final and not include_scheduled:
             skipped += 1
             continue
 
@@ -108,19 +115,35 @@ def scrape_date(conn: sqlite3.Connection, d: date) -> dict:
             skipped += 1
             continue
 
-        home_score = home_info.get("score")
-        away_score = away_info.get("score")
+        # For final games, require scores
+        if is_final:
+            home_score = home_info.get("score")
+            away_score = away_info.get("score")
 
-        if home_score is None or away_score is None:
-            skipped += 1
-            continue
+            if home_score is None or away_score is None:
+                skipped += 1
+                continue
 
-        try:
-            home_runs = int(home_score)
-            away_runs = int(away_score)
-        except (ValueError, TypeError):
-            skipped += 1
-            continue
+            try:
+                home_runs = int(home_score)
+                away_runs = int(away_score)
+            except (ValueError, TypeError):
+                skipped += 1
+                continue
+
+            if home_runs > away_runs:
+                winner_id_value = "home"
+            elif away_runs > home_runs:
+                winner_id_value = "away"
+            else:
+                winner_id_value = None
+            game_status = "final"
+        else:
+            # Scheduled game — no scores yet
+            home_runs = None
+            away_runs = None
+            winner_id_value = None
+            game_status = "scheduled"
 
         # Resolve team IDs
         home_id = _resolve_team(conn, home_name)
@@ -130,28 +153,26 @@ def scrape_date(conn: sqlite3.Connection, d: date) -> dict:
             skipped += 1
             continue
 
-        # Determine winner
-        if home_runs > away_runs:
+        # Determine winner ID
+        if winner_id_value == "home":
             winner_id = home_id
-        elif away_runs > home_runs:
+        elif winner_id_value == "away":
             winner_id = away_id
         else:
-            winner_id = None  # tie (rare in baseball but possible in suspended)
-
-        date_str = d.isoformat()
+            winner_id = None
 
         try:
             conn.execute("""
                 INSERT INTO games (date, home_team_id, away_team_id, home_runs, away_runs,
                                    status, actual_winner_id, source)
-                VALUES (?, ?, ?, ?, ?, 'final', ?, 'ncaa')
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'ncaa')
                 ON CONFLICT(date, home_team_id, away_team_id) DO UPDATE SET
                     home_runs=excluded.home_runs,
                     away_runs=excluded.away_runs,
-                    status='final',
+                    status=excluded.status,
                     actual_winner_id=excluded.actual_winner_id,
-                    source='ncaa'
-            """, (date_str, home_id, away_id, home_runs, away_runs, winner_id))
+                    source=excluded.source
+            """, (date_str, home_id, away_id, home_runs, away_runs, game_status, winner_id))
             imported += 1
         except sqlite3.IntegrityError:
             skipped += 1

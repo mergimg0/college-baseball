@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>College Baseball Predictions — NCAA D1</title>
+<title>College Baseball Predictions -- NCAA D1</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
@@ -22,12 +22,9 @@
   .accuracy-banner .stat.edge .value { color: #34d399; }
   .accuracy-banner .stat.negative .value { color: #f87171; }
   .accuracy-banner .divider { width: 1px; height: 48px; background: #312e81; }
-  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 12px; border-bottom: 1px solid #1a2035; padding-bottom: 6px; }
-  .section-header h2 { color: #e8eaed; font-size: 1.1em; font-weight: 600; }
-  .section-header .date { color: #6b7280; font-size: 0.85em; }
   table { width: 100%; border-collapse: collapse; }
   thead th { background: #111827; color: #9ca3af; padding: 8px 12px; text-align: left;
-    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 0; }
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: sticky; top: 48px; z-index: 50; }
   tbody td { padding: 10px 12px; border-bottom: 1px solid #111827; font-size: 0.88em; }
   tbody tr:hover { background: #0f172a; }
   .prob { font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -65,14 +62,6 @@
   .about { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 20px; margin: 32px 0; }
   .about h3 { color: #e8eaed; margin-bottom: 12px; font-size: 1em; }
   .about p { color: #9ca3af; font-size: 0.85em; margin-bottom: 8px; }
-  .about .qa { margin-bottom: 6px; }
-  .about .qa .q { color: #a5b4fc; font-weight: 600; font-size: 0.8em; }
-  .about .qa .a { color: #9ca3af; font-size: 0.8em; }
-  .faq-item { margin-bottom: 20px; }
-  .faq-item:last-child { margin-bottom: 0; }
-  .faq-q { color: #a5b4fc; font-weight: 700; font-size: 0.95em; margin-bottom: 6px; }
-  .faq-a { color: #9ca3af; font-size: 0.85em; line-height: 1.65; }
-  .faq-a strong { color: #c7d2fe; }
   .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
   .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
   .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
@@ -82,6 +71,42 @@
   .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
   .nav-link.active { background: #312e81; color: #c7d2fe; }
   .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #111827; color: #374151; font-size: 0.75em; text-align: center; }
+
+  /* Day tabs */
+  .day-tabs { display: flex; gap: 4px; margin: 20px 0 16px; overflow-x: auto; padding-bottom: 4px; }
+  .day-tab { padding: 8px 16px; border-radius: 8px; font-size: 0.82em; font-weight: 600; color: #9ca3af;
+    background: #111827; border: 1px solid #1f2937; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .day-tab:hover { background: #1f2937; color: #e8eaed; }
+  .day-tab.active { background: #312e81; color: #c7d2fe; border-color: #4338ca; }
+  .day-tab .badge { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 10px;
+    font-size: 0.75em; font-weight: 700; }
+  .badge-accuracy { background: #064e3b; color: #34d399; }
+  .badge-today { background: #4338ca; color: #c7d2fe; }
+
+  /* Report card */
+  .report-card { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 16px 24px; margin-bottom: 16px; display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  .rc-stat { font-size: 1.1em; color: #a5b4fc; font-weight: 700; }
+  .rc-pct { font-size: 2em; font-weight: 800; color: #34d399; }
+
+  /* Section divider */
+  .section-divider { color: #6b7280; font-size: 0.8em; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1px; margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #1f2937; }
+
+  /* Staleness */
+  .stale-warning { padding: 10px 20px; text-align: center; font-size: 0.85em; font-weight: 600; border-radius: 6px; margin-bottom: 12px; }
+  .stale-warn { background: #451a03; color: #fbbf24; border: 1px solid #92400e; }
+  .stale-critical { background: #450a0a; color: #f87171; border: 1px solid #991b1b; }
+
+  /* Conference filter */
+  .filter-bar { margin-bottom: 12px; }
+  .filter-bar select { background: #111827; color: #c8ccd4; border: 1px solid #1f2937; border-radius: 6px;
+    padding: 6px 12px; font-size: 0.82em; cursor: pointer; }
+
+  /* Day panel */
+  .day-panel { display: none; }
+  .day-panel.active { display: block; }
+
   @media (max-width: 640px) {
     .accuracy-banner { gap: 20px; padding: 14px; }
     .accuracy-banner .stat .value { font-size: 1.5em; }
@@ -89,6 +114,8 @@
     .rankings-grid { grid-template-columns: 1fr; }
     table { font-size: 0.82em; }
     td, th { padding: 6px 8px; }
+    .day-tabs { gap: 2px; }
+    .day-tab { padding: 6px 10px; font-size: 0.75em; }
   }
 </style>
 </head>
@@ -102,14 +129,18 @@
       <a href="edge.html" class="nav-link">Edge</a>
       <a href="backtest.html" class="nav-link">Accuracy</a>
       <a href="wp.html" class="nav-link">Win Prob</a>
+      <a href="top25.html" class="nav-link">Top 25</a>
     </div>
   </div>
 </nav>
+
+<div id="stale-banner" style="display:none" class="stale-warning"></div>
+
 <div class="container">
   <div class="header">
     <h1>College Baseball Predictions</h1>
-    <div class="tagline">NCAA D1 Game Predictions &mdash; Pythagenport + Bradley-Terry + Log5</div>
-    <div class="meta">Updated {{ generated_at }} | Model v0.1 | {{ total_teams }} teams tracked</div>
+    <div class="tagline">NCAA D1 Game Predictions &mdash; 7-Day Rolling Forecast</div>
+    <div class="meta">Updated {{ generated_at }} | {{ total_teams }} teams | {{ sys_stats.total_games|default('26,052') }} games | {{ sys_stats.seasons|default(4) }} seasons | Refreshes every 6 hours</div>
   </div>
 
   {% if accuracy and accuracy.games > 0 %}
@@ -138,68 +169,161 @@
   </div>
   {% endif %}
 
-  <div class="finding">
-    <div class="label">Original Research</div>
-    <div class="text">The college baseball Pythagenport exponent is <span class="number">{{ "%.2f" | format(pythag_exp) }}</span>, not the MLB-derived 1.83. First published computation of the college-specific exponent &mdash; reflecting {{ "%.1f" | format(rpg) }} runs per game (vs MLB ~8.5).</div>
-  </div>
-
-  <div class="section-header">
-    <h2>Tonight's Predictions</h2>
-    <span class="date">{{ today }}</span>
-  </div>
-  {% if today_predictions %}
-  <table>
-    <thead><tr><th>Home</th><th>Away</th><th>Win %</th><th>Pick</th><th>Total</th><th>Series</th><th>Conf</th></tr></thead>
-    <tbody>
-    {% for p in today_predictions %}
-      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
-      {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
-      <tr>
-        <td>{{ p.home_team }}</td>
-        <td>{{ p.away_team }}</td>
-        <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (p.home_win_prob * 100) | round(1) }}%{% if p.get('ci_lower') %}<span style="font-size:0.7em;color:#6b7280;font-weight:400"> ({{ (p.ci_lower * 100) | round(0) }}&ndash;{{ (p.ci_upper * 100) | round(0) }})</span>{% endif %}</td>
-        <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
-        <td class="score">{{ p.predicted_total_runs }}</td>
-        <td>{% if p.series_position == 1 %}<span class="conf conf-high">G1 Ace</span>{% elif p.series_position == 2 %}<span class="conf conf-medium">G2</span>{% elif p.series_position == 3 %}<span class="conf conf-low">G3</span>{% else %}<span class="conf" style="background:#1f2937;color:#6b7280">Mid</span>{% endif %}</td>
-        <td><span class="conf conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
-      </tr>
+  <!-- Day tabs -->
+  <div class="day-tabs">
+    {% for day in days %}
+    <button class="day-tab {% if day.is_today %}active{% endif %}" onclick="showDay('{{ day.date }}')" data-date="{{ day.date }}">
+      {% if day.is_yesterday %}Yest{% else %}{{ day.date_label }}{% endif %}
+      {% if day.is_today %}<span class="badge badge-today">Today</span>{% endif %}
+      {% if day.is_yesterday and day.accuracy is not none %}<span class="badge badge-accuracy">{{ (day.accuracy * 100)|round(0)|int }}%</span>{% endif %}
+      {% if not day.is_yesterday and not day.is_today %}({{ day.predictions|length }}){% endif %}
+    </button>
     {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p style="color: #4b5563; padding: 20px 0;">No games scheduled. Check back tomorrow.</p>
-  {% endif %}
-
-  <div class="section-header">
-    <h2>Yesterday's Results</h2>
-    <span class="date">{{ yesterday }}</span>
   </div>
-  {% if yesterday_predictions %}
-  <table>
-    <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Score</th><th></th></tr></thead>
-    <tbody>
-    {% for p in yesterday_predictions %}
-      {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
-      <tr>
-        <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}&#10003;{% elif p.correct is sameas false %}&#10007;{% else %}&mdash;{% endif %}</td>
-        <td>{{ p.home_team }}</td>
-        <td>{{ p.away_team }}</td>
-        <td>{{ winner }} ({{ ([p.home_win_prob, p.away_win_prob] | max * 100) | round(0) }}%)</td>
-        <td class="score">{% if p.actual_home_runs is not none %}{{ p.actual_home_runs }}&ndash;{{ p.actual_away_runs }}{% else %}&mdash;{% endif %}</td>
-        <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}Correct{% elif p.correct is sameas false %}Wrong{% else %}Pending{% endif %}</td>
-      </tr>
+
+  <!-- Conference filter -->
+  <div class="filter-bar">
+    <select id="conf-filter" onchange="filterConference(this.value)">
+      <option value="">All Conferences</option>
+      {% for conf in conferences %}
+      <option value="{{ conf }}">{{ conf }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Day panels -->
+  {% for day in days %}
+  <div class="day-panel {% if day.is_today %}active{% endif %}" data-date="{{ day.date }}">
+
+    {% if day.is_yesterday %}
+    <!-- Yesterday: Report card -->
+    {% if day.games_total > 0 %}
+    <div class="report-card">
+      <div><span class="rc-stat">Yesterday's Results</span></div>
+      <div><span class="rc-pct">{{ (day.accuracy * 100)|round(1) }}%</span></div>
+      <div><span class="rc-stat">{{ day.games_correct }}/{{ day.games_total }} correct</span></div>
+    </div>
+    {% endif %}
+    {% if day.predictions|length > 0 %}
+    <table>
+      <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Win %</th><th>Score</th><th></th></tr></thead>
+      <tbody>
+      {% for p in day.predictions %}
+        {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+        {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
+        <tr data-home-conf="{{ p.home_conference }}" data-away-conf="{{ p.away_conference }}">
+          <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}&#10003;{% elif p.correct is sameas false %}&#10007;{% else %}&mdash;{% endif %}</td>
+          <td>{{ p.home_team }}</td>
+          <td>{{ p.away_team }}</td>
+          <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
+          <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (conf_pct * 100)|round(1) }}%</td>
+          <td class="score">{% if p.actual_home_runs is not none %}{{ p.actual_home_runs }}&ndash;{{ p.actual_away_runs }}{% else %}&mdash;{% endif %}</td>
+          <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}Correct{% elif p.correct is sameas false %}Wrong{% else %}Pending{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color: #4b5563; padding: 20px 0;">No results from yesterday.</p>
+    {% endif %}
+
+    {% elif day.is_today %}
+    <!-- Today: Split completed/upcoming -->
+    {% set ns = namespace(completed=[], upcoming=[]) %}
+    {% for p in day.predictions %}
+      {% if p.status == "final" %}
+        {% set ns.completed = ns.completed + [p] %}
+      {% else %}
+        {% set ns.upcoming = ns.upcoming + [p] %}
+      {% endif %}
     {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p style="color: #4b5563; padding: 20px 0;">No results from yesterday.</p>
-  {% endif %}
 
-  <div class="section-header">
-    <h2>Power Rankings</h2>
-    <span class="date">Top 25</span>
+    {% if ns.completed|length > 0 %}
+    <div class="section-divider">Completed ({{ ns.completed|length }})</div>
+    <table>
+      <thead><tr><th></th><th>Home</th><th>Away</th><th>Pick</th><th>Win %</th><th>Score</th><th></th></tr></thead>
+      <tbody>
+      {% for p in ns.completed %}
+        {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+        {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
+        <tr data-home-conf="{{ p.home_conference }}" data-away-conf="{{ p.away_conference }}">
+          <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% else %}pending{% endif %}">{% if p.correct is sameas true %}&#10003;{% elif p.correct is sameas false %}&#10007;{% else %}&mdash;{% endif %}</td>
+          <td>{{ p.home_team }}</td>
+          <td>{{ p.away_team }}</td>
+          <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
+          <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (conf_pct * 100)|round(1) }}%</td>
+          <td class="score">{{ p.actual_home_runs }}&ndash;{{ p.actual_away_runs }}</td>
+          <td class="{% if p.correct is sameas true %}correct{% elif p.correct is sameas false %}incorrect{% endif %}">{% if p.correct is sameas true %}Correct{% elif p.correct is sameas false %}Wrong{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if ns.upcoming|length > 0 %}
+    <div class="section-divider">Upcoming ({{ ns.upcoming|length }})</div>
+    <table>
+      <thead><tr><th>Home</th><th>Away</th><th>Pick</th><th>Win %</th><th>Conf</th><th>Total</th>{% if ns.upcoming|selectattr("has_odds")|list|length > 0 %}<th>Edge</th>{% endif %}</tr></thead>
+      <tbody>
+      {% for p in ns.upcoming %}
+        {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+        {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
+        <tr data-home-conf="{{ p.home_conference }}" data-away-conf="{{ p.away_conference }}">
+          <td>{{ p.home_team }}</td>
+          <td>{{ p.away_team }}</td>
+          <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
+          <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (conf_pct * 100)|round(1) }}%</td>
+          <td><span class="conf conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
+          <td class="score">{{ p.predicted_total_runs }}</td>
+          {% if ns.upcoming|selectattr("has_odds")|list|length > 0 %}
+          <td>{% if p.has_odds %}<span style="color:{% if p.edge > 0.05 %}#34d399{% elif p.edge < -0.05 %}#f87171{% else %}#9ca3af{% endif %}">{{ "%+.1f"|format(p.edge * 100) }}%</span>{% else %}&mdash;{% endif %}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if ns.completed|length == 0 and ns.upcoming|length == 0 %}
+    <p style="color: #4b5563; padding: 20px 0;">No games scheduled for today.</p>
+    {% endif %}
+
+    {% else %}
+    <!-- Future day: Pure predictions -->
+    {% if day.predictions|length > 0 %}
+    <table>
+      <thead><tr><th>Home</th><th>Away</th><th>Pick</th><th>Win %</th><th>Conf</th><th>Total</th>{% if day.predictions|selectattr("has_odds")|list|length > 0 %}<th>Edge</th>{% endif %}</tr></thead>
+      <tbody>
+      {% for p in day.predictions %}
+        {% set winner = p.home_team if p.home_win_prob > 0.5 else p.away_team %}
+        {% set conf_pct = [p.home_win_prob, p.away_win_prob] | max %}
+        <tr data-home-conf="{{ p.home_conference }}" data-away-conf="{{ p.away_conference }}">
+          <td>{{ p.home_team }}</td>
+          <td>{{ p.away_team }}</td>
+          <td class="{% if p.home_win_prob > 0.5 %}pick{% else %}pick-away{% endif %}">{{ winner }}</td>
+          <td class="prob {% if conf_pct > 0.65 %}prob-strong{% elif conf_pct > 0.55 %}prob-mid{% else %}prob-weak{% endif %}">{{ (conf_pct * 100)|round(1) }}%</td>
+          <td><span class="conf conf-{{ p.confidence }}">{{ p.confidence }}</span></td>
+          <td class="score">{{ p.predicted_total_runs }}</td>
+          {% if day.predictions|selectattr("has_odds")|list|length > 0 %}
+          <td>{% if p.has_odds %}<span style="color:{% if p.edge > 0.05 %}#34d399{% elif p.edge < -0.05 %}#f87171{% else %}#9ca3af{% endif %}">{{ "%+.1f"|format(p.edge * 100) }}%</span>{% else %}&mdash;{% endif %}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color: #4b5563; padding: 20px 0;">No games scheduled. Schedule data typically appears 3-5 days in advance.</p>
+    {% endif %}
+
+    {% endif %}
   </div>
-  <div class="rankings-grid">
+  {% endfor %}
+
+  <!-- Power Rankings -->
+  <div style="margin-top: 32px; border-bottom: 1px solid #1a2035; padding-bottom: 6px;">
+    <h2 style="color: #e8eaed; font-size: 1.1em; font-weight: 600;">Power Rankings <span style="color: #6b7280; font-size: 0.85em; font-weight: 400;">Top 25</span></h2>
+  </div>
+  <div class="rankings-grid" style="margin-top: 12px;">
     {% for t in rankings[:25] %}
     <div class="rank-card">
       <div class="rank-num {% if loop.index <= 5 %}top5{% elif loop.index <= 10 %}top10{% endif %}">{{ loop.index }}</div>
@@ -221,74 +345,47 @@
     <p><strong>Layer 1:</strong> Pythagenport Expected Win% with variable exponent calibrated for college baseball ({{ "%.2f" | format(pythag_exp) }}, not MLB's 1.83).</p>
     <p><strong>Layer 2:</strong> Dynamic Bradley-Terry ratings via MM algorithm with temporal decay.</p>
     <p><strong>Layer 3:</strong> Log5 matchup probability with home-field adjustment (~53% baseline).</p>
-    <p style="margin-top: 12px; color: #6b7280; font-size: 0.75em;">No neural networks. The accuracy comes from correct modeling of college baseball's unique run environment, not from complexity.</p>
-  </div>
-
-  <div class="about" id="faq" style="margin-top: 16px;">
-    <h3>Frequently Asked Questions</h3>
-
-    <div class="faq-item">
-      <div class="faq-q">1. Where does the data actually come from?</div>
-      <div class="faq-a">Three sources, all structured JSON APIs &mdash; no screen scraping or fragile HTML parsing.
-        <strong>PEAR Ratings</strong> (pearatings.com) gives us the baseline: team ratings, power rankings, ELO, strength of schedule, and full season stats for all {{ total_teams }} D1 teams.
-        <strong>NCAA Scoreboard</strong> gives us every game score, every day, across the entire D1 season.
-        <strong>The Odds API</strong> gives us live Vegas lines &mdash; moneyline, run line, and over/unders from 40+ sportsbooks.
-        No team websites are scraped. Everything comes through clean REST APIs that return JSON.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">2. How is the data collected? What tools?</div>
-      <div class="faq-a">All three sources are proper APIs that return structured JSON &mdash; we just make HTTP requests and parse the response. No Selenium, no browser automation, no BeautifulSoup. It's Python's built-in HTTP library making GET requests. This keeps the system simple and reliable: no headless browsers to crash, no HTML layouts to break. If the API returns data, we have data.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">3. Is the scraping logic the same for each source?</div>
-      <div class="faq-a">Same core pattern everywhere: build a URL, make an HTTP request, parse the JSON. The differences are minor. PEAR needs us to call once per team when we want detailed stats (about 3 minutes for all {{ total_teams }} teams at a polite rate). NCAA is one call per day. The Odds API is a single call that returns everything at once. All three have built-in rate limiting so we're good API citizens.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">4. How often does the data refresh?</div>
-      <div class="faq-a">Once a day. An automated pipeline runs every afternoon: pull the latest PEAR ratings, import yesterday's and today's NCAA scores, recompute all our ratings (Pythagorean, Bradley-Terry, strength of schedule), generate tonight's predictions, render this page, and push it live. The whole pipeline takes under 5 minutes. For odds, those are fetched on-demand since lines move throughout the day.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">5. How deep does the data go &mdash; team level? Player level? Play by play?</div>
-      <div class="faq-a">Three levels deep. <strong>Team level:</strong> 308 D1 teams with runs scored/allowed, win-loss records, conference, and a full rating suite (Pythagorean, Bradley-Terry, ELO, SOS, composite power). <strong>Player level:</strong> 9,140 pitchers with game-by-game IP/K/BB/ERA, 4,808 with advanced metrics (FIP, xFIP, SIERA from 64 Analytics), 5,130 hitters with wRCE/wOBA/ISO, and 1,113 pitchers with computed quality ratings used in predictions. <strong>Play-by-play:</strong> 245,000+ events parsed from NCAA box scores covering 18 event types (strikeouts, groundouts, hits, walks, HBP, errors, steals, etc.) with inning-by-inning scoring.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">6. What happens when team names don't match across sources?</div>
-      <div class="faq-a">This is a real problem &mdash; NCAA might say "Mississippi St." while PEAR says "Mississippi State" and The Odds API says "Mississippi State Bulldogs." We handle it with a multi-layer system. First, exact name match. Then alias table lookup (351 known aliases covering 170+ teams). Then fuzzy substitutions (State/St., Southern/So., etc.). Then home/away swap detection for games where PEAR and NCAA disagree on who's home. When a fuzzy match works, we permanently cache it. Box score coverage is 99.9% across the season (4,145 of 4,149 games) with only 4 genuinely unavailable games.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">7. What's the tech stack?</div>
-      <div class="faq-a">Python, all the way through. The CLI uses Click, the math uses NumPy (Bradley-Terry fitting, matrix operations), the page rendering uses Jinja2 templates, and the database is SQLite. No machine learning frameworks &mdash; our prediction model is a hand-tuned blend of Pythagorean expectation and Bradley-Terry ratings. The accuracy comes from domain-specific modeling of college baseball's run environment, not from throwing data at a neural network.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">8. Where does this run? Cloud? Local?</div>
-      <div class="faq-a">Currently runs locally with a daily cron job, and this page is deployed as static HTML on GitHub Pages. No cloud infrastructure, no servers to maintain, no monthly hosting bill. The daily pipeline runs on a Mac, generates an HTML file, and pushes it to GitHub. For our current scale (one page, updated once daily), this is the right architecture. If we add real-time features or an API for others to query, we'd move to cloud hosting &mdash; but we're not there yet.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">9. Where is the data stored?</div>
-      <div class="faq-a">SQLite database, about 730 KB. It holds {{ total_teams }} teams with full ratings, nearly 5,000 game results with scores (going back to February 14th, the start of the 2026 season), predictions, and accuracy tracking. Raw API responses are also cached as JSON files so we have a backup. SQLite is fast, zero-configuration, and perfect for this scale &mdash; the entire season's data fits in a file smaller than a single photo.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">10. Can you get Vegas odds?</div>
-      <div class="faq-a">Yes, and it's already built. The Odds API provides moneyline, run lines (spreads), and over/unders for college baseball from 40+ sportsbooks including DraftKings, FanDuel, and BetMGM. Free tier gives us 500 API credits per month, which is more than enough for daily polling. The next step is building a betting edge calculator that compares our win probabilities against the implied odds to find value &mdash; games where our model disagrees with the market.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">11. Can you backtest? Do you have historical performance?</div>
-      <div class="faq-a">Yes &mdash; and we take it seriously. Our backtest engine replays the entire season chronologically: for each game, it computes a prediction using <em>only</em> the data that was available before that game happened. No peeking at future results. It then compares our prediction against the actual outcome and against PEAR's ratings. We track accuracy (% of games called correctly), Brier score (how well-calibrated our probabilities are), and we break it down into calibration bins so we can see if "our 70%" really wins 70% of the time. The system is designed so you can never accidentally cheat &mdash; accumulators update after each prediction, not before.</div>
-    </div>
+    <p style="margin-top: 12px;">Predictions refresh every 6 hours. Ratings update as new results come in, so predictions for future games improve over time.</p>
   </div>
 
   <div class="footer">
+    <p>College Baseball Predictions | Data: NCAA, PEAR, The Odds API | Model: Pythagenport + Bradley-Terry + Platt Calibration</p>
   </div>
 </div>
+
+<script>
+function showDay(date) {
+  document.querySelectorAll('.day-tab').forEach(function(t) {
+    t.classList.toggle('active', t.dataset.date === date);
+  });
+  document.querySelectorAll('.day-panel').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.date === date);
+  });
+  document.getElementById('conf-filter').value = '';
+  filterConference('');
+}
+
+function filterConference(conf) {
+  document.querySelectorAll('.day-panel.active tr[data-home-conf]').forEach(function(tr) {
+    var match = !conf || tr.dataset.homeConf === conf || tr.dataset.awayConf === conf;
+    tr.style.display = match ? '' : 'none';
+  });
+}
+
+(function() {
+  var generated = new Date("{{ generated_at_iso }}");
+  var age = (Date.now() - generated.getTime()) / 3600000;
+  var banner = document.getElementById('stale-banner');
+  if (age > 24) {
+    banner.textContent = 'Pipeline may be down \u2014 predictions last updated ' + Math.round(age) + ' hours ago';
+    banner.className = 'stale-warning stale-critical';
+    banner.style.display = 'block';
+  } else if (age > 8) {
+    banner.textContent = 'Data may be stale \u2014 last updated ' + Math.round(age) + ' hours ago';
+    banner.className = 'stale-warning stale-warn';
+    banner.style.display = 'block';
+  }
+})();
+</script>
 </body>
 </html>
