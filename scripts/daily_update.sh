@@ -11,6 +11,10 @@ set -euo pipefail
 PROJ_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJ_DIR"
 
+# Activate project venv so all dependencies (click, tabulate, etc.) are available
+# shellcheck disable=SC1091
+source "$PROJ_DIR/.venv/bin/activate"
+
 # Logging
 mkdir -p logs
 LOG="logs/daily-$(date '+%Y-%m-%d').log"
@@ -53,7 +57,7 @@ python3 -m fsbb pitchers --days 2 2>&1 | tail -4
 # Step 3: Scrape play-by-play (yesterday)
 echo "[3/8] Scraping play-by-play..."
 YESTERDAY=$(python3 -c "from datetime import date, timedelta; print((date.today()-timedelta(days=1)).isoformat())")
-python3 -m fsbb scrape_pbp --start "$YESTERDAY" --end "$YESTERDAY" 2>&1 | tail -2
+python3 -m fsbb scrape-pbp --start "$YESTERDAY" --end "$YESTERDAY" 2>&1 | tail -2
 
 # Step 4: Compute series positions + game features
 echo "[4/8] Computing game features..."
