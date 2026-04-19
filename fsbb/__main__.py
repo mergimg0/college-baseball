@@ -808,6 +808,94 @@ def render(output: str | None):
     (docs_dir / "top25.html").write_text(html)
     click.echo(f"Rendered top25 → {docs_dir / 'top25.html'}")
 
+    # 7. Prediction History page
+    conn_hist = init_db()
+    history_rows = conn_hist.execute("""
+        SELECT g.date,
+               h.name as home, a.name as away,
+               g.our_home_win_prob, g.actual_winner_id,
+               g.home_team_id, g.away_team_id,
+               g.home_runs, g.away_runs,
+               h.conference as home_conf, a.conference as away_conf
+        FROM games g
+        JOIN teams h ON g.home_team_id = h.id
+        JOIN teams a ON g.away_team_id = a.id
+        WHERE g.our_home_win_prob IS NOT NULL
+        ORDER BY g.date DESC, g.our_home_win_prob DESC
+    """).fetchall()
+
+    from collections import OrderedDict
+    from datetime import datetime as _dt
+    history_by_date: dict[str, list] = OrderedDict()
+    for r in history_rows:
+        d = r["date"]
+        if d not in history_by_date:
+            history_by_date[d] = []
+        prob = r["our_home_win_prob"]
+        pick = r["home"] if prob > 0.5 else r["away"]
+        display_prob = max(prob, 1 - prob)
+        confidence = "high" if display_prob > 0.65 else ("medium" if display_prob > 0.55 else "low")
+        correct = None
+        if r["actual_winner_id"] is not None:
+            predicted_winner = r["home_team_id"] if prob > 0.5 else r["away_team_id"]
+            correct = "correct" if predicted_winner == r["actual_winner_id"] else "wrong"
+        score = ""
+        if r["home_runs"] is not None and r["away_runs"] is not None:
+            score = f"{r['home_runs']}-{r['away_runs']}"
+        history_by_date[d].append({
+            "home": r["home"], "away": r["away"],
+            "pick": pick, "prob": display_prob, "confidence": confidence,
+            "score": score, "result": correct or "pending",
+        })
+
+    history_days = []
+    total_correct = 0
+    total_evaluated = 0
+    best_day_pct = 0
+    months_set = set()
+    for d, games in history_by_date.items():
+        evaluated = sum(1 for g in games if g["result"] != "pending")
+        correct = sum(1 for g in games if g["result"] == "correct")
+        accuracy = correct / evaluated if evaluated > 0 else None
+        high_conf = sum(1 for g in games if g["confidence"] == "high")
+        total_correct += correct
+        total_evaluated += evaluated
+        if accuracy and accuracy > best_day_pct and evaluated >= 5:
+            best_day_pct = accuracy
+        dt = _dt.fromisoformat(d)
+        month_key = dt.strftime("%Y-%m")
+        months_set.add(month_key)
+        history_days.append({
+            "date": d,
+            "date_label": dt.strftime("%a %b %d"),
+            "month_key": month_key,
+            "games": games,
+            "total": len(games),
+            "evaluated": evaluated,
+            "correct": correct,
+            "accuracy": accuracy,
+            "high_conf": high_conf,
+        })
+
+    months_sorted = sorted(months_set)
+    months_list = [{"key": m, "label": _dt.strptime(m, "%Y-%m").strftime("%b %Y")} for m in months_sorted]
+
+    overall_acc = f"{total_correct/total_evaluated*100:.1f}%" if total_evaluated > 0 else "N/A"
+    html = env.get_template("history.html").render(
+        history_days=history_days,
+        total_dates=len(history_days),
+        total_predictions=sum(d["total"] for d in history_days),
+        total_evaluated=total_evaluated,
+        total_correct=total_correct,
+        overall_accuracy=overall_acc,
+        best_day_pct=f"{best_day_pct*100:.0f}%" if best_day_pct else "N/A",
+        months=months_list,
+        generated_at=generated_at,
+    )
+    (docs_dir / "history.html").write_text(html)
+    conn_hist.close()
+    click.echo(f"Rendered history → {docs_dir / 'history.html'} ({len(history_days)} dates)")
+
 
 @cli.command()
 @click.option("--start", default=None, help="Start date YYYY-MM-DD")

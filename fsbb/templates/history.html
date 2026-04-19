@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prediction History -- College Baseball Predictions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8ccd4; line-height: 1.5; }
+  a { color: #4fc3f7; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+  .navbar { background: #111827; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; height: 48px; gap: 32px; }
+  .nav-brand { font-weight: 800; font-size: 1em; color: #a5b4fc; letter-spacing: -0.5px; }
+  .nav-brand:hover { text-decoration: none; color: #c7d2fe; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af; transition: all 0.15s; }
+  .nav-link:hover { background: #1f2937; color: #e8eaed; text-decoration: none; }
+  .nav-link.active { background: #312e81; color: #c7d2fe; }
+  h1 { color: #e8eaed; font-size: 1.5em; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .tagline { color: #6b7280; font-size: 0.85em; margin-bottom: 20px; }
+  .meta { color: #4b5563; font-size: 0.75em; margin-bottom: 16px; }
+
+  /* Summary banner */
+  .summary-banner { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid #312e81;
+    border-radius: 10px; padding: 20px; margin: 16px 0 24px; display: flex; gap: 40px; flex-wrap: wrap; align-items: center; }
+  .summary-banner .stat { text-align: center; min-width: 80px; }
+  .summary-banner .stat .value { font-size: 2em; font-weight: 800; color: #a5b4fc; line-height: 1.1; }
+  .summary-banner .stat .label { font-size: 0.7em; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .summary-banner .divider { width: 1px; height: 48px; background: #312e81; }
+
+  /* Date cards */
+  .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-top: 16px; }
+  .date-card { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.15s; }
+  .date-card:hover { border-color: #4338ca; background: #0f172a; }
+  .date-card.expanded { grid-column: 1 / -1; }
+  .date-header { display: flex; justify-content: space-between; align-items: center; }
+  .date-title { font-weight: 700; color: #e8eaed; font-size: 1em; }
+  .date-meta { font-size: 0.8em; color: #6b7280; }
+  .date-stats { display: flex; gap: 16px; margin-top: 8px; }
+  .date-stat { font-size: 0.78em; }
+  .date-stat .val { font-weight: 700; color: #a5b4fc; }
+  .acc-good { color: #34d399 !important; }
+  .acc-mid { color: #fbbf24 !important; }
+  .acc-bad { color: #f87171 !important; }
+
+  /* Game table inside expanded card */
+  .game-table { margin-top: 12px; display: none; }
+  .date-card.expanded .game-table { display: block; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #0a0e17; color: #9ca3af; padding: 6px 10px; text-align: left;
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  tbody td { padding: 8px 10px; border-bottom: 1px solid #1a2035; font-size: 0.82em; }
+  tbody tr:hover { background: #0f172a; }
+  .pick { font-weight: 700; color: #e8eaed; }
+  .prob { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prob-high { color: #34d399; }
+  .prob-mid { color: #fbbf24; }
+  .prob-low { color: #9ca3af; }
+  .result-correct { color: #34d399; }
+  .result-wrong { color: #f87171; }
+  .result-pending { color: #4b5563; }
+  .conf-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.75em; font-weight: 600; }
+  .conf-high { background: #065f46; color: #34d399; }
+  .conf-medium { background: #78350f; color: #fbbf24; }
+  .conf-low { background: #1f2937; color: #9ca3af; }
+  .score { font-variant-numeric: tabular-nums; color: #9ca3af; }
+
+  /* Month filter */
+  .month-filter { display: flex; gap: 4px; margin: 16px 0; flex-wrap: wrap; }
+  .month-btn { padding: 6px 14px; border-radius: 6px; font-size: 0.8em; font-weight: 500; color: #9ca3af;
+    background: #111827; border: 1px solid #1f2937; cursor: pointer; transition: all 0.15s; }
+  .month-btn:hover { background: #1f2937; color: #e8eaed; }
+  .month-btn.active { background: #312e81; color: #c7d2fe; border-color: #4338ca; }
+
+  @media (max-width: 768px) {
+    .date-grid { grid-template-columns: 1fr; }
+    .summary-banner { gap: 20px; }
+    table { font-size: 0.78em; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-brand">CBP</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Predictions</a>
+      <a href="history.html" class="nav-link active">History</a>
+      <a href="rankings.html" class="nav-link">Rankings</a>
+      <a href="edge.html" class="nav-link">Edge</a>
+      <a href="backtest.html" class="nav-link">Accuracy</a>
+      <a href="wp.html" class="nav-link">Win Prob</a>
+      <a href="top25.html" class="nav-link">Top 25</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Prediction History</h1>
+  <p class="tagline">Every prediction made, with results</p>
+  <p class="meta">Generated {{ generated_at }} | {{ total_dates }} dates | {{ total_predictions }} predictions</p>
+
+  <div class="summary-banner">
+    <div class="stat"><div class="value">{{ overall_accuracy }}</div><div class="label">Overall Accuracy</div></div>
+    <div class="divider"></div>
+    <div class="stat"><div class="value">{{ total_evaluated }}</div><div class="label">Games Evaluated</div></div>
+    <div class="divider"></div>
+    <div class="stat"><div class="value">{{ total_correct }}</div><div class="label">Correct</div></div>
+    <div class="divider"></div>
+    <div class="stat"><div class="value">{{ best_day_pct }}</div><div class="label">Best Day</div></div>
+  </div>
+
+  <!-- Month filter -->
+  <div class="month-filter">
+    <button class="month-btn active" onclick="filterMonth('all')">All</button>
+    {% for month in months %}
+    <button class="month-btn" onclick="filterMonth('{{ month.key }}')">{{ month.label }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="date-grid">
+    {% for day in history_days %}
+    <div class="date-card" data-month="{{ day.month_key }}" onclick="toggleCard(this)">
+      <div class="date-header">
+        <span class="date-title">{{ day.date_label }}</span>
+        <span class="date-meta">{{ day.total }} games</span>
+      </div>
+      <div class="date-stats">
+        {% if day.evaluated > 0 %}
+        <span class="date-stat">
+          Accuracy: <span class="val {% if day.accuracy >= 0.65 %}acc-good{% elif day.accuracy >= 0.55 %}acc-mid{% else %}acc-bad{% endif %}">
+            {{ (day.accuracy * 100)|round(1) }}%
+          </span>
+          ({{ day.correct }}/{{ day.evaluated }})
+        </span>
+        {% else %}
+        <span class="date-stat"><span class="val" style="color:#4b5563;">Pending</span></span>
+        {% endif %}
+        {% if day.high_conf > 0 %}
+        <span class="date-stat">High conf: <span class="val">{{ day.high_conf }}</span></span>
+        {% endif %}
+      </div>
+
+      <div class="game-table">
+        <table>
+          <thead><tr><th>Home</th><th>Away</th><th>Pick</th><th>Win %</th><th>Conf</th><th>Score</th><th>Result</th></tr></thead>
+          <tbody>
+          {% for g in day.games %}
+          <tr>
+            <td>{{ g.home }}</td>
+            <td>{{ g.away }}</td>
+            <td class="pick">{{ g.pick }}</td>
+            <td class="prob {% if g.prob >= 0.65 %}prob-high{% elif g.prob >= 0.55 %}prob-mid{% else %}prob-low{% endif %}">
+              {{ (g.prob * 100)|round(1) }}%
+            </td>
+            <td><span class="conf-badge conf-{{ g.confidence }}">{{ g.confidence|upper }}</span></td>
+            <td class="score">{{ g.score }}</td>
+            <td class="{% if g.result == 'correct' %}result-correct{% elif g.result == 'wrong' %}result-wrong{% else %}result-pending{% endif %}">
+              {% if g.result == 'correct' %}&#10003;{% elif g.result == 'wrong' %}&#10007;{% else %}&mdash;{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+function toggleCard(card) {
+  card.classList.toggle('expanded');
+}
+
+function filterMonth(key) {
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.date-card').forEach(card => {
+    if (key === 'all' || card.dataset.month === key) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>

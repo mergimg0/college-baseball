@@ -157,7 +157,7 @@ python3 -m fsbb render 2>&1
 # Step 8: Push to GitHub (triggers Pages auto-deploy)
 echo "[8/8] Pushing to GitHub..."
 cd "$PROJ_DIR"
-git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html docs/backtest.html docs/wp.html docs/top25.html
+git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html docs/backtest.html docs/wp.html docs/top25.html docs/history.html
 
 alert() {
     local msg="$1"
