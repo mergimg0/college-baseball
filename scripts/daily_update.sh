@@ -157,14 +157,47 @@ python3 -m fsbb render 2>&1
 # Step 8: Push to GitHub (triggers Pages auto-deploy)
 echo "[8/8] Pushing to GitHub..."
 cd "$PROJ_DIR"
-git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html docs/backtest.html docs/wp.html
+git add docs/index.html docs/predictions.html docs/rankings.html docs/edge.html docs/backtest.html docs/wp.html docs/top25.html
+
+alert() {
+    local msg="$1"
+    echo "  !! $msg"
+    mkdir -p logs
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $msg" >> logs/push-failures.log
+    # macOS desktop notification (best-effort, ignore if unavailable)
+    osascript -e "display notification \"$msg\" with title \"college-baseball cron\"" 2>/dev/null || true
+    # Visible marker file the developer can spot in `git status`
+    date '+%Y-%m-%d %H:%M:%S' > .deploy-stuck
+}
+
+clear_stuck_marker() {
+    [ -f .deploy-stuck ] && rm -f .deploy-stuck
+}
+
+# Disable -e for the push block so we can handle failures explicitly
+set +e
 if git diff --staged --quiet; then
     echo "  No changes to deploy"
+    clear_stuck_marker
 else
     git commit -m "daily: predictions update $(date '+%Y-%m-%d')"
-    git push origin main
-    echo "  Pushed — Pages will auto-deploy"
+    if git push origin main; then
+        echo "  Pushed — Pages will auto-deploy"
+        clear_stuck_marker
+    else
+        alert "git push origin main FAILED — commit is local only"
+    fi
 fi
+
+# Final reconciliation: even if push said OK, verify HEAD matches origin
+git fetch origin main --quiet 2>/dev/null
+ahead=$(git rev-list --count origin/main..HEAD 2>/dev/null || echo "?")
+if [ "$ahead" != "0" ]; then
+    alert "Local is $ahead commits ahead of origin/main — site is STALE"
+else
+    clear_stuck_marker
+fi
+set -e
 
 echo "========================================"
 echo "$(date '+%Y-%m-%d %H:%M:%S') — Daily update complete"
