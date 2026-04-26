@@ -1,0 +1,76 @@
+========================================
+2026-04-17 03:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-16: 1 imported, 5 skipped
+  Results 2026-04-17: 0 imported, 153 skipped
+  Schedule 2026-04-17: 153 imported, 0 skipped
+  Schedule 2026-04-18: 158 imported, 0 skipped
+  Schedule 2026-04-19: 145 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 116 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 5 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  File "/Users/mghome/projects/college-baseball/fsbb/__main__.py", line 345
+    (len(set(f'{p['home_team']} vs {p['away_team']}' for p in parsed)))
+                   ^
+SyntaxError: f-string: f-string: unmatched '['
+========================================
+2026-04-17 09:00:01 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-16: 5 imported, 0 skipped
+  Results 2026-04-17: 0 imported, 153 skipped
+  Schedule 2026-04-17: 153 imported, 0 skipped
+  Schedule 2026-04-18: 158 imported, 0 skipped
+  Schedule 2026-04-19: 145 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 116 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 147 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  File "/Users/mghome/projects/college-baseball/fsbb/__main__.py", line 664
+    "total_games": f"{conn2.execute('SELECT COUNT(*) FROM games WHERE status=\"final\"').fetchone()[0]:,}",
+                                                                                                          ^
+SyntaxError: f-string expression part cannot include a backslash
+========================================
+2026-04-17 15:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-16: 5 imported, 0 skipped
+  Results 2026-04-17: 0 imported, 153 skipped
+  Schedule 2026-04-17: 153 imported, 0 skipped
+  Schedule 2026-04-18: 159 imported, 0 skipped
+  Schedule 2026-04-19: 144 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 116 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 147 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+    exec(code, run_globals)
+  File "/Users/mghome/projects/college-baseball/fsbb/__main__.py", line 21, in <module>
+    import click
+ModuleNotFoundError: No module named 'click'
+========================================
+2026-04-17 21:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-16: 5 imported, 0 skipped
+  Results 2026-04-17: 2 imported, 151 skipped
+  Schedule 2026-04-17: 153 imported, 0 skipped
+  Schedule 2026-04-18: 161 imported, 0 skipped
+  Schedule 2026-04-19: 144 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 147 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+    exec(code, run_globals)
+  File "/Users/mghome/projects/college-baseball/fsbb/__main__.py", line 21, in <module>
+    import click
+ModuleNotFoundError: No module named 'click'

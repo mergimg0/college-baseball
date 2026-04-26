@@ -1,0 +1,19 @@
+========================================
+2026-04-16 11:00:01 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-15: 26 imported, 2 skipped
+  Results 2026-04-16: 0 imported, 5 skipped
+  Schedule 2026-04-16: 5 imported, 0 skipped
+  Schedule 2026-04-17: 150 imported, 0 skipped
+  Schedule 2026-04-18: 159 imported, 0 skipped
+  Schedule 2026-04-19: 147 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 116 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 5 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  File "/Users/mghome/projects/college-baseball/fsbb/__main__.py", line 345
+    (len(set(f'{p['home_team']} vs {p['away_team']}' for p in parsed)))
+                   ^
+SyntaxError: f-string: f-string: unmatched '['

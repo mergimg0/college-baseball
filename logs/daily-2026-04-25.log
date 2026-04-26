@@ -1,0 +1,103 @@
+========================================
+2026-04-25 09:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-24: 149 imported, 8 skipped
+  Results 2026-04-25: 0 imported, 148 skipped
+  Schedule 2026-04-25: 148 imported, 0 skipped
+  Schedule 2026-04-26: 151 imported, 0 skipped
+  Schedule 2026-04-27: 3 imported, 0 skipped
+  Schedule 2026-04-28: 103 imported, 4 skipped
+  Schedule 2026-04-29: 33 imported, 3 skipped
+  Schedule 2026-04-30: 4 imported, 0 skipped
+  Schedule 2026-05-01: 143 imported, 0 skipped
+  Schedule 2026-05-02: 154 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-23: 0 games, 0 pitchers
+
+Scraped 139 games, 727 pitcher entries
+Database: 24150 pitchers total, 10887 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 139 games, 13398 play events across 1 days
+Database: 3099117 total play events
+[4/8] Computing game features...
+  139 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 63 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: 0.0000
+  std_bt_rating: 0.5432
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-24: 147 predictions
+  2026-04-25: 153 predictions
+  2026-04-26: 149 predictions
+  2026-04-27: 4 predictions
+  2026-04-28: 103 predictions
+  2026-04-29: 34 predictions
+  2026-04-30: 4 predictions
+  2026-05-01: 143 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+========================================
+2026-04-25 21:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-24: 154 imported, 3 skipped
+  Results 2026-04-25: 7 imported, 143 skipped
+  Schedule 2026-04-25: 150 imported, 0 skipped
+  Schedule 2026-04-26: 151 imported, 0 skipped
+  Schedule 2026-04-27: 3 imported, 0 skipped
+  Schedule 2026-04-28: 103 imported, 4 skipped
+  Schedule 2026-04-29: 33 imported, 3 skipped
+  Schedule 2026-04-30: 4 imported, 0 skipped
+  Schedule 2026-05-01: 143 imported, 0 skipped
+  Schedule 2026-05-02: 154 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-23: 0 games, 0 pitchers
+
+Scraped 5 games, 26 pitcher entries
+Database: 24154 pitchers total, 10887 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 5 games, 494 play events across 1 days
+Database: 3099611 total play events
+[4/8] Computing game features...
+  10 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 145 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: 0.0000
+  std_bt_rating: 0.5425
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-24: 147 predictions
+  2026-04-25: 154 predictions
+  2026-04-26: 149 predictions
+  2026-04-27: 4 predictions
+  2026-04-28: 103 predictions
+  2026-04-29: 34 predictions
+  2026-04-30: 4 predictions
+  2026-05-01: 143 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+Rendered history → /Users/mghome/projects/college-baseball/docs/history.html (55 dates)
+[8/8] Pushing to GitHub...
+[main f1306a7] daily: predictions update 2026-04-25
+ 8 files changed, 14861 insertions(+), 7941 deletions(-)
+ssh: connect to host github.com port 22: Undefined error: 0
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+  !! git push origin main FAILED — commit is local only
+  !! Local is 1 commits ahead of origin/main — site is STALE
+========================================
+2026-04-25 21:43:11 — Daily update complete
+========================================

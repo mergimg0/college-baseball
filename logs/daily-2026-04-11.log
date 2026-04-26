@@ -1,0 +1,9 @@
+========================================
+2026-04-11 11:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores...
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+  File "/Users/mghome/projects/college-baseball/fsbb/db.py", line 99, in <module>
+    def get_connection(db_path: Path | None = None) -> sqlite3.Connection:
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'

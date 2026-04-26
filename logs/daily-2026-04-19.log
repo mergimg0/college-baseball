@@ -1,0 +1,261 @@
+========================================
+2026-04-19 03:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-18: 140 imported, 38 skipped
+  Results 2026-04-19: 0 imported, 130 skipped
+  Schedule 2026-04-19: 130 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+  Schedule 2026-04-25: 159 imported, 0 skipped
+  Schedule 2026-04-26: 148 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-17: 5 games, 31 pitchers
+
+Scraped 122 games, 660 pitcher entries
+Database: 23903 pitchers total, 10694 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 116 games, 11293 play events across 1 days
+Database: 3054852 total play events
+[4/8] Computing game features...
+  111 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 50 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: -0.0000
+  std_bt_rating: 0.5475
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-18: 153 predictions
+  2026-04-19: 147 predictions
+  2026-04-20: 5 predictions
+  2026-04-21: 117 predictions
+  2026-04-22: 37 predictions
+  2026-04-23: 5 predictions
+  2026-04-24: 145 predictions
+  2026-04-25: 152 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+[8/8] Pushing to GitHub...
+[main aaf6a1b] daily: predictions update 2026-04-19
+ 6 files changed, 8647 insertions(+), 8743 deletions(-)
+fatal: could not read Username for 'https://github.com': Device not configured
+========================================
+2026-04-19 09:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-18: 162 imported, 12 skipped
+  Results 2026-04-19: 0 imported, 127 skipped
+  Schedule 2026-04-19: 127 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+  Schedule 2026-04-25: 159 imported, 0 skipped
+  Schedule 2026-04-26: 148 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-17: 0 games, 0 pitchers
+
+Scraped 25 games, 135 pitcher entries
+Database: 23907 pitchers total, 10698 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 26 games, 2456 play events across 1 days
+Database: 3057308 total play events
+[4/8] Computing game features...
+  21 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 67 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: -0.0000
+  std_bt_rating: 0.5476
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-18: 153 predictions
+  2026-04-19: 147 predictions
+  2026-04-20: 5 predictions
+  2026-04-21: 117 predictions
+  2026-04-22: 37 predictions
+  2026-04-23: 5 predictions
+  2026-04-24: 145 predictions
+  2026-04-25: 152 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+[8/8] Pushing to GitHub...
+[main bcb90c9] daily: predictions update 2026-04-19
+ 6 files changed, 2378 insertions(+), 2359 deletions(-)
+fatal: could not read Username for 'https://github.com': Device not configured
+========================================
+2026-04-19 15:00:00 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-18: 162 imported, 12 skipped
+  Results 2026-04-19: 0 imported, 127 skipped
+  Schedule 2026-04-19: 127 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+  Schedule 2026-04-25: 159 imported, 0 skipped
+  Schedule 2026-04-26: 148 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-17: 0 games, 0 pitchers
+
+Scraped 0 games, 0 pitcher entries
+Database: 23907 pitchers total, 10698 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 0 games, 0 play events across 1 days
+Database: 3057308 total play events
+[4/8] Computing game features...
+  0 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 194 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: -0.0000
+  std_bt_rating: 0.5476
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-18: 153 predictions
+  2026-04-19: 147 predictions
+  2026-04-20: 5 predictions
+  2026-04-21: 117 predictions
+  2026-04-22: 37 predictions
+  2026-04-23: 5 predictions
+  2026-04-24: 145 predictions
+  2026-04-25: 152 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+[8/8] Pushing to GitHub...
+[main eee1f13] daily: predictions update 2026-04-19
+ 6 files changed, 309 insertions(+), 309 deletions(-)
+fatal: could not read Username for 'https://github.com': Device not configured
+========================================
+2026-04-19 17:52:58 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-18: 162 imported, 10 skipped
+  Results 2026-04-19: 0 imported, 128 skipped
+  Schedule 2026-04-19: 128 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+  Schedule 2026-04-25: 159 imported, 0 skipped
+  Schedule 2026-04-26: 148 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-17: 1 games, 5 pitchers
+
+Scraped 1 games, 5 pitcher entries
+Database: 23907 pitchers total, 10698 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 0 games, 0 play events across 1 days
+Database: 3057308 total play events
+[4/8] Computing game features...
+  0 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 241 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: -0.0000
+  std_bt_rating: 0.5476
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-18: 153 predictions
+  2026-04-19: 147 predictions
+  2026-04-20: 5 predictions
+  2026-04-21: 117 predictions
+  2026-04-22: 37 predictions
+  2026-04-23: 5 predictions
+  2026-04-24: 145 predictions
+  2026-04-25: 152 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+[8/8] Pushing to GitHub...
+[main 41c8be5] daily: predictions update 2026-04-19
+ 6 files changed, 534 insertions(+), 498 deletions(-)
+To github.com:mergimg0/college-baseball.git
+   eee1f13..41c8be5  main -> main
+  Pushed — Pages will auto-deploy
+========================================
+2026-04-19 18:28:16 — Daily update complete
+========================================
+========================================
+2026-04-19 21:00:01 — Starting daily update
+========================================
+[1/8] Importing NCAA scores and schedules...
+  Results 2026-04-18: 165 imported, 8 skipped
+  Results 2026-04-19: 13 imported, 115 skipped
+  Schedule 2026-04-19: 128 imported, 0 skipped
+  Schedule 2026-04-20: 5 imported, 0 skipped
+  Schedule 2026-04-21: 117 imported, 5 skipped
+  Schedule 2026-04-22: 37 imported, 2 skipped
+  Schedule 2026-04-23: 4 imported, 0 skipped
+  Schedule 2026-04-24: 146 imported, 0 skipped
+  Schedule 2026-04-25: 159 imported, 0 skipped
+  Schedule 2026-04-26: 148 imported, 0 skipped
+[2/8] Scraping pitcher box scores...
+  2026-04-17: 0 games, 0 pitchers
+
+Scraped 3 games, 14 pitcher entries
+Database: 23909 pitchers total, 10698 unique starters identified
+[3/8] Scraping play-by-play...
+Done: 3 games, 315 play events across 1 days
+Database: 3057623 total play events
+[4/8] Computing game features...
+  16 series positions, features updated
+[5/8] Fetching odds...
+  Stored odds for 75 games
+[6/8] Computing ratings...
+  bt_iterations: converged
+  mean_bt_rating: 0.0000
+  std_bt_rating: 0.5479
+  308 team stats, 308 bullpen stats, 7115 pitchers rated
+[7/8] Generating predictions + rendering...
+  2026-04-18: 153 predictions
+  2026-04-19: 147 predictions
+  2026-04-20: 5 predictions
+  2026-04-21: 117 predictions
+  2026-04-22: 37 predictions
+  2026-04-23: 5 predictions
+  2026-04-24: 145 predictions
+  2026-04-25: 152 predictions
+Rendered predictions -> /Users/mghome/projects/college-baseball/docs/index.html
+Rendered rankings → /Users/mghome/projects/college-baseball/docs/rankings.html
+Rendered edge → /Users/mghome/projects/college-baseball/docs/edge.html
+Rendered backtest → /Users/mghome/projects/college-baseball/docs/backtest.html
+Rendered wp → /Users/mghome/projects/college-baseball/docs/wp.html (10 games)
+Rendered top25 → /Users/mghome/projects/college-baseball/docs/top25.html
+Rendered history → /Users/mghome/projects/college-baseball/docs/history.html (49 dates)
+[8/8] Pushing to GitHub...
+[main 7b3b6cf] daily: predictions update 2026-04-19
+ 8 files changed, 2435 insertions(+), 2475 deletions(-)
+To github.com:mergimg0/college-baseball.git
+   ada8451..7b3b6cf  main -> main
+  Pushed — Pages will auto-deploy
+========================================
+2026-04-19 21:57:38 — Daily update complete
+========================================
