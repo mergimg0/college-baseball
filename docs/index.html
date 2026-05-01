@@ -141,7 +141,7 @@
   <div class="header">
     <h1>College Baseball Predictions</h1>
     <div class="tagline">NCAA D1 Game Predictions &mdash; 7-Day Rolling Forecast</div>
-    <div class="meta">Updated 2026-05-01 03:37 | 294 teams | 27,782 games | 4 seasons | Refreshes every 6 hours</div>
+    <div class="meta">Updated 2026-05-01 09:26 | 294 teams | 27,786 games | 4 seasons | Refreshes every 6 hours</div>
   </div>
 
   
@@ -152,7 +152,7 @@
     </div>
     <div class="divider"></div>
     <div class="stat">
-      <div class="value">26070</div>
+      <div class="value">26074</div>
       <div class="label">Games Tested</div>
     </div>
     <div class="divider"></div>
@@ -170,7 +170,7 @@
     <button class="day-tab " onclick="showDay('2026-04-30')" data-date="2026-04-30">
       Yest
       
-      
+      <span class="badge badge-accuracy">50%</span>
       
     </button>
     
@@ -300,6 +300,12 @@
     
     <!-- Yesterday: Report card -->
     
+    <div class="report-card">
+      <div><span class="rc-stat">Yesterday's Results</span></div>
+      <div><span class="rc-pct">50.0%</span></div>
+      <div><span class="rc-stat">2/4 correct</span></div>
+    </div>
+    
     
     <table>
       <thead><tr><th></th><th>Home</th><th>Away</th><th>Our Pick</th><th>Win %</th><th>Score</th><th></th></tr></thead>
@@ -308,49 +314,49 @@
         
         
         <tr data-home-conf="SEC" data-away-conf="SEC">
-          <td class="pending">&mdash;</td>
+          <td class="correct">&#10003;</td>
           <td>Alabama</td>
           <td>Vanderbilt</td>
           <td class="pick">Alabama</td>
           <td class="prob prob-mid">63.9%</td>
-          <td class="score">&mdash;</td>
-          <td class="pending">Pending</td>
+          <td class="score">5&ndash;4</td>
+          <td class="correct">Correct</td>
         </tr>
       
         
         
         <tr data-home-conf="ACC" data-away-conf="ACC">
-          <td class="pending">&mdash;</td>
+          <td class="incorrect">&#10007;</td>
           <td>Wake Forest</td>
           <td>Louisville</td>
           <td class="pick-away">Louisville</td>
           <td class="prob prob-mid">58.2%</td>
-          <td class="score">&mdash;</td>
-          <td class="pending">Pending</td>
+          <td class="score">9&ndash;8</td>
+          <td class="incorrect">Wrong</td>
         </tr>
       
         
         
         <tr data-home-conf="Big 12" data-away-conf="Big 12">
-          <td class="pending">&mdash;</td>
+          <td class="incorrect">&#10007;</td>
           <td>BYU</td>
           <td>Utah</td>
           <td class="pick-away">Utah</td>
           <td class="prob prob-mid">62.0%</td>
-          <td class="score">&mdash;</td>
-          <td class="pending">Pending</td>
+          <td class="score">6&ndash;4</td>
+          <td class="incorrect">Wrong</td>
         </tr>
       
         
         
         <tr data-home-conf="West Coast" data-away-conf="West Coast">
-          <td class="pending">&mdash;</td>
+          <td class="correct">&#10003;</td>
           <td>Portland</td>
           <td>San Diego</td>
           <td class="pick">Portland</td>
           <td class="prob prob-weak">52.8%</td>
-          <td class="score">&mdash;</td>
-          <td class="pending">Pending</td>
+          <td class="score">9&ndash;6</td>
+          <td class="correct">Correct</td>
         </tr>
       
       </tbody>
@@ -1055,7 +1061,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td>&mdash;</td>
+          <td><span style="color:#34d399">+8.4%</span></td>
           
         </tr>
       
@@ -1153,7 +1159,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td>&mdash;</td>
+          <td><span style="color:#f87171">-34.1%</span></td>
           
         </tr>
       
@@ -2447,20 +2453,6 @@
       
         
         
-        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
-          <td>Louisiana</td>
-          <td>Georgia St.</td>
-          <td class="pick">Louisiana</td>
-          <td class="prob prob-mid">60.8%</td>
-          <td><span class="conf conf-medium">medium</span></td>
-          <td class="score">0.0</td>
-          
-          <td>&mdash;</td>
-          
-        </tr>
-      
-        
-        
         <tr data-home-conf="Western Athletic" data-away-conf="Western Athletic">
           <td>Sacramento St.</td>
           <td>Abilene Christian</td>
@@ -2475,11 +2467,11 @@
       
         
         
-        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
-          <td>Little Rock</td>
-          <td>Morehead St.</td>
-          <td class="pick">Little Rock</td>
-          <td class="prob prob-mid">60.1%</td>
+        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
+          <td>Louisiana</td>
+          <td>Georgia St.</td>
+          <td class="pick">Louisiana</td>
+          <td class="prob prob-mid">60.8%</td>
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
@@ -2496,6 +2488,20 @@
           <td class="prob prob-mid">60.1%</td>
           <td><span class="conf conf-high">high</span></td>
           <td class="score">10.6</td>
+          
+          <td>&mdash;</td>
+          
+        </tr>
+      
+        
+        
+        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
+          <td>Little Rock</td>
+          <td>Morehead St.</td>
+          <td class="pick">Little Rock</td>
+          <td class="prob prob-mid">60.1%</td>
+          <td><span class="conf conf-medium">medium</span></td>
+          <td class="score">0.0</td>
           
           <td>&mdash;</td>
           
@@ -2609,7 +2615,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td><span style="color:#f87171">-13.6%</span></td>
+          <td><span style="color:#f87171">-14.0%</span></td>
           
         </tr>
       
@@ -3019,7 +3025,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td><span style="color:#f87171">-25.2%</span></td>
+          <td><span style="color:#f87171">-25.9%</span></td>
           
         </tr>
       
@@ -3299,7 +3305,7 @@
           <td><span class="conf conf-high">high</span></td>
           <td class="score">0.0</td>
           
-          <td><span style="color:#9ca3af">-4.6%</span></td>
+          <td><span style="color:#f87171">-6.0%</span></td>
           
         </tr>
       
@@ -4293,7 +4299,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td><span style="color:#f87171">-27.6%</span></td>
+          <td><span style="color:#f87171">-26.9%</span></td>
           
         </tr>
       
@@ -4363,7 +4369,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td><span style="color:#f87171">-21.2%</span></td>
+          <td><span style="color:#f87171">-22.0%</span></td>
           
         </tr>
       
@@ -4433,7 +4439,7 @@
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
-          <td>&mdash;</td>
+          <td><span style="color:#f87171">-15.5%</span></td>
           
         </tr>
       
@@ -4537,20 +4543,6 @@
       
         
         
-        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
-          <td>Louisiana</td>
-          <td>Georgia St.</td>
-          <td class="pick">Louisiana</td>
-          <td class="prob prob-mid">60.8%</td>
-          <td><span class="conf conf-medium">medium</span></td>
-          <td class="score">0.0</td>
-          
-          <td>&mdash;</td>
-          
-        </tr>
-      
-        
-        
         <tr data-home-conf="Western Athletic" data-away-conf="Western Athletic">
           <td>Sacramento St.</td>
           <td>Abilene Christian</td>
@@ -4565,11 +4557,11 @@
       
         
         
-        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
-          <td>Little Rock</td>
-          <td>Morehead St.</td>
-          <td class="pick">Little Rock</td>
-          <td class="prob prob-mid">60.1%</td>
+        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
+          <td>Louisiana</td>
+          <td>Georgia St.</td>
+          <td class="pick">Louisiana</td>
+          <td class="prob prob-mid">60.8%</td>
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
@@ -4586,6 +4578,20 @@
           <td class="prob prob-mid">60.1%</td>
           <td><span class="conf conf-high">high</span></td>
           <td class="score">10.6</td>
+          
+          <td>&mdash;</td>
+          
+        </tr>
+      
+        
+        
+        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
+          <td>Little Rock</td>
+          <td>Morehead St.</td>
+          <td class="pick">Little Rock</td>
+          <td class="prob prob-mid">60.1%</td>
+          <td><span class="conf conf-medium">medium</span></td>
+          <td class="score">0.0</td>
           
           <td>&mdash;</td>
           
@@ -6391,18 +6397,6 @@
       
         
         
-        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
-          <td>Louisiana</td>
-          <td>Georgia St.</td>
-          <td class="pick">Louisiana</td>
-          <td class="prob prob-mid">60.8%</td>
-          <td><span class="conf conf-medium">medium</span></td>
-          <td class="score">0.0</td>
-          
-        </tr>
-      
-        
-        
         <tr data-home-conf="Western Athletic" data-away-conf="Western Athletic">
           <td>Sacramento St.</td>
           <td>Abilene Christian</td>
@@ -6415,11 +6409,11 @@
       
         
         
-        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
-          <td>Little Rock</td>
-          <td>Morehead St.</td>
-          <td class="pick">Little Rock</td>
-          <td class="prob prob-mid">60.1%</td>
+        <tr data-home-conf="Sun Belt" data-away-conf="Sun Belt">
+          <td>Louisiana</td>
+          <td>Georgia St.</td>
+          <td class="pick">Louisiana</td>
+          <td class="prob prob-mid">60.8%</td>
           <td><span class="conf conf-medium">medium</span></td>
           <td class="score">0.0</td>
           
@@ -6434,6 +6428,18 @@
           <td class="prob prob-mid">60.1%</td>
           <td><span class="conf conf-high">high</span></td>
           <td class="score">10.6</td>
+          
+        </tr>
+      
+        
+        
+        <tr data-home-conf="Ohio Valley" data-away-conf="Ohio Valley">
+          <td>Little Rock</td>
+          <td>Morehead St.</td>
+          <td class="pick">Little Rock</td>
+          <td class="prob prob-mid">60.1%</td>
+          <td><span class="conf conf-medium">medium</span></td>
+          <td class="score">0.0</td>
           
         </tr>
       
@@ -8699,7 +8705,7 @@ function filterConference(conf) {
 }
 
 (function() {
-  var generated = new Date("2026-05-01T03:37:21.196957");
+  var generated = new Date("2026-05-01T09:26:29.067403");
   var age = (Date.now() - generated.getTime()) / 3600000;
   var banner = document.getElementById('stale-banner');
   if (age > 24) {
